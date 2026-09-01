@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload E2E backend log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: steelcontrol-e2e-log
           path: backend-e2e.log
