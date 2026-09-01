@@ -1,4 +1,4 @@
-# Vari�veis de ambiente / segredos
+# Variáveis de ambiente / segredos
 .env
 .env.*
 !.env.example
@@ -7,15 +7,20 @@
 # Node
 node_modules/
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Python
 venv/
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+face-api/.insightface/
 
-# VS Code
+# IDEs
 .vscode/
+.idea/
 
 # Sistema
 .DS_Store
@@ -25,6 +30,16 @@ Thumbs.db
 backend/uploads/
 
 # Build / containers
-**/.pytest_cache/
-face-api/.insightface/
+dist/
+build/
+coverage/
 *.log
+*.pid
+
+# Artefatos de validação local
+artifacts/
+backend-e2e.log
+
+# Pacotes locais
+*.zip
+*.rar

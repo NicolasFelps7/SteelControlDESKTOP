@@ -172,3 +172,39 @@ node tools/check-production.mjs
 
 ## Integração Dobot Magician
 A versão profissional inclui `dobot-gateway/`, modo MOCK sem hardware e driver USB/Serial real. Consulte `INTEGRACAO_DOBOT_MAGICIAN.md`.
+
+---
+
+## Quality gate e entrega profissional
+
+Esta versão possui hardening de engenharia sem alteração da lógica funcional.
+
+Validação rápida:
+
+```bash
+npm run quality
+```
+
+No Windows:
+
+```powershell
+.\VALIDAR_PROJETO.ps1
+```
+
+Gate estrito antes de criar a tag final:
+
+```powershell
+.\VALIDAR_RELEASE.ps1
+```
+
+O GitHub Actions em `.github/workflows/quality-gate.yml` executa automaticamente validações estáticas, testes, segurança, Face API e E2E com PostgreSQL 16.
+
+Documentação:
+
+- `docs/HARDENING_ENGENHARIA.md`
+- `docs/PROCESSO_DE_RELEASE.md`
+- `docs/VALIDACAO_2026-09-01.md`
+- `docs/CHECKLIST_SEGURANCA_RELEASE.md`
+
+O arquivo `CODE_FREEZE.sha256` comprova a integridade dos arquivos funcionais congelados.
+

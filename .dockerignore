@@ -1,5 +1,7 @@
 .git
 .gitignore
+.github
+docs
 **/.env
 **/.env.*
 !**/.env.example
@@ -9,8 +11,16 @@
 **/*.pyc
 **/.venv
 **/venv
+**/.pytest_cache
+**/.insightface
 backend/uploads
+backend/test
+face-api/tests
+device-examples
+dobot-gateway
 *.zip
+*.rar
 *.log
+*.pid
 .DS_Store
 Thumbs.db

@@ -11,6 +11,11 @@
     "test": "npm --prefix backend test",
     "check": "node tools/check-production.mjs",
     "check:dobot": "node tools/check-dobot.mjs",
-    "check:controllers": "node tools/check-controller-panels.mjs"
+    "check:controllers": "node tools/check-controller-panels.mjs",
+    "check:static": "node tools/validar-estatico.mjs",
+    "check:secrets": "node tools/check-secrets.mjs",
+    "check:docker": "node tools/check-docker-hardening.mjs",
+    "check:freeze": "node tools/check-code-freeze.mjs",
+    "quality": "npm test && npm run check && npm run check:static && npm run check:controllers && npm run check:dobot && npm run check:secrets && npm run check:docker && npm run check:freeze"
   }
 }

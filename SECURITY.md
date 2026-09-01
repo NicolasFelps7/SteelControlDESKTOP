@@ -48,3 +48,47 @@ Embeddings faciais são dados biométricos sensíveis. Para produção:
 - controle de acesso;
 - trilha de auditoria;
 - avaliação jurídica/LGPD.
+
+## Hardening da cadeia de entrega
+
+A release possui controles adicionais fora da lógica da aplicação:
+
+- scanner de segredos: `npm run check:secrets`;
+- manifesto de integridade do código funcional: `npm run check:freeze`;
+- validação de containers non-root/healthcheck: `npm run check:docker`;
+- CI com `permissions: contents: read`;
+- E2E com PostgreSQL efêmero em ambiente isolado;
+- Dependabot para npm, pip e GitHub Actions.
+
+## Containers
+
+Os containers de produção não devem executar como root.
+
+- backend: usuário `node`;
+- Face API: usuário dedicado `steelcontrol`.
+
+Os dois serviços possuem `HEALTHCHECK`.
+
+## Política de segredos
+
+Nunca versionar:
+
+- `.env`;
+- senha de app do Gmail;
+- JWT secret;
+- Face API key;
+- URL de banco contendo credencial real;
+- chaves privadas.
+
+Os arquivos `.env.example` e `.env.production.example` devem conter somente placeholders.
+
+## Processo de release
+
+Antes de publicar uma versão:
+
+1. executar `npm run quality`;
+2. confirmar GitHub Actions verde;
+3. executar o E2E;
+4. validar backup/migrations do PostgreSQL;
+5. criar tag Git imutável para a versão apresentada.
+
