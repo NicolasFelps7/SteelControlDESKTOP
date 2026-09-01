@@ -59,7 +59,7 @@
         titulo: "Painel exclusivo do Dobot",
         mensagem: "Cadastre ou selecione uma máquina com o controlador Dobot Magician."
       });
-      window.setTimeout(() => window.location.replace("maquinas.html"), 900);
+      window.setTimeout(() => window.location.replace("/app/maquinas"), 900);
       return;
     }
 

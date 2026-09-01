@@ -13,11 +13,11 @@
     SteelControl | Dashboard Industrial
   </title>
 
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824_TOP_FINAL">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260901_OPAQUE_DIALOGS">
 
   <link
     rel="stylesheet"
-    href="assets/css/dashboard.css?v=20260901_MACHINE_SCOPED"
+    href="assets/css/dashboard.css?v=20260902_STEEL_BRAND_REPAIR"
   >
 
   <link
@@ -29,13 +29,14 @@
 
   <script src="assets/vendor/steel-charts/steel-charts.js?v=1"></script>
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
-  <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DOBOT_PRO">
-  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260901_CONTROLLER_ADAPTIVE">
+  <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DARK_COMPLETE">
+  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260902_BRAND_STANDARD">
+  <link rel="stylesheet" href="assets/css/runtime-typography.css?v=20260902_PRO_TYPOGRAPHY">
 
 </head>
 
 
-<body>
+<body data-i18n-page-title="dashboardPageTitle">
 
 
   <!-- ==================================================
@@ -48,10 +49,14 @@
 
       <img
         id="empresaLogoSidebar"
-        src="assets/img/dash.png"
-        alt="Logo da empresa"
-        onerror="this.src='assets/img/dash.png'"
+        src="assets/img/steel-icon.svg"
+        alt="SteelControl"
       >
+
+      <div class="sidebar-brand-copy">
+        <strong>SteelControl</strong>
+        <span>Gestão Industrial</span>
+      </div>
 
     </div>
 
@@ -1969,7 +1974,7 @@
       </div>
     </section>
 
-    <section id="dobotTela" class="tela">
+    <section id="dobotTela" class="tela dobot-runtime">
       <div class="dobot-hero">
         <div><span class="dobot-eyebrow">PAINEL EXCLUSIVO DA MÁQUINA</span><h2 id="dobotMachineName">Dobot Magician</h2><p>Gateway Python • USB/Serial • Telemetria e comandos pela fila segura do SteelControl</p></div>
         <div id="dobotStateBadge" class="dobot-state waiting"><span></span><strong>Aguardando gateway</strong></div>
@@ -2182,7 +2187,6 @@
                 id="configEmpresaLogo"
                 src="assets/img/dash.png"
                 alt="Logo da empresa"
-                onerror="this.src='assets/img/dash.png'"
               >
 
             </div>
@@ -2303,12 +2307,12 @@
        SCRIPTS
   =================================================== -->
 
-  <script src="assets/js/config.js?v=20260831_PROD_FINAL"></script>
+  <script src="assets/js/config.js?v=20260901_I18N_WELCOME"></script>
 
-  <script src="assets/js/dashboard.js?v=20260901_MACHINE_SCOPED"></script>
+  <script src="assets/js/dashboard.js?v=20260902_FIXED_STEELCONTROL_BRAND"></script>
 
   <script src="assets/js/industrial-runtime.js?v=20260831_PROD_FINAL"></script>
-  <script src="assets/js/controller-runtime.js?v=20260901_CONTROLLER_ADAPTIVE"></script>
+  <script src="assets/js/controller-runtime.js?v=20260902_NAVIGATION_STABLE"></script>
   <script src="assets/js/dobot-runtime.js?v=20260901_DOBOT_DEDICADO"></script>
 
 </body>

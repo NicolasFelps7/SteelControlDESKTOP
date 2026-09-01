@@ -12,11 +12,11 @@
 
   <title>Minha Empresa | SteelControl</title>
 
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824_CLIENTE_FINAL">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260901_OPAQUE_DIALOGS">
 
   <link
     rel="stylesheet"
-    href="assets/css/empresa.css?v=20260831_FACIAIS_NOMEADAS"
+    href="assets/css/empresa.css?v=20260901_OPAQUE_UI_MAP"
   >
 
   <link rel="stylesheet" href="assets/vendor/steel-icons/steel-icons.css?v=1">
@@ -26,7 +26,7 @@
 </head>
 
 
-<body>
+<body data-i18n-page-title="companyPageTitle">
 
   <main class="page">
 
@@ -37,9 +37,9 @@
 
     <header class="topbar">
 
-      <a href="home.html" class="brand company-top-brand" aria-label="SteelControl">
+      <a href="/app/home" class="brand company-top-brand" aria-label="SteelControl">
         <span class="company-top-symbol">
-          <img src="assets/img/steel-icon.png" alt="">
+          <img src="assets/img/steel-icon.svg" alt="">
         </span>
         <span class="company-top-copy">
           <strong>SteelControl</strong>
@@ -99,7 +99,7 @@
 
             <div id="empresaLogoPlaceholder" class="company-logo-placeholder">
               <img
-                src="assets/img/steel-icon.png"
+                src="assets/img/steel-icon.svg"
                 alt="SteelControl"
                 class="default-company-logo"
               >
@@ -1492,13 +1492,13 @@
         </div>
 
         <div>
-          <h2>Faciais cadastradas</h2>
+          <h2>Biometria cadastrada</h2>
           <p id="facesManagerUserName">Funcionário</p>
         </div>
       </div>
 
       <p class="faces-manager-help">
-        Clique na facial que deseja excluir. Somente a amostra selecionada será removida.
+        Este perfil pode possuir apenas uma biometria. Remova-a somente quando precisar cadastrar outro rosto.
       </p>
 
       <div
@@ -1524,9 +1524,9 @@
   ></canvas>
 
 
-  <script src="assets/js/config.js?v=20260831_PROD_FINAL"></script>
+  <script src="assets/js/config.js?v=20260901_I18N_WELCOME"></script>
 
-  <script src="assets/js/empresa.js?v=20260831_PROD_FINAL"></script>
+  <script src="assets/js/empresa.js?v=20260901_LOCATION_MAP_FIX"></script>
 
 </body>
 

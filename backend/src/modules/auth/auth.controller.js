@@ -21,7 +21,8 @@ import {
 } from "../../lib/faceApi.js";
 
 import {
-  validarMesmaPessoaLiveness
+  validarMesmaPessoaLiveness,
+  classificarCorrespondenciaFacial
 } from "../../lib/faceSecurity.js";
 
 import {
@@ -36,7 +37,7 @@ import { empresaParaResposta } from "../../lib/companyView.js";
 
 const FACE_THRESHOLD = 0.58;
 const FACE_MIN_MARGIN = 0.08;
-const MAX_FACE_SAMPLES = 5;
+const MAX_FACE_SAMPLES = 1;
 
 
 // =========================================================
@@ -1424,24 +1425,22 @@ export async function registerFace(
         embedding,
         nome:
           nomeFacial,
-        maxSamples:
-          MAX_FACE_SAMPLES
       });
 
     if (
       !registroFacial.ok &&
       registroFacial.motivo ===
-        "limite"
+        "perfil_ja_possui_face"
     ) {
 
       return res
-        .status(400)
+          .status(409)
         .json({
           codigo:
-            "FACE_LIMIT_REACHED",
+            "FACE_PROFILE_ALREADY_REGISTERED",
 
           mensagem:
-            `Você já possui ${MAX_FACE_SAMPLES} amostras faciais cadastradas.`,
+            "Seu perfil já possui uma biometria facial. Remova a facial atual antes de cadastrar outro rosto.",
 
           quantidade:
             registroFacial.quantidadeAtual,
@@ -1495,9 +1494,7 @@ export async function registerFace(
       .status(201)
       .json({
         mensagem:
-          quantidade === 1
-            ? "Reconhecimento facial cadastrado com sucesso."
-            : "Nova amostra facial adicionada com sucesso.",
+          "Reconhecimento facial único cadastrado com sucesso.",
 
         faceId:
           rosto.id,
@@ -1745,109 +1742,19 @@ export async function loginFace(
         });
     }
 
-    const usuariosMap =
-      new Map();
-
-    for (
-      const face of faces
-    ) {
-
-      const embeddingSalvo =
-        Array.isArray(
-          face.embedding
-        )
-          ? face.embedding
-          : [];
-
-      if (
-        !embeddingValido(
-          embeddingSalvo
-        )
-      ) {
-        continue;
-      }
-
-      const similaridade =
-        similaridadeCosseno(
-          embedding,
-          embeddingSalvo
-        );
-
-      const usuarioId =
-        face.usuario.id;
-
-      const atual =
-        usuariosMap.get(
-          usuarioId
-        );
-
-      if (
-        !atual ||
-        similaridade >
-        atual.similaridade
-      ) {
-
-        usuariosMap.set(
-          usuarioId,
-          {
-            usuario:
-              face.usuario,
-
-            faceId:
-              face.id,
-
-            similaridade
-          }
-        );
-      }
-    }
-
-    const resultados =
-      Array.from(
-        usuariosMap.values()
-      );
+    const classificacao =
+      classificarCorrespondenciaFacial({
+        embedding,
+        faces,
+        threshold:
+          FACE_THRESHOLD,
+        margemMinima:
+          FACE_MIN_MARGIN
+      });
 
     if (
-      resultados.length === 0
-    ) {
-
-      return res
-        .status(401)
-        .json({
-          codigo:
-            "FACE_NOT_REGISTERED",
-
-          mensagem:
-            "Nenhum rosto válido foi encontrado no banco."
-        });
-    }
-
-    resultados.sort(
-      (a, b) =>
-        b.similaridade -
-        a.similaridade
-    );
-
-    const melhor =
-      resultados[0];
-
-    const segundo =
-      resultados[1] || null;
-
-    const segundaSimilaridade =
-      segundo
-        ? segundo.similaridade
-        : -1;
-
-    const margem =
-      segundo
-        ? melhor.similaridade -
-          segundaSimilaridade
-        : 1;
-
-    if (
-      melhor.similaridade <
-      FACE_THRESHOLD
+      classificacao.status ===
+      "nao_encontrado"
     ) {
 
       return res
@@ -1865,9 +1772,8 @@ export async function loginFace(
     }
 
     if (
-      segundo &&
-      margem <
-      FACE_MIN_MARGIN
+      classificacao.status ===
+      "ambiguo"
     ) {
 
       return res
@@ -1883,6 +1789,9 @@ export async function loginFace(
             "Olhe diretamente para a câmera e tente novamente."
         });
     }
+
+    const melhor =
+      classificacao.melhor;
 
     const usuario =
       melhor.usuario;
@@ -1925,7 +1834,7 @@ export async function loginFace(
 
         margem:
           Number(
-            margem.toFixed(4)
+            classificacao.margem.toFixed(4)
           ),
 
         faceId:

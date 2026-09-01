@@ -100,7 +100,7 @@ body {
 
 
 /* =========================================================
-   LOGO DA EMPRESA
+   MARCA FIXA STEELCONTROL
 ========================================================= */
 
 .logo {
@@ -113,7 +113,9 @@ body {
   display: flex;
 
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+
+  gap: 11px;
 
   padding: 16px;
 
@@ -123,18 +125,11 @@ body {
 }
 
 
-/*
-  A logo do dashboard agora é a logo cadastrada pela empresa.
-
-  Ela NÃO deve ser invertida no modo escuro.
-*/
-
 .logo img {
-  width: auto;
-  height: auto;
+  width: 42px;
+  height: 47px;
 
-  max-width: 145px;
-  max-height: 76px;
+  flex: 0 0 42px;
 
   object-fit: contain;
 
@@ -145,6 +140,32 @@ body {
     opacity 0.25s ease;
 
   filter: none !important;
+}
+
+.sidebar-brand-copy {
+  min-width: 0;
+}
+
+.sidebar-brand-copy strong {
+  display: block;
+  color: var(--texto);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.35px;
+}
+
+.sidebar-brand-copy span {
+  display: block;
+  margin-top: 4px;
+  color: var(--texto-suave);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 

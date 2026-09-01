@@ -2,11 +2,16 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-import cv2
-import numpy as np
 import os
 
 from insightface.app import FaceAnalysis
+
+from .face_rules import (
+    embedding_valido,
+    limitar_bbox,
+    validar_metadados_upload,
+)
+from .image_utils import decodificar_imagem, medir_brilho
 
 
 # =========================================================
@@ -99,36 +104,21 @@ face_analyzer.prepare(
 # =========================================================
 
 async def upload_para_frame(imagem: UploadFile):
-
-    tipos_permitidos = {
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-    }
-
-    if imagem.content_type not in tipos_permitidos:
-        raise HTTPException(
-            status_code=415,
-            detail="Formato de imagem não suportado."
-        )
-
     conteudo = await imagem.read()
 
-    if len(conteudo) > 4 * 1024 * 1024:
+    erro_upload = validar_metadados_upload(
+        imagem.content_type,
+        len(conteudo),
+    )
+
+    if erro_upload:
+        status_code, detail = erro_upload
         raise HTTPException(
-            status_code=413,
-            detail="Imagem maior que o limite de 4 MB."
+            status_code=status_code,
+            detail=detail,
         )
 
-    np_array = np.frombuffer(
-        conteudo,
-        np.uint8
-    )
-
-    frame = cv2.imdecode(
-        np_array,
-        cv2.IMREAD_COLOR
-    )
+    frame = decodificar_imagem(conteudo)
 
     if frame is None:
 
@@ -138,25 +128,6 @@ async def upload_para_frame(imagem: UploadFile):
         )
 
     return frame
-
-
-def limitar_bbox(
-    bbox,
-    largura,
-    altura
-):
-
-    x1, y1, x2, y2 = bbox.astype(int)
-
-    x1 = max(0, x1)
-    y1 = max(0, y1)
-
-    x2 = min(largura, x2)
-    y2 = min(altura, y2)
-
-    return x1, y1, x2, y2
-
-
 # =========================================================
 # HEALTH
 # =========================================================
@@ -192,15 +163,7 @@ async def analisar_rosto(
     # ILUMINAÇÃO
     # -----------------------------------------------------
 
-    cinza = cv2.cvtColor(
-        frame,
-        cv2.COLOR_BGR2GRAY
-    )
-
-
-    brilho = float(
-        np.mean(cinza)
-    )
+    brilho = medir_brilho(frame)
 
 
     # -----------------------------------------------------
@@ -624,6 +587,12 @@ async def gerar_embedding(
         .astype(float)
         .tolist()
     )
+
+    if not embedding_valido(embedding):
+        raise HTTPException(
+            status_code=500,
+            detail="O modelo facial retornou um embedding inválido.",
+        )
 
 
     return {

@@ -209,7 +209,7 @@ function prepararLogoEmpresaParaTema(img) {
 
 const API_URL = window.STEELCONTROL_API_URL;
 
-const MAX_FACE_SAMPLES = 5;
+const MAX_FACE_SAMPLES = 1;
 const FRAMES_NECESSARIOS = 4;
 
 
@@ -300,7 +300,7 @@ const token =
 if (!token) {
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 
@@ -338,6 +338,8 @@ function origemEmpresaAtual() {
 
 function configurarBotaoVoltarEmpresa() {
   const origem = origemEmpresaAtual();
+  const destinoDashboard =
+    destinoSeguroDashboardEmpresa();
 
   const texto =
     document.getElementById(
@@ -346,26 +348,120 @@ function configurarBotaoVoltarEmpresa() {
 
   if (texto) {
     texto.textContent =
-      origem === "dashboard"
-        ? "Dashboard"
+      origem === "dashboard" ||
+      Boolean(destinoDashboard)
+        ? "Painel da máquina"
         : "Máquinas";
   }
 }
 
+function destinoDashboardReferenciador() {
+  if (!document.referrer) {
+    return null;
+  }
+
+  try {
+    const referencia =
+      new URL(document.referrer);
+
+    if (
+      referencia.origin !==
+      window.location.origin
+    ) {
+      return null;
+    }
+
+    const pagina =
+      referencia.pathname
+        .split("/")
+        .pop();
+
+    const painel =
+      referencia.searchParams.get(
+        "view"
+      );
+
+    if (
+      (
+        pagina === "index.html" ||
+        pagina === "dashboard"
+      ) &&
+      (
+        painel === "controller" ||
+        painel === "dobot"
+      )
+    ) {
+      return `/app/dashboard?view=${painel}`;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function destinoSeguroDashboardEmpresa() {
+  const retorno =
+    destinoDashboardReferenciador() ||
+      localStorage.getItem(
+        "empresaRetornoDashboard"
+      ) ||
+      localStorage.getItem(
+        "dashboardMaquinaDestino"
+      );
+
+  const destinosPermitidos =
+    new Map([
+      ["/app/dashboard?view=controller", "/app/dashboard?view=controller"],
+      ["/app/dashboard?view=dobot", "/app/dashboard?view=dobot"],
+      ["index.html?view=controller", "/app/dashboard?view=controller"],
+      ["index.html?view=dobot", "/app/dashboard?view=dobot"]
+    ]);
+
+  return destinosPermitidos.get(
+    retorno
+  ) || null;
+}
+
 function voltarOrigemEmpresa() {
   const origem = origemEmpresaAtual();
+  const maquinaId =
+    localStorage.getItem(
+      "maquinaId"
+    );
+
+  const destinoSalvo =
+    destinoSeguroDashboardEmpresa();
+
+  if (
+    maquinaId &&
+    destinoSalvo
+  ) {
+    window.location.href =
+      destinoSalvo;
+    return;
+  }
 
   if (
     origem === "dashboard" &&
-    localStorage.getItem("maquinaId")
+    maquinaId
   ) {
+    const controlador =
+      String(
+        localStorage.getItem(
+          "controladorSelecionado"
+        ) || "OUTRO"
+      ).toUpperCase();
+
     window.location.href =
-      "index.html";
+      controlador === "DOBOT_MAGICIAN"
+        ? "/app/dashboard?view=dobot"
+        : "/app/dashboard?view=controller";
     return;
   }
 
   window.location.href =
-    "maquinas.html";
+    "/app/maquinas";
 }
 
 function definirLogoEmpresa(logoUrl) {
@@ -1275,6 +1371,16 @@ document
           dados.logoUrl;
 
 
+        if (
+          !dados.empresa?.temLogo ||
+          !logoUrl
+        ) {
+          throw new Error(
+            "O PostgreSQL não confirmou o salvamento da logo."
+          );
+        }
+
+
         if (logoUrl) {
 
           definirLogoEmpresa(
@@ -1284,8 +1390,10 @@ document
 
           if (empresaAtual) {
 
-            empresaAtual.logoUrl =
-              logoUrl;
+            empresaAtual = {
+              ...empresaAtual,
+              ...dados.empresa
+            };
 
             localStorage.setItem(
               "empresa",
@@ -2186,15 +2294,29 @@ function atualizarMapaEmpresa(
   }
 
 
-  mapa.removeAttribute("src");
-  mapa.style.display = "none";
+  const mapaUrl =
+    `https://www.google.com/maps?q=${encodeURIComponent(enderecoCompleto)}&output=embed`;
 
-  if (semEndereco) {
-    semEndereco.style.display = "flex";
-    const titulo = semEndereco.querySelector("strong");
-    const detalhe = semEndereco.querySelector("span");
-    if (titulo) titulo.textContent = "Localização cadastrada";
-    if (detalhe) detalhe.textContent = enderecoCompleto;
+  // Exibe o mapa quando houver conexão. Os dados do endereço continuam
+  // disponíveis no cartão abaixo caso o computador esteja sem internet.
+  if (navigator.onLine !== false) {
+    mapa.src = mapaUrl;
+    mapa.style.display = "block";
+
+    if (semEndereco) {
+      semEndereco.style.display = "none";
+    }
+  } else {
+    mapa.removeAttribute("src");
+    mapa.style.display = "none";
+
+    if (semEndereco) {
+      semEndereco.style.display = "flex";
+      const titulo = semEndereco.querySelector("strong");
+      const detalhe = semEndereco.querySelector("span");
+      if (titulo) titulo.textContent = "Localização cadastrada";
+      if (detalhe) detalhe.textContent = enderecoCompleto;
+    }
   }
 
 
@@ -2530,7 +2652,7 @@ function renderizarFuncionarios() {
             ${
               possuiFacial
 
-                ? `${quantidade} de ${MAX_FACE_SAMPLES} amostra(s) cadastrada(s).`
+                ? "Biometria única vinculada a este perfil."
 
                 : "Nenhuma amostra facial cadastrada."
             }
@@ -2574,7 +2696,7 @@ function renderizarFuncionarios() {
 
                   ${
                     possuiFacial
-                      ? "Adicionar facial"
+                      ? "Facial já cadastrada"
                       : "Cadastrar facial"
                   }
 
@@ -2594,7 +2716,7 @@ function renderizarFuncionarios() {
 
                         <i class="fa-solid fa-list-check"></i>
 
-                        Gerenciar faciais
+                        Gerenciar facial
 
                       </button>
 
@@ -3766,7 +3888,7 @@ async function abrirCadastroFacialFuncionario(
   ) {
 
     notificarEmpresa(
-      `Este funcionário já possui ${MAX_FACE_SAMPLES} amostras faciais.`,
+      "Este perfil já possui uma biometria facial. Remova a facial atual antes de cadastrar outra.",
       "warning",
       "Limite de biometria"
     );
@@ -3821,7 +3943,7 @@ async function abrirCadastroFacialFuncionario(
   if (funcionarioNome) {
 
     funcionarioNome.textContent =
-      `${usuario.nome} • ${quantidade}/${MAX_FACE_SAMPLES} amostras`;
+      `${usuario.nome} • cadastro facial único`;
 
   }
 
@@ -4401,7 +4523,7 @@ async function cadastrarEmbeddingFuncionario() {
     alterarStatusCamera(
       "sucesso",
       "Facial cadastrada!",
-      `${resultado.nomeFacial || nomeAmostra} cadastrada. ${resultado.quantidadeFaces || ""} amostra(s) no perfil.`
+      `${resultado.nomeFacial || nomeAmostra} cadastrada e vinculada exclusivamente a este perfil.`
     );
 
 
@@ -4679,7 +4801,7 @@ async function excluirFacialNomeada(
           titulo:
             `Excluir "${nomeFacial}"?`,
           mensagem:
-            `Somente a facial "${nomeFacial}" de ${usuario.nome} será removida. As outras amostras do perfil continuarão ativas.`,
+            `A biometria facial de ${usuario.nome} será removida. Depois disso, será possível cadastrar um novo rosto.`,
           confirmar:
             "Excluir esta facial",
           cancelar:
@@ -5262,7 +5384,7 @@ function sair() {
 
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 

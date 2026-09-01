@@ -251,21 +251,67 @@ app.use(
 // =========================================================
 // FRONTEND
 // =========================================================
-// Produção passa a ter um único endereço: frontend + API.
-// Ex.: https://steelcontrol.onrender.com
+// Frontend e API usam a mesma origem, como em produção.
+// As rotas /app/* não expõem nomes de arquivos .html.
 
 app.get(
   "/",
   (req, res) => {
-    return res.sendFile(
-      path.join(
-        frontendDir,
-        "home.html"
-      )
+    return res.redirect(
+      302,
+      "/app/login"
     );
   }
 );
 
+const paginasFrontend = {
+  "/app/home": "home.html",
+  "/app/login": "login.html",
+  "/app/maquinas": "maquinas.html",
+  "/app/dashboard": "index.html",
+  "/app/empresa": "empresa.html"
+};
+
+for (
+  const [rota, arquivo]
+  of Object.entries(paginasFrontend)
+) {
+  app.get(
+    rota,
+    (req, res) =>
+      res.sendFile(
+        path.join(
+          frontendDir,
+          arquivo
+        )
+      )
+  );
+}
+
+app.get(
+  "/app",
+  (req, res) =>
+    res.redirect(
+      302,
+      "/app/login"
+    )
+);
+
+app.use(
+  "/app",
+  express.static(
+    frontendDir,
+    {
+      etag: true,
+      maxAge:
+        env.nodeEnv === "production"
+          ? "1h"
+          : 0
+    }
+  )
+);
+
+// Compatibilidade temporária com URLs antigas terminadas em .html.
 app.use(
   express.static(
     frontendDir,

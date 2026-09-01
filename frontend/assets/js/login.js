@@ -272,6 +272,81 @@ let cadastroPendente =
 
 
 // ========================================================
+// MENSAGEM VISUAL DE BOAS-VINDAS
+// ========================================================
+
+function textoAcesso(chave, parametros = {}) {
+  if (typeof window.t === "function") {
+    return window.t(chave, parametros);
+  }
+
+  if (typeof t === "function") {
+    return t(chave, parametros);
+  }
+
+  return chave;
+}
+
+
+function mensagemTraduzida(texto) {
+  if (typeof traduzirTextoLivre === "function") {
+    return traduzirTextoLivre(texto);
+  }
+
+  return String(texto || "");
+}
+
+
+function mostrarBoasVindas({ titulo, texto, cadastro = false }) {
+  document
+    .querySelector(".access-welcome-overlay")
+    ?.remove();
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.className =
+    "access-welcome-overlay";
+
+  overlay.setAttribute("role", "status");
+  overlay.setAttribute("aria-live", "polite");
+
+  overlay.innerHTML = `
+    <div class="access-welcome-card ${cadastro ? "is-register" : ""}">
+      <div class="access-welcome-brand">
+        <img src="assets/img/steel-icon.svg" alt="" aria-hidden="true">
+        <span>SteelControl</span>
+      </div>
+      <div class="access-welcome-check" aria-hidden="true">
+        <i class="fa-solid ${cadastro ? "fa-wand-magic-sparkles" : "fa-check"}"></i>
+      </div>
+      <h2></h2>
+      <p></p>
+      <div class="access-welcome-loading">
+        <span></span>
+        <small></small>
+      </div>
+    </div>
+  `;
+
+  overlay.querySelector("h2").textContent =
+    titulo;
+
+  overlay.querySelector("p").textContent =
+    texto;
+
+  overlay.querySelector("small").textContent =
+    textoAcesso("redirectingWorkspace");
+
+  document.body.appendChild(overlay);
+
+  requestAnimationFrame(() => {
+    overlay.classList.add("is-visible");
+  });
+}
+
+
+// ========================================================
 // SALVAR SESSÃO
 // ========================================================
 
@@ -479,29 +554,41 @@ loginForm.addEventListener(
 
 
       mensagem.textContent =
-        "Login realizado com sucesso!";
+        textoAcesso(
+          "loginWelcomeTitle",
+          { nome: dados.usuario?.nome || "" }
+        );
 
 
       mensagem.className =
         "message sucesso";
 
 
+      mostrarBoasVindas({
+        titulo: textoAcesso(
+          "loginWelcomeTitle",
+          { nome: dados.usuario?.nome || "" }
+        ),
+        texto: textoAcesso("loginWelcomeText")
+      });
+
+
       setTimeout(
         () => {
 
           window.location.href =
-            "maquinas.html";
+            "/app/maquinas";
 
         },
 
-        500
+        1800
       );
 
 
     } catch (erro) {
 
       mensagem.textContent =
-        erro.message;
+        mensagemTraduzida(erro.message);
 
 
       mensagem.className =
@@ -576,7 +663,10 @@ function iniciarContagemReenvio(segundos = 60) {
     if (restante > 0) {
       btnReenviarCodigo.disabled = true;
       textoReenvio.textContent =
-        `Reenviar código em ${restante}s`;
+        textoAcesso(
+          "resendCodeIn",
+          { segundos: restante }
+        );
 
       restante--;
       return;
@@ -586,7 +676,7 @@ function iniciarContagemReenvio(segundos = 60) {
 
     btnReenviarCodigo.disabled = false;
     textoReenvio.textContent =
-      "Reenviar código";
+      textoAcesso("resendCode");
   };
 
   atualizar();
@@ -673,7 +763,7 @@ async function solicitarCodigoCadastroSeguro() {
 
   if (mensagemCadastro) {
     mensagemCadastro.textContent =
-      "Enviando código para o e-mail informado...";
+      textoAcesso("sendingCode");
 
     mensagemCadastro.className =
       "message";
@@ -716,7 +806,7 @@ async function solicitarCodigoCadastroSeguro() {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
         dados.mensagem ||
-        "Código enviado.";
+        textoAcesso("codeSent");
 
       mensagemCadastro.className =
         "message sucesso";
@@ -727,7 +817,7 @@ async function solicitarCodigoCadastroSeguro() {
   } catch (erro) {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
-        erro.message;
+        mensagemTraduzida(erro.message);
 
       mensagemCadastro.className =
         "message erro";
@@ -754,7 +844,7 @@ async function confirmarCodigoCadastroSeguro() {
   ) {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
-        "Digite o código de 6 dígitos enviado para seu e-mail.";
+        textoAcesso("invalidCodeLength");
 
       mensagemCadastro.className =
         "message erro";
@@ -806,7 +896,7 @@ async function confirmarCodigoCadastroSeguro() {
 
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
-        "E-mail confirmado. Empresa criada. Agora cadastre sua biometria.";
+        textoAcesso("emailConfirmedFaceNext");
 
       mensagemCadastro.className =
         "message sucesso";
@@ -819,7 +909,7 @@ async function confirmarCodigoCadastroSeguro() {
   } catch (erro) {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
-        erro.message;
+        mensagemTraduzida(erro.message);
 
       mensagemCadastro.className =
         "message erro";
@@ -872,7 +962,7 @@ async function reenviarCodigoCadastroSeguro() {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
         dados.mensagem ||
-        "Novo código enviado.";
+        textoAcesso("newCodeSent");
 
       mensagemCadastro.className =
         "message sucesso";
@@ -885,7 +975,7 @@ async function reenviarCodigoCadastroSeguro() {
   } catch (erro) {
     if (mensagemCadastro) {
       mensagemCadastro.textContent =
-        erro.message;
+        mensagemTraduzida(erro.message);
 
       mensagemCadastro.className =
         "message erro";
@@ -994,9 +1084,9 @@ async function abrirCameraFace() {
 
     "analisando",
 
-    "Iniciando câmera...",
+    textoAcesso("cameraStarting"),
 
-    "Aguarde alguns segundos"
+    textoAcesso("cameraWait")
 
   );
 
@@ -1044,9 +1134,9 @@ async function abrirCameraFace() {
 
       "analisando",
 
-      "Procurando rosto...",
+      textoAcesso("faceSearching"),
 
-      "Posicione seu rosto no centro da câmera"
+      textoAcesso("faceCenter")
 
     );
 
@@ -1069,9 +1159,9 @@ async function abrirCameraFace() {
 
       "erro",
 
-      "Câmera indisponível",
+      textoAcesso("cameraUnavailable"),
 
-      "Permita o acesso à câmera no navegador"
+      textoAcesso("cameraPermission")
 
     );
 
@@ -1304,16 +1394,16 @@ async function analisarFrame() {
 
         alterarStatus(
           "sucesso",
-          "Movimento confirmado",
-          "Agora volte a olhar diretamente para a câmera."
+          textoAcesso("movementConfirmed"),
+          textoAcesso("lookFrontAgain")
         );
 
       } else {
 
         alterarStatus(
           "analisando",
-          "Prova de vida",
-          "Vire levemente a cabeça para um dos lados."
+          textoAcesso("livenessCheck"),
+          textoAcesso("turnHead")
         );
 
       }
@@ -1341,8 +1431,8 @@ async function analisarFrame() {
 
       alterarStatus(
         "sucesso",
-        "Posição correta",
-        `Mantenha-se parado... ${framesCorretos}/2`
+        textoAcesso("correctPosition"),
+        textoAcesso("stayStillCount", { atual: framesCorretos })
       );
 
 
@@ -1358,8 +1448,8 @@ async function analisarFrame() {
 
         alterarStatus(
           "analisando",
-          "Prova de vida",
-          "Vire levemente a cabeça para um dos lados."
+          textoAcesso("livenessCheck"),
+          textoAcesso("turnHead")
         );
 
       }
@@ -1375,8 +1465,8 @@ async function analisarFrame() {
 
       alterarStatus(
         "sucesso",
-        "Prova de vida concluída",
-        `Olhe para a câmera... ${framesCorretos}/2`
+        textoAcesso("livenessComplete"),
+        textoAcesso("lookCameraCount", { atual: framesCorretos })
       );
 
 
@@ -1407,9 +1497,9 @@ async function analisarFrame() {
 
       "erro",
 
-      "Falha na análise",
+      textoAcesso("analysisFailed"),
 
-      "Verifique se a API Python está funcionando"
+      textoAcesso("checkPythonApi")
 
     );
 
@@ -1468,10 +1558,10 @@ function atualizarDeteccao(
       tipo,
 
       dados.detectado
-        ? "Ajuste sua posição"
-        : "Procurando rosto...",
+        ? textoAcesso("adjustPosition")
+        : textoAcesso("faceSearching"),
 
-      dados.orientacao
+      mensagemTraduzida(dados.orientacao)
 
     );
 
@@ -1501,9 +1591,9 @@ async function executarReconhecimento() {
 
     "analisando",
 
-    "Verificando identidade...",
+    textoAcesso("checkingIdentity"),
 
-    "Não se mova"
+    textoAcesso("doNotMove")
 
   );
 
@@ -1561,9 +1651,9 @@ async function executarReconhecimento() {
 
       "erro",
 
-      "Não foi possível validar",
+      textoAcesso("validationFailed"),
 
-      erro.message
+      mensagemTraduzida(erro.message)
 
     );
 
@@ -1630,8 +1720,8 @@ async function cadastrarFace(
 
   alterarStatus(
     "sucesso",
-    "Rosto cadastrado!",
-    "Sua biometria facial foi processada pelo backend e vinculada à conta."
+    textoAcesso("faceRegisteredTitle"),
+    textoAcesso("faceRegisteredText")
   );
 
 
@@ -1643,12 +1733,22 @@ async function cadastrarFace(
   pararCamera();
 
 
+  mostrarBoasVindas({
+    titulo: textoAcesso(
+      "registerWelcomeTitle",
+      { nome: cadastroPendente?.usuario?.nome || "" }
+    ),
+    texto: textoAcesso("registerWelcomeText"),
+    cadastro: true
+  });
+
+
   setTimeout(
     () => {
       window.location.href =
-        "maquinas.html";
+        "/app/maquinas";
     },
-    1200
+    2300
   );
 
 }
@@ -1697,10 +1797,10 @@ async function autenticarFace(
       alterarStatus(
         "erro",
         dados.codigo === "FACE_AMBIGUOUS"
-          ? "Identidade ambígua"
-          : "Rosto não cadastrado",
-        dados.orientacao ||
-        "Não encontramos este rosto com segurança. Entre com e-mail e senha."
+          ? textoAcesso("ambiguousIdentity")
+          : textoAcesso("faceNotRegistered"),
+        mensagemTraduzida(dados.orientacao) ||
+        textoAcesso("faceNotFoundSecurely")
       );
 
 
@@ -1730,8 +1830,11 @@ async function autenticarFace(
 
   alterarStatus(
     "sucesso",
-    "Rosto reconhecido!",
-    `Bem-vindo, ${dados.usuario.nome}`
+    textoAcesso("faceRecognizedTitle"),
+    textoAcesso(
+      "faceRecognizedText",
+      { nome: dados.usuario.nome }
+    )
   );
 
 
@@ -1743,12 +1846,21 @@ async function autenticarFace(
   pararCamera();
 
 
+  mostrarBoasVindas({
+    titulo: textoAcesso(
+      "loginWelcomeTitle",
+      { nome: dados.usuario.nome }
+    ),
+    texto: textoAcesso("loginWelcomeText")
+  });
+
+
   setTimeout(
     () => {
       window.location.href =
-        "maquinas.html";
+        "/app/maquinas";
     },
-    1000
+    2000
   );
 
 }

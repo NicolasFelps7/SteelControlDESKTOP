@@ -49,7 +49,7 @@ const uploadLogoMiddleware =
 
     limits: {
       fileSize:
-        2 * 1024 * 1024
+        5 * 1024 * 1024
     },
 
     fileFilter(

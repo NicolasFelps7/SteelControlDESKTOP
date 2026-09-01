@@ -5,9 +5,12 @@
   const requestedView = new URLSearchParams(window.location.search).get("view");
   if (!token || !machineId || requestedView !== "controller") return;
 
+  const BRAND_ACCENT = "#2563eb";
+  const BRAND_DARK = "#071a3d";
+
   const profiles = {
     ESP32: {
-      panel: "ESP32 / IoT", icon: "fa-wifi", accent: "#0891b2", dark: "#083344",
+      panel: "ESP32 / IoT", icon: "fa-wifi", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Sensores, conectividade Wi-Fi, sinal, latência e telemetria do dispositivo embarcado.",
       capabilities: ["Sensores", "Wi-Fi / RSSI", "GPIO", "Heartbeat", "HTTP / MQTT"],
       dataFields: ["temperatura", "vibracao", "corrente", "qualidadeSinal"],
@@ -17,7 +20,7 @@
       ]
     },
     CLP_PLC: {
-      panel: "CLP / PLC", icon: "fa-server", accent: "#7c3aed", dark: "#2e1065",
+      panel: "CLP / PLC", icon: "fa-server", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Processo industrial, entradas e saídas, registradores, ciclo de varredura e alarmes do CLP.",
       capabilities: ["Entradas digitais", "Saídas digitais", "Registradores", "Scan", "Alarmes"],
       dataFields: ["plc.scanTimeMs", "plc.inputs", "plc.outputs", "plc.registers"],
@@ -27,7 +30,7 @@
       ]
     },
     CONTROLADOR_ROBOTICO: {
-      panel: "Célula robótica", icon: "fa-robot", accent: "#db2777", dark: "#500724",
+      panel: "Célula robótica", icon: "fa-robot", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Eixos, ferramenta, ciclos, modo de operação e informações de segurança da célula robótica.",
       capabilities: ["Eixos", "Ferramenta", "Ciclos", "Modo automático", "Segurança"],
       dataFields: ["robot.axes", "robot.tool", "robot.mode", "robot.safety"],
@@ -37,7 +40,7 @@
       ]
     },
     CNC: {
-      panel: "CNC / Usinagem", icon: "fa-gears", accent: "#ea580c", dark: "#431407",
+      panel: "CNC / Usinagem", icon: "fa-gears", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Spindle, avanço, ferramenta, programa, peças produzidas e desempenho do ciclo de usinagem.",
       capabilities: ["Spindle", "Avanço", "Ferramenta", "Programa CNC", "Contagem de peças"],
       dataFields: ["cnc.spindleRpm", "cnc.feedRate", "cnc.tool", "cnc.program"],
@@ -47,7 +50,7 @@
       ]
     },
     GATEWAY_INDUSTRIAL: {
-      panel: "Gateway industrial", icon: "fa-network-wired", accent: "#16a34a", dark: "#052e16",
+      panel: "Gateway industrial", icon: "fa-network-wired", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Dispositivos conectados, protocolos, tráfego, latência e integridade do gateway de integração.",
       capabilities: ["Dispositivos", "Protocolos", "Tráfego", "Conversão de dados", "Integridade"],
       dataFields: ["gateway.devicesOnline", "gateway.messagesPerMinute", "gateway.protocols", "qualidadeSinal"],
@@ -57,7 +60,7 @@
       ]
     },
     OUTRO: {
-      panel: "Equipamento genérico", icon: "fa-microchip", accent: "#475569", dark: "#0f172a",
+      panel: "Equipamento genérico", icon: "fa-microchip", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Telemetria e comunicação configuráveis para equipamentos que utilizam controladores proprietários.",
       capabilities: ["Telemetria", "Comunicação", "Alertas", "Produção", "Dados adicionais"],
       dataFields: ["temperatura", "vibracao", "corrente", "consumoEnergia"],
@@ -79,6 +82,7 @@
 
   let machine = null;
   let diagnostic = null;
+  let requestedViewHandled = false;
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
@@ -112,20 +116,32 @@
     return fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   }
 
+  function openDedicatedView() {
+    if (requestedViewHandled || !machine) return;
+    requestedViewHandled = true;
+
+    const code = String(machine.controlador || "").toUpperCase();
+    if (code === "DOBOT_MAGICIAN") {
+      window.location.replace("/app/dashboard?view=dobot");
+      return;
+    }
+
+    if (!profiles[code]) {
+      window.location.replace("/app/maquinas");
+      return;
+    }
+
+    // O dashboard principal já abre ?view=controller de forma síncrona.
+    // Aqui apenas validamos o tipo selecionado: nenhuma atualização de API
+    // pode retirar o usuário de Produção, Manutenção, Logs ou Configurações.
+  }
+
   function render() {
     if (!machine || !diagnostic) return;
     const code = String(machine.controlador || "").toUpperCase();
 
-    if (code === "DOBOT_MAGICIAN") {
-      window.location.replace("index.html?view=dobot");
-      return;
-    }
-
     const profile = profiles[code];
-    if (!profile) {
-      window.location.replace("maquinas.html");
-      return;
-    }
+    if (!profile) return;
 
     const extras = diagnostic.dadosExtras || machine.dadosExtrasAtuais || {};
     const hasReading = Boolean(diagnostic.ultimaTelemetriaEm);
@@ -176,7 +192,6 @@
       }).join("");
     }
 
-    window.mostrarTela?.("controller", null);
   }
 
   async function load() {
@@ -187,6 +202,7 @@
       if (!machineResponse.ok || !diagnosticResponse.ok) throw new Error("Não foi possível carregar o controlador.");
       machine = await machineResponse.json();
       diagnostic = await diagnosticResponse.json();
+      openDedicatedView();
       render();
     } catch (error) {
       window.SteelUI?.toast?.({ tipo: "error", titulo: "Painel do controlador", mensagem: error.message });

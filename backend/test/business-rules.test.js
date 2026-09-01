@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import {
   validarMesmaPessoaLiveness,
   similaridadeCosseno,
-  encontrarCorrespondenciaFacial
+  encontrarCorrespondenciaFacial,
+  classificarCorrespondenciaFacial
 } from "../src/lib/faceSecurity.js";
 
 import {
@@ -16,6 +17,10 @@ import {
   podeRegistrarManutencao,
   podeExcluirManutencao
 } from "../src/lib/maintenancePolicy.js";
+
+import {
+  criarAmostraFacialExclusiva
+} from "../src/lib/faceIdentity.js";
 
 
 test("liveness aceita embeddings equivalentes", () => {
@@ -92,6 +97,188 @@ test("cadastro facial aceita identidade sem correspondência", () => {
     });
 
   assert.equal(encontrado, null);
+});
+
+
+test("login facial sinaliza dois usuários muito próximos como ambíguos", () => {
+  const resultado =
+    classificarCorrespondenciaFacial({
+      embedding: [1, 0, 0],
+      faces: [
+        {
+          id: 1,
+          usuarioId: 10,
+          embedding: [1, 0, 0]
+        },
+        {
+          id: 2,
+          usuarioId: 20,
+          embedding: [0.998, 0.063, 0]
+        }
+      ],
+      threshold: 0.58,
+      margemMinima: 0.08
+    });
+
+  assert.equal(resultado.status, "ambiguo");
+  assert.equal(resultado.melhor.usuarioId, 10);
+  assert.equal(resultado.segundo.usuarioId, 20);
+  assert.ok(resultado.margem < 0.08);
+});
+
+
+test("amostras próximas do mesmo usuário não geram ambiguidade", () => {
+  const resultado =
+    classificarCorrespondenciaFacial({
+      embedding: [1, 0, 0],
+      faces: [
+        {
+          id: 1,
+          usuarioId: 10,
+          embedding: [1, 0, 0]
+        },
+        {
+          id: 2,
+          usuarioId: 10,
+          embedding: [0.999, 0.04, 0]
+        }
+      ]
+    });
+
+  assert.equal(resultado.status, "reconhecido");
+  assert.equal(resultado.segundo, null);
+});
+
+
+test("login facial reconhece quando existe margem segura", () => {
+  const resultado =
+    classificarCorrespondenciaFacial({
+      embedding: [1, 0, 0],
+      faces: [
+        {
+          id: 1,
+          usuarioId: 10,
+          embedding: [1, 0, 0]
+        },
+        {
+          id: 2,
+          usuarioId: 20,
+          embedding: [0.6, 0.8, 0]
+        }
+      ],
+      threshold: 0.58,
+      margemMinima: 0.08
+    });
+
+  assert.equal(resultado.status, "reconhecido");
+  assert.equal(resultado.melhor.usuarioId, 10);
+  assert.ok(resultado.margem > 0.08);
+});
+
+
+test("login facial rejeita melhor candidato abaixo do limite", () => {
+  const resultado =
+    classificarCorrespondenciaFacial({
+      embedding: [1, 0, 0],
+      faces: [
+        {
+          id: 1,
+          usuarioId: 10,
+          embedding: [0, 1, 0]
+        }
+      ],
+      threshold: 0.58
+    });
+
+  assert.equal(resultado.status, "nao_encontrado");
+});
+
+
+test("cadastro facial converte retorno void do advisory lock para texto", async () => {
+  let consultaLock = "";
+
+  const tx = {
+    async $queryRawUnsafe(consulta) {
+      consultaLock = consulta;
+      return [{ lock: "" }];
+    },
+    faceEmbedding: {
+      async count() {
+        return 0;
+      },
+      async findFirst() {
+        return null;
+      },
+      async findMany() {
+        return [];
+      },
+      async create({ data }) {
+        return {
+          id: 1,
+          ...data
+        };
+      }
+    }
+  };
+
+  const prismaFake = {
+    async $transaction(callback) {
+      return callback(tx);
+    }
+  };
+
+  const resultado =
+    await criarAmostraFacialExclusiva({
+      prisma: prismaFake,
+      usuarioId: 10,
+      embedding: [1, 0, 0],
+      maxSamples: 5,
+      nome: "Principal"
+    });
+
+  assert.equal(resultado.ok, true);
+  assert.match(consultaLock, /::text/);
+  assert.match(consultaLock, /AS "lock"/);
+});
+
+test("cadastro facial rejeita segunda biometria no mesmo perfil", async () => {
+  let tentouCriar = false;
+
+  const tx = {
+    async $queryRawUnsafe() {
+      return [{ lock: "" }];
+    },
+    faceEmbedding: {
+      async count() {
+        return 1;
+      },
+      async create() {
+        tentouCriar = true;
+        return null;
+      }
+    }
+  };
+
+  const prismaFake = {
+    async $transaction(callback) {
+      return callback(tx);
+    }
+  };
+
+  const resultado =
+    await criarAmostraFacialExclusiva({
+      prisma: prismaFake,
+      usuarioId: 10,
+      embedding: [1, 0, 0],
+      nome: "Outra facial"
+    });
+
+  assert.equal(resultado.ok, false);
+  assert.equal(
+    resultado.motivo,
+    "perfil_ja_possui_face"
+  );
+  assert.equal(tentouCriar, false);
 });
 
 test("administrador pode acionar simulador", () => {

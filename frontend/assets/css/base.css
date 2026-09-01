@@ -334,3 +334,62 @@ b {
     width: auto;
   }
 }
+
+/* =========================================================
+   STEELCONTROL — UI GLOBAL OPACA (DASHBOARDS / MÁQUINAS)
+   Garante que confirmações e avisos SteelUI nunca herdem
+   fundo transparente quando a página não define --sc-*.
+========================================================= */
+:root {
+  --sc-surface: #ffffff;
+  --sc-text: #0f172a;
+  --sc-text-muted: #64748b;
+  --sc-border: #dbe2ea;
+  --sc-primary: #2563eb;
+  --sc-primary-soft: #eaf1ff;
+}
+
+html[data-theme="escuro"] {
+  --sc-surface: #111827;
+  --sc-text: #f8fafc;
+  --sc-text-muted: #cbd5e1;
+  --sc-border: #334155;
+  --sc-primary: #60a5fa;
+  --sc-primary-soft: #172554;
+}
+
+.sc-toast,
+.sc-confirm-card {
+  opacity: 1;
+  background-color: var(--sc-surface, #ffffff) !important;
+  color: var(--sc-text, #0f172a) !important;
+  border-color: var(--sc-border, #dbe2ea) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.sc-toast {
+  /* Mantém somente a animação de entrada, sem efeito de vidro. */
+  animation: sc-toast-in .22s ease forwards;
+}
+
+.sc-confirm-card h3,
+.sc-toast strong {
+  color: var(--sc-text, #0f172a) !important;
+}
+
+.sc-confirm-card p,
+.sc-toast p,
+.sc-toast-close {
+  color: var(--sc-text-muted, #64748b) !important;
+}
+
+.sc-confirm-cancel {
+  background-color: var(--sc-surface, #ffffff) !important;
+  color: var(--sc-text, #0f172a) !important;
+  border-color: var(--sc-border, #dbe2ea) !important;
+}
+
+html[data-theme="escuro"] .sc-confirm-backdrop {
+  background: rgba(2, 6, 23, .78);
+}

@@ -85,7 +85,7 @@ if (
 ) {
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 
@@ -779,7 +779,7 @@ async function carregarMaquinas() {
       );
 
       window.location.href =
-        "login.html";
+        "/app/login";
 
       return;
 
@@ -2545,12 +2545,28 @@ function abrirDashboard(
     Boolean(obterPerfilControlador(maquina.controlador));
 
 
-  window.location.href =
+  const destinoDashboard =
     ehDobot
-      ? "index.html?view=dobot"
+      ? "/app/dashboard?view=dobot"
       : temPainelControlador
-        ? "index.html?view=controller"
-        : "index.html";
+        ? "/app/dashboard?view=controller"
+        : "/app/dashboard?view=controller";
+
+
+  localStorage.setItem(
+    "dashboardMaquinaDestino",
+    destinoDashboard
+  );
+
+
+  localStorage.setItem(
+    "controladorSelecionado",
+    String(maquina.controlador || "OUTRO")
+  );
+
+
+  window.location.href =
+    destinoDashboard;
 
 }
 
@@ -2591,7 +2607,7 @@ function sair() {
 
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 

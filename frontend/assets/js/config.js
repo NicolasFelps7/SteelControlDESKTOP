@@ -1,11 +1,10 @@
-const STEELCONTROL_BUILD = "20260831_PROD_FINAL";
+const STEELCONTROL_BUILD = "20260902_SINGLE_ORIGIN_APP_ROUTES";
 console.info("[SteelControl] build", STEELCONTROL_BUILD);
 // =========================================================
 // ENDPOINTS — LOCAL + PRODUÇÃO
 // =========================================================
-// Em produção o frontend é servido pelo próprio backend e usa a mesma
-// origem HTTPS. Em desenvolvimento com Live Server (5500/5501), usa
-// automaticamente o Node local na porta 3000.
+// Frontend e API são servidos pelo backend na mesma origem. O fallback
+// separado permanece apenas para abrir cópias antigas durante a migração.
 
 (function configurarEndpointsSteelControl() {
   const override =
@@ -5350,6 +5349,10 @@ const traducoes = {
 
 const TRADUCOES_COMPLEMENTARES = {
   pt: {
+    loginPageTitle: "Entrar | SteelControl",
+    dashboardPageTitle: "SteelControl | Painel Industrial",
+    machinesPageTitle: "Equipamentos | SteelControl",
+    companyPageTitle: "Minha Empresa | SteelControl",
     desktopMonitoramentoAtivo: "Monitoramento ativo",
     desktopOperacaoIndustrial: "Operação Industrial",
     desktopAcompanhamentoMaquina: "Acompanhamento da máquina em tempo real",
@@ -5376,6 +5379,10 @@ const TRADUCOES_COMPLEMENTARES = {
     desktopVoltarAcesso: "Voltar para o acesso"
   },
   en: {
+    loginPageTitle: "Sign in | SteelControl",
+    dashboardPageTitle: "SteelControl | Industrial Dashboard",
+    machinesPageTitle: "Equipment | SteelControl",
+    companyPageTitle: "My Company | SteelControl",
     desktopMonitoramentoAtivo: "Active monitoring",
     desktopOperacaoIndustrial: "Industrial Operation",
     desktopAcompanhamentoMaquina: "Real-time machine monitoring",
@@ -5402,6 +5409,10 @@ const TRADUCOES_COMPLEMENTARES = {
     desktopVoltarAcesso: "Back to sign in"
   },
   es: {
+    loginPageTitle: "Iniciar sesión | SteelControl",
+    dashboardPageTitle: "SteelControl | Panel Industrial",
+    machinesPageTitle: "Equipos | SteelControl",
+    companyPageTitle: "Mi Empresa | SteelControl",
     desktopMonitoramentoAtivo: "Monitoreo activo",
     desktopOperacaoIndustrial: "Operación Industrial",
     desktopAcompanhamentoMaquina: "Monitoreo de la máquina en tiempo real",
@@ -5428,6 +5439,10 @@ const TRADUCOES_COMPLEMENTARES = {
     desktopVoltarAcesso: "Volver al acceso"
   },
   fr: {
+    loginPageTitle: "Connexion | SteelControl",
+    dashboardPageTitle: "SteelControl | Tableau de bord industriel",
+    machinesPageTitle: "Équipements | SteelControl",
+    companyPageTitle: "Mon Entreprise | SteelControl",
     desktopMonitoramentoAtivo: "Surveillance active",
     desktopOperacaoIndustrial: "Opération industrielle",
     desktopAcompanhamentoMaquina: "Suivi de la machine en temps réel",
@@ -5454,6 +5469,10 @@ const TRADUCOES_COMPLEMENTARES = {
     desktopVoltarAcesso: "Retour à la connexion"
   },
   de: {
+    loginPageTitle: "Anmelden | SteelControl",
+    dashboardPageTitle: "SteelControl | Industrie-Dashboard",
+    machinesPageTitle: "Geräte | SteelControl",
+    companyPageTitle: "Mein Unternehmen | SteelControl",
     desktopMonitoramentoAtivo: "Aktive Überwachung",
     desktopOperacaoIndustrial: "Industriebetrieb",
     desktopAcompanhamentoMaquina: "Maschinenüberwachung in Echtzeit",
@@ -5480,6 +5499,10 @@ const TRADUCOES_COMPLEMENTARES = {
     desktopVoltarAcesso: "Zurück zur Anmeldung"
   },
   it: {
+    loginPageTitle: "Accedi | SteelControl",
+    dashboardPageTitle: "SteelControl | Dashboard Industriale",
+    machinesPageTitle: "Apparecchiature | SteelControl",
+    companyPageTitle: "La Mia Azienda | SteelControl",
     desktopMonitoramentoAtivo: "Monitoraggio attivo",
     desktopOperacaoIndustrial: "Operazione industriale",
     desktopAcompanhamentoMaquina: "Monitoraggio della macchina in tempo reale",
@@ -5746,6 +5769,205 @@ Object.assign(traducoes.it, {
     "Consulta e accedi alle attrezzature della tua azienda.",
   configDesc:
     "Personalizza SteelControl e gestisci la tua azienda."
+});
+
+// =========================================================
+// EXPERIÊNCIA DE ACESSO E CADASTRO
+// =========================================================
+// Textos usados pelas mensagens visuais de boas-vindas e pelos
+// estados dinâmicos do fluxo de criação de conta.
+
+const TRADUCOES_EXPERIENCIA_ACESSO = {
+  pt: {
+    loginWelcomeTitle: "Bem-vindo, {nome}!",
+    loginWelcomeText: "Acesso confirmado. Estamos preparando o painel da sua empresa com segurança.",
+    registerWelcomeTitle: "Bem-vindo ao SteelControl, {nome}!",
+    registerWelcomeText: "Sua empresa foi criada e sua biometria foi protegida com sucesso. Tudo pronto para começar.",
+    redirectingWorkspace: "Abrindo seu ambiente industrial...",
+    emailConfirmedFaceNext: "E-mail confirmado e empresa criada. Agora vamos proteger sua conta com a biometria facial.",
+    faceRegisteredTitle: "Cadastro concluído!",
+    faceRegisteredText: "Biometria vinculada com segurança à sua conta.",
+    resendCodeIn: "Reenviar código em {segundos}s",
+    resendCode: "Reenviar código",
+    sendingCode: "Enviando código para o e-mail informado...",
+    codeSent: "Código enviado.",
+    newCodeSent: "Novo código enviado.",
+    invalidCodeLength: "Digite o código de 6 dígitos enviado para seu e-mail.",
+    checkingIdentity: "Verificando identidade...",
+    doNotMove: "Não se mova",
+    faceRecognizedTitle: "Identidade confirmada!",
+    faceRecognizedText: "Bem-vindo, {nome}. Seu acesso seguro foi autorizado.",
+    cameraStarting: "Iniciando câmera...", cameraWait: "Aguarde alguns segundos",
+    faceSearching: "Procurando rosto...", faceCenter: "Posicione seu rosto no centro da câmera",
+    cameraUnavailable: "Câmera indisponível", cameraPermission: "Permita o acesso à câmera no navegador",
+    movementConfirmed: "Movimento confirmado", lookFrontAgain: "Agora volte a olhar diretamente para a câmera.",
+    livenessCheck: "Prova de vida", turnHead: "Vire levemente a cabeça para um dos lados.",
+    correctPosition: "Posição correta", stayStillCount: "Mantenha-se parado... {atual}/2",
+    livenessComplete: "Prova de vida concluída", lookCameraCount: "Olhe para a câmera... {atual}/2",
+    analysisFailed: "Falha na análise", checkPythonApi: "Verifique se a API Python está funcionando",
+    adjustPosition: "Ajuste sua posição", validationFailed: "Não foi possível validar",
+    ambiguousIdentity: "Identidade ambígua", faceNotRegistered: "Rosto não cadastrado",
+    faceNotFoundSecurely: "Não encontramos este rosto com segurança. Entre com e-mail e senha."
+  },
+  en: {
+    loginWelcomeTitle: "Welcome, {nome}!",
+    loginWelcomeText: "Access confirmed. We are securely preparing your company's dashboard.",
+    registerWelcomeTitle: "Welcome to SteelControl, {nome}!",
+    registerWelcomeText: "Your company has been created and your biometric data was secured successfully. Everything is ready.",
+    redirectingWorkspace: "Opening your industrial workspace...",
+    emailConfirmedFaceNext: "Email confirmed and company created. Now let's protect your account with facial biometrics.",
+    faceRegisteredTitle: "Registration complete!",
+    faceRegisteredText: "Biometric data securely linked to your account.",
+    resendCodeIn: "Resend code in {segundos}s",
+    resendCode: "Resend code",
+    sendingCode: "Sending a code to the provided email...",
+    codeSent: "Code sent.",
+    newCodeSent: "New code sent.",
+    invalidCodeLength: "Enter the 6-digit code sent to your email.",
+    checkingIdentity: "Verifying identity...",
+    doNotMove: "Do not move",
+    faceRecognizedTitle: "Identity confirmed!",
+    faceRecognizedText: "Welcome, {nome}. Your secure access has been authorized.",
+    cameraStarting: "Starting camera...", cameraWait: "Please wait a few seconds",
+    faceSearching: "Searching for a face...", faceCenter: "Position your face in the center of the camera",
+    cameraUnavailable: "Camera unavailable", cameraPermission: "Allow camera access in your browser",
+    movementConfirmed: "Movement confirmed", lookFrontAgain: "Now look directly at the camera again.",
+    livenessCheck: "Liveness check", turnHead: "Turn your head slightly to one side.",
+    correctPosition: "Correct position", stayStillCount: "Stay still... {atual}/2",
+    livenessComplete: "Liveness check complete", lookCameraCount: "Look at the camera... {atual}/2",
+    analysisFailed: "Analysis failed", checkPythonApi: "Make sure the Python API is running",
+    adjustPosition: "Adjust your position", validationFailed: "Unable to validate",
+    ambiguousIdentity: "Ambiguous identity", faceNotRegistered: "Face not registered",
+    faceNotFoundSecurely: "We could not identify this face securely. Sign in with email and password."
+  },
+  es: {
+    loginWelcomeTitle: "¡Bienvenido, {nome}!",
+    loginWelcomeText: "Acceso confirmado. Estamos preparando de forma segura el panel de su empresa.",
+    registerWelcomeTitle: "¡Bienvenido a SteelControl, {nome}!",
+    registerWelcomeText: "Su empresa fue creada y sus datos biométricos se protegieron correctamente. Todo está listo.",
+    redirectingWorkspace: "Abriendo su entorno industrial...",
+    emailConfirmedFaceNext: "Correo confirmado y empresa creada. Ahora protegeremos su cuenta con biometría facial.",
+    faceRegisteredTitle: "¡Registro completado!",
+    faceRegisteredText: "Biometría vinculada de forma segura a su cuenta.",
+    resendCodeIn: "Reenviar código en {segundos}s",
+    resendCode: "Reenviar código",
+    sendingCode: "Enviando un código al correo indicado...",
+    codeSent: "Código enviado.",
+    newCodeSent: "Nuevo código enviado.",
+    invalidCodeLength: "Ingrese el código de 6 dígitos enviado a su correo.",
+    checkingIdentity: "Verificando identidad...",
+    doNotMove: "No se mueva",
+    faceRecognizedTitle: "¡Identidad confirmada!",
+    faceRecognizedText: "Bienvenido, {nome}. Su acceso seguro fue autorizado.",
+    cameraStarting: "Iniciando cámara...", cameraWait: "Espere unos segundos",
+    faceSearching: "Buscando rostro...", faceCenter: "Coloque su rostro en el centro de la cámara",
+    cameraUnavailable: "Cámara no disponible", cameraPermission: "Permita el acceso a la cámara en el navegador",
+    movementConfirmed: "Movimiento confirmado", lookFrontAgain: "Vuelva a mirar directamente a la cámara.",
+    livenessCheck: "Prueba de vida", turnHead: "Gire ligeramente la cabeza hacia un lado.",
+    correctPosition: "Posición correcta", stayStillCount: "Manténgase quieto... {atual}/2",
+    livenessComplete: "Prueba de vida completada", lookCameraCount: "Mire a la cámara... {atual}/2",
+    analysisFailed: "Error de análisis", checkPythonApi: "Compruebe que la API de Python esté funcionando",
+    adjustPosition: "Ajuste su posición", validationFailed: "No fue posible validar",
+    ambiguousIdentity: "Identidad ambigua", faceNotRegistered: "Rostro no registrado",
+    faceNotFoundSecurely: "No pudimos identificar este rostro de forma segura. Ingrese con correo y contraseña."
+  },
+  fr: {
+    loginWelcomeTitle: "Bienvenue, {nome} !",
+    loginWelcomeText: "Accès confirmé. Nous préparons le tableau de bord de votre entreprise en toute sécurité.",
+    registerWelcomeTitle: "Bienvenue sur SteelControl, {nome} !",
+    registerWelcomeText: "Votre entreprise a été créée et vos données biométriques ont été sécurisées. Tout est prêt.",
+    redirectingWorkspace: "Ouverture de votre environnement industriel...",
+    emailConfirmedFaceNext: "E-mail confirmé et entreprise créée. Protégeons maintenant votre compte avec la biométrie faciale.",
+    faceRegisteredTitle: "Inscription terminée !",
+    faceRegisteredText: "Données biométriques associées à votre compte en toute sécurité.",
+    resendCodeIn: "Renvoyer le code dans {segundos}s",
+    resendCode: "Renvoyer le code",
+    sendingCode: "Envoi d'un code à l'adresse indiquée...",
+    codeSent: "Code envoyé.",
+    newCodeSent: "Nouveau code envoyé.",
+    invalidCodeLength: "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail.",
+    checkingIdentity: "Vérification de l'identité...",
+    doNotMove: "Ne bougez pas",
+    faceRecognizedTitle: "Identité confirmée !",
+    faceRecognizedText: "Bienvenue, {nome}. Votre accès sécurisé a été autorisé.",
+    cameraStarting: "Démarrage de la caméra...", cameraWait: "Veuillez patienter quelques secondes",
+    faceSearching: "Recherche d'un visage...", faceCenter: "Placez votre visage au centre de la caméra",
+    cameraUnavailable: "Caméra indisponible", cameraPermission: "Autorisez l'accès à la caméra dans le navigateur",
+    movementConfirmed: "Mouvement confirmé", lookFrontAgain: "Regardez de nouveau directement la caméra.",
+    livenessCheck: "Test de présence", turnHead: "Tournez légèrement la tête d'un côté.",
+    correctPosition: "Position correcte", stayStillCount: "Restez immobile... {atual}/2",
+    livenessComplete: "Test de présence terminé", lookCameraCount: "Regardez la caméra... {atual}/2",
+    analysisFailed: "Échec de l'analyse", checkPythonApi: "Vérifiez que l'API Python fonctionne",
+    adjustPosition: "Ajustez votre position", validationFailed: "Validation impossible",
+    ambiguousIdentity: "Identité ambiguë", faceNotRegistered: "Visage non enregistré",
+    faceNotFoundSecurely: "Nous n'avons pas pu identifier ce visage de manière sûre. Connectez-vous par e-mail et mot de passe."
+  },
+  de: {
+    loginWelcomeTitle: "Willkommen, {nome}!",
+    loginWelcomeText: "Zugriff bestätigt. Das Dashboard Ihres Unternehmens wird sicher vorbereitet.",
+    registerWelcomeTitle: "Willkommen bei SteelControl, {nome}!",
+    registerWelcomeText: "Ihr Unternehmen wurde erstellt und Ihre biometrischen Daten wurden sicher geschützt. Alles ist bereit.",
+    redirectingWorkspace: "Ihr industrieller Arbeitsbereich wird geöffnet...",
+    emailConfirmedFaceNext: "E-Mail bestätigt und Unternehmen erstellt. Jetzt schützen wir Ihr Konto mit Gesichtsbiometrie.",
+    faceRegisteredTitle: "Registrierung abgeschlossen!",
+    faceRegisteredText: "Biometrische Daten wurden sicher mit Ihrem Konto verknüpft.",
+    resendCodeIn: "Code in {segundos}s erneut senden",
+    resendCode: "Code erneut senden",
+    sendingCode: "Code wird an die angegebene E-Mail gesendet...",
+    codeSent: "Code gesendet.",
+    newCodeSent: "Neuer Code gesendet.",
+    invalidCodeLength: "Geben Sie den 6-stelligen Code aus Ihrer E-Mail ein.",
+    checkingIdentity: "Identität wird überprüft...",
+    doNotMove: "Nicht bewegen",
+    faceRecognizedTitle: "Identität bestätigt!",
+    faceRecognizedText: "Willkommen, {nome}. Ihr sicherer Zugriff wurde autorisiert.",
+    cameraStarting: "Kamera wird gestartet...", cameraWait: "Bitte warten Sie einige Sekunden",
+    faceSearching: "Gesicht wird gesucht...", faceCenter: "Positionieren Sie Ihr Gesicht in der Mitte der Kamera",
+    cameraUnavailable: "Kamera nicht verfügbar", cameraPermission: "Erlauben Sie den Kamerazugriff im Browser",
+    movementConfirmed: "Bewegung bestätigt", lookFrontAgain: "Schauen Sie wieder direkt in die Kamera.",
+    livenessCheck: "Lebenderkennung", turnHead: "Drehen Sie den Kopf leicht zu einer Seite.",
+    correctPosition: "Korrekte Position", stayStillCount: "Stillhalten... {atual}/2",
+    livenessComplete: "Lebenderkennung abgeschlossen", lookCameraCount: "In die Kamera schauen... {atual}/2",
+    analysisFailed: "Analyse fehlgeschlagen", checkPythonApi: "Prüfen Sie, ob die Python-API läuft",
+    adjustPosition: "Position anpassen", validationFailed: "Validierung nicht möglich",
+    ambiguousIdentity: "Mehrdeutige Identität", faceNotRegistered: "Gesicht nicht registriert",
+    faceNotFoundSecurely: "Dieses Gesicht konnte nicht sicher erkannt werden. Melden Sie sich mit E-Mail und Passwort an."
+  },
+  it: {
+    loginWelcomeTitle: "Benvenuto, {nome}!",
+    loginWelcomeText: "Accesso confermato. Stiamo preparando in sicurezza la dashboard della tua azienda.",
+    registerWelcomeTitle: "Benvenuto su SteelControl, {nome}!",
+    registerWelcomeText: "La tua azienda è stata creata e i dati biometrici sono stati protetti. È tutto pronto.",
+    redirectingWorkspace: "Apertura del tuo ambiente industriale...",
+    emailConfirmedFaceNext: "E-mail confermata e azienda creata. Ora proteggiamo il tuo account con la biometria facciale.",
+    faceRegisteredTitle: "Registrazione completata!",
+    faceRegisteredText: "Dati biometrici collegati in modo sicuro al tuo account.",
+    resendCodeIn: "Invia nuovamente il codice tra {segundos}s",
+    resendCode: "Invia nuovamente il codice",
+    sendingCode: "Invio del codice all'e-mail indicata...",
+    codeSent: "Codice inviato.",
+    newCodeSent: "Nuovo codice inviato.",
+    invalidCodeLength: "Inserisci il codice di 6 cifre inviato alla tua e-mail.",
+    checkingIdentity: "Verifica dell'identità...",
+    doNotMove: "Non muoverti",
+    faceRecognizedTitle: "Identità confermata!",
+    faceRecognizedText: "Benvenuto, {nome}. Il tuo accesso sicuro è stato autorizzato.",
+    cameraStarting: "Avvio fotocamera...", cameraWait: "Attendi alcuni secondi",
+    faceSearching: "Ricerca del volto...", faceCenter: "Posiziona il volto al centro della fotocamera",
+    cameraUnavailable: "Fotocamera non disponibile", cameraPermission: "Consenti l'accesso alla fotocamera nel browser",
+    movementConfirmed: "Movimento confermato", lookFrontAgain: "Guarda di nuovo direttamente la fotocamera.",
+    livenessCheck: "Prova di vitalità", turnHead: "Gira leggermente la testa da un lato.",
+    correctPosition: "Posizione corretta", stayStillCount: "Rimani fermo... {atual}/2",
+    livenessComplete: "Prova di vitalità completata", lookCameraCount: "Guarda la fotocamera... {atual}/2",
+    analysisFailed: "Analisi non riuscita", checkPythonApi: "Verifica che l'API Python sia in esecuzione",
+    adjustPosition: "Regola la posizione", validationFailed: "Impossibile convalidare",
+    ambiguousIdentity: "Identità ambigua", faceNotRegistered: "Volto non registrato",
+    faceNotFoundSecurely: "Non è stato possibile identificare il volto in modo sicuro. Accedi con e-mail e password."
+  }
+};
+
+Object.entries(TRADUCOES_EXPERIENCIA_ACESSO).forEach(([idioma, tabela]) => {
+  Object.assign(traducoes[idioma], tabela);
 });
 
 const STEEL_LITERAL_I18N = {
@@ -6623,6 +6845,214 @@ Object.assign(STEEL_LITERAL_I18N, {
   }
 });
 
+// Cobertura das telas adicionadas depois do primeiro dicionário.
+// A função curta mantém as cinco traduções juntas e facilita a auditoria.
+const steelL = (en, es, fr, de, it) => ({ en, es, fr, de, it });
+
+Object.assign(STEEL_LITERAL_I18N, {
+  // Login e criação de conta
+  "Obrigatório": steelL("Required", "Obligatorio", "Obligatoire", "Erforderlich", "Obbligatorio"),
+  "03 Biometria facial": steelL("03 Facial biometrics", "03 Biometría facial", "03 Biométrie faciale", "03 Gesichtsbiometrie", "03 Biometria facciale"),
+  "Depois de confirmar o código do e-mail, a câmera abrirá automaticamente para cadastrar o rosto do administrador.": steelL("After confirming the email code, the camera will open automatically to register the administrator's face.", "Después de confirmar el código del correo, la cámara se abrirá automáticamente para registrar el rostro del administrador.", "Après confirmation du code reçu par e-mail, la caméra s'ouvrira automatiquement pour enregistrer le visage de l'administrateur.", "Nach Bestätigung des E-Mail-Codes öffnet sich die Kamera automatisch, um das Gesicht des Administrators zu registrieren.", "Dopo aver confermato il codice e-mail, la fotocamera si aprirà automaticamente per registrare il volto dell'amministratore."),
+  "Confirme seu e-mail": steelL("Confirm your email", "Confirme su correo", "Confirmez votre e-mail", "Bestätigen Sie Ihre E-Mail", "Conferma la tua e-mail"),
+  "Enviamos um código de 6 dígitos para": steelL("We sent a 6-digit code to", "Enviamos un código de 6 dígitos a", "Nous avons envoyé un code à 6 chiffres à", "Wir haben einen 6-stelligen Code gesendet an", "Abbiamo inviato un codice di 6 cifre a"),
+  "seu e-mail": steelL("your email", "su correo", "votre e-mail", "Ihre E-Mail", "la tua e-mail"),
+  ". A empresa só será criada depois da confirmação.": steelL(". The company will only be created after confirmation.", ". La empresa solo se creará después de la confirmación.", ". L'entreprise ne sera créée qu'après confirmation.", ". Das Unternehmen wird erst nach der Bestätigung erstellt.", ". L'azienda verrà creata solo dopo la conferma."),
+  "Código de confirmação": steelL("Confirmation code", "Código de confirmación", "Code de confirmation", "Bestätigungscode", "Codice di conferma"),
+  "Confirmar e criar conta": steelL("Confirm and create account", "Confirmar y crear cuenta", "Confirmer et créer le compte", "Bestätigen und Konto erstellen", "Conferma e crea account"),
+  "Reenviar código": steelL("Resend code", "Reenviar código", "Renvoyer le code", "Code erneut senden", "Invia nuovamente il codice"),
+  "Alterar dados": steelL("Edit information", "Modificar datos", "Modifier les informations", "Daten ändern", "Modifica dati"),
+  "Verificar e-mail e continuar": steelL("Verify email and continue", "Verificar correo y continuar", "Vérifier l'e-mail et continuer", "E-Mail prüfen und fortfahren", "Verifica e-mail e continua"),
+
+  // Minha empresa e biometria
+  "Remover logo": steelL("Remove logo", "Eliminar logo", "Supprimer le logo", "Logo entfernen", "Rimuovi logo"),
+  "E-mail institucional da empresa": steelL("Company email", "Correo institucional de la empresa", "E-mail institutionnel de l'entreprise", "Unternehmens-E-Mail", "E-mail aziendale"),
+  "As informações abaixo ficam disponíveis localmente no SteelControl.": steelL("The information below remains available locally in SteelControl.", "La información siguiente permanece disponible localmente en SteelControl.", "Les informations ci-dessous restent disponibles localement dans SteelControl.", "Die folgenden Informationen bleiben lokal in SteelControl verfügbar.", "Le informazioni seguenti restano disponibili localmente in SteelControl."),
+  "Localização cadastrada": steelL("Saved location", "Ubicación registrada", "Emplacement enregistré", "Gespeicherter Standort", "Posizione registrata"),
+  "Dados de localização disponíveis mesmo sem internet.": steelL("Location data available even without internet.", "Datos de ubicación disponibles incluso sin internet.", "Données de localisation disponibles même sans Internet.", "Standortdaten sind auch ohne Internet verfügbar.", "Dati sulla posizione disponibili anche senza Internet."),
+  "Copiar endereço": steelL("Copy address", "Copiar dirección", "Copier l'adresse", "Adresse kopieren", "Copia indirizzo"),
+  "Editar acesso": steelL("Edit access", "Editar acceso", "Modifier l'accès", "Zugriff bearbeiten", "Modifica accesso"),
+  "Atualize e-mail, senha, nome e cargo.": steelL("Update email, password, name and role.", "Actualice correo, contraseña, nombre y cargo.", "Mettez à jour l'e-mail, le mot de passe, le nom et le rôle.", "Aktualisieren Sie E-Mail, Passwort, Name und Rolle.", "Aggiorna e-mail, password, nome e ruolo."),
+  "E-mail de acesso": steelL("Access email", "Correo de acceso", "E-mail d'accès", "Zugangs-E-Mail", "E-mail di accesso"),
+  "Ao alterar o próprio e-mail de administrador, um código de 6 dígitos será enviado ao novo endereço.": steelL("When changing your administrator email, a 6-digit code will be sent to the new address.", "Al cambiar su correo de administrador, se enviará un código de 6 dígitos a la nueva dirección.", "Lors du changement de votre e-mail administrateur, un code à 6 chiffres sera envoyé à la nouvelle adresse.", "Beim Ändern Ihrer Administrator-E-Mail wird ein 6-stelliger Code an die neue Adresse gesendet.", "Quando modifichi l'e-mail amministratore, verrà inviato un codice di 6 cifre al nuovo indirizzo."),
+  "Nova senha": steelL("New password", "Nueva contraseña", "Nouveau mot de passe", "Neues Passwort", "Nuova password"),
+  "Confirme o novo e-mail": steelL("Confirm the new email", "Confirme el nuevo correo", "Confirmez le nouvel e-mail", "Neue E-Mail bestätigen", "Conferma la nuova e-mail"),
+  "Digite o código enviado para o novo endereço.": steelL("Enter the code sent to the new address.", "Ingrese el código enviado a la nueva dirección.", "Saisissez le code envoyé à la nouvelle adresse.", "Geben Sie den an die neue Adresse gesendeten Code ein.", "Inserisci il codice inviato al nuovo indirizzo."),
+  "Confirmar código": steelL("Confirm code", "Confirmar código", "Confirmer le code", "Code bestätigen", "Conferma codice"),
+  "Nome desta facial": steelL("Name for this face ID", "Nombre de este reconocimiento facial", "Nom de cette biométrie faciale", "Name dieser Gesichts-ID", "Nome di questa biometria facciale"),
+  "Esse nome será usado para identificar a amostra na hora de remover.": steelL("This name will identify the sample when it is removed.", "Este nombre identificará la muestra al eliminarla.", "Ce nom identifiera l'échantillon lors de sa suppression.", "Dieser Name kennzeichnet die Probe beim Entfernen.", "Questo nome identificherà il campione durante la rimozione."),
+  "Confirmo que o funcionário autorizou o uso dos dados biométricos para autenticação. Cada rosto pode ficar vinculado a apenas um perfil no SteelControl.": steelL("I confirm that the employee authorized the use of biometric data for authentication. Each face can be linked to only one SteelControl profile.", "Confirmo que el empleado autorizó el uso de datos biométricos para autenticación. Cada rostro solo puede vincularse a un perfil de SteelControl.", "Je confirme que l'employé a autorisé l'utilisation des données biométriques pour l'authentification. Chaque visage ne peut être lié qu'à un seul profil SteelControl.", "Ich bestätige, dass der Mitarbeiter die Nutzung biometrischer Daten zur Authentifizierung genehmigt hat. Jedes Gesicht kann nur mit einem SteelControl-Profil verknüpft werden.", "Confermo che il dipendente ha autorizzato l'uso dei dati biometrici per l'autenticazione. Ogni volto può essere collegato a un solo profilo SteelControl."),
+  "Biometria cadastrada": steelL("Biometrics registered", "Biometría registrada", "Biométrie enregistrée", "Biometrie registriert", "Biometria registrata"),
+  "Este perfil pode possuir apenas uma biometria. Remova-a somente quando precisar cadastrar outro rosto.": steelL("This profile can have only one biometric identity. Remove it only when another face must be registered.", "Este perfil solo puede tener una identidad biométrica. Elimínela únicamente cuando necesite registrar otro rostro.", "Ce profil ne peut avoir qu'une seule identité biométrique. Supprimez-la uniquement pour enregistrer un autre visage.", "Dieses Profil kann nur eine biometrische Identität haben. Entfernen Sie sie nur, wenn ein anderes Gesicht registriert werden muss.", "Questo profilo può avere una sola identità biometrica. Rimuovila solo quando devi registrare un altro volto."),
+
+  // Cadastro e comunicação de equipamentos
+  "Informe o controlador, protocolo e dados de comunicação fornecidos pelo fabricante, CLP, gateway ou controlador do equipamento.": steelL("Enter the controller, protocol and communication data provided by the equipment manufacturer, PLC, gateway or controller.", "Informe el controlador, protocolo y datos de comunicación proporcionados por el fabricante, PLC, gateway o controlador del equipo.", "Renseignez le contrôleur, le protocole et les données de communication fournis par le fabricant, l'automate, la passerelle ou le contrôleur de l'équipement.", "Geben Sie Controller, Protokoll und Kommunikationsdaten des Herstellers, der SPS, des Gateways oder des Gerätesteuergeräts ein.", "Inserisci controller, protocollo e dati di comunicazione forniti dal produttore, PLC, gateway o controller dell'apparecchiatura."),
+  "Modo de operação": steelL("Operating mode", "Modo de operación", "Mode de fonctionnement", "Betriebsmodus", "Modalità operativa"),
+  "Simulação do SteelControl": steelL("SteelControl simulation", "Simulación de SteelControl", "Simulation SteelControl", "SteelControl-Simulation", "Simulazione SteelControl"),
+  "Equipamento real": steelL("Real equipment", "Equipo real", "Équipement réel", "Reales Gerät", "Apparecchiatura reale"),
+  "Use simulação enquanto não houver um equipamento físico conectado.": steelL("Use simulation while no physical equipment is connected.", "Use la simulación mientras no haya un equipo físico conectado.", "Utilisez la simulation tant qu'aucun équipement physique n'est connecté.", "Verwenden Sie die Simulation, solange kein physisches Gerät verbunden ist.", "Usa la simulazione finché non è collegata un'apparecchiatura fisica."),
+  "Controlador / Gateway": steelL("Controller / Gateway", "Controlador / Gateway", "Contrôleur / Passerelle", "Controller / Gateway", "Controller / Gateway"),
+  "Selecione": steelL("Select", "Seleccione", "Sélectionner", "Auswählen", "Seleziona"),
+  "Controlador robótico": steelL("Robot controller", "Controlador robótico", "Contrôleur robotique", "Robotersteuerung", "Controller robotico"),
+  "Controlador CNC": steelL("CNC controller", "Controlador CNC", "Contrôleur CNC", "CNC-Steuerung", "Controller CNC"),
+  "Gateway industrial": steelL("Industrial gateway", "Gateway industrial", "Passerelle industrielle", "Industrie-Gateway", "Gateway industriale"),
+  "PAINEL QUE SERÁ CRIADO": steelL("DASHBOARD TO BE CREATED", "PANEL QUE SE CREARÁ", "TABLEAU DE BORD À CRÉER", "ZU ERSTELLENDES DASHBOARD", "DASHBOARD DA CREARE"),
+  "Painel adaptativo": steelL("Adaptive dashboard", "Panel adaptativo", "Tableau de bord adaptatif", "Adaptives Dashboard", "Dashboard adattiva"),
+  "Deixe tudo preparado agora em MOCK e troque para REAL quando conectar o braço.": steelL("Prepare everything in MOCK now and switch to REAL when the arm is connected.", "Prepare todo en MOCK ahora y cambie a REAL cuando conecte el brazo.", "Préparez tout en mode MOCK maintenant, puis passez en mode REAL lorsque le bras sera connecté.", "Bereiten Sie jetzt alles im MOCK-Modus vor und wechseln Sie zu REAL, sobald der Arm verbunden ist.", "Prepara tutto in modalità MOCK e passa a REAL quando colleghi il braccio."),
+  "Modo do gateway": steelL("Gateway mode", "Modo del gateway", "Mode de la passerelle", "Gateway-Modus", "Modalità gateway"),
+  "MOCK — sem braço": steelL("MOCK — no arm", "MOCK — sin brazo", "MOCK — sans bras", "MOCK — ohne Arm", "MOCK — senza braccio"),
+  "REAL — USB físico": steelL("REAL — physical USB", "REAL — USB físico", "REAL — USB physique", "REAL — physisches USB", "REAL — USB fisico"),
+  "Porta serial": steelL("Serial port", "Puerto serie", "Port série", "Serieller Port", "Porta seriale"),
+  "Preparar controle físico (continua protegido pelo gateway)": steelL("Prepare physical control (still protected by the gateway)", "Preparar control físico (sigue protegido por el gateway)", "Préparer le contrôle physique (toujours protégé par la passerelle)", "Physische Steuerung vorbereiten (weiterhin durch das Gateway geschützt)", "Prepara il controllo fisico (ancora protetto dal gateway)"),
+  "Segurança: no gateway, DOBOT_ALLOW_MOTION=false continua bloqueando movimento mesmo que a interface esteja preparada.": steelL("Safety: on the gateway, DOBOT_ALLOW_MOTION=false continues to block movement even when the interface is ready.", "Seguridad: en el gateway, DOBOT_ALLOW_MOTION=false sigue bloqueando el movimiento aunque la interfaz esté lista.", "Sécurité : sur la passerelle, DOBOT_ALLOW_MOTION=false continue de bloquer les mouvements même si l'interface est prête.", "Sicherheit: Im Gateway blockiert DOBOT_ALLOW_MOTION=false weiterhin Bewegungen, auch wenn die Oberfläche bereit ist.", "Sicurezza: nel gateway, DOBOT_ALLOW_MOTION=false continua a bloccare il movimento anche quando l'interfaccia è pronta."),
+  "Intervalo esperado de leitura": steelL("Expected reading interval", "Intervalo de lectura esperado", "Intervalle de lecture attendu", "Erwartetes Leseintervall", "Intervallo di lettura previsto"),
+  "Valor em milissegundos. Ex.: 2000 = 2 segundos.": steelL("Value in milliseconds. Example: 2000 = 2 seconds.", "Valor en milisegundos. Ej.: 2000 = 2 segundos.", "Valeur en millisecondes. Ex. : 2000 = 2 secondes.", "Wert in Millisekunden. Beispiel: 2000 = 2 Sekunden.", "Valore in millisecondi. Es.: 2000 = 2 secondi."),
+  "Credencial do equipamento": steelL("Equipment credential", "Credencial del equipo", "Identifiant de l'équipement", "Gerätezugangsdaten", "Credenziale dell'apparecchiatura"),
+  "O SteelControl gera automaticamente uma chave exclusiva no cadastro. Ela será usada pelo ESP32, CLP ou gateway para enviar dados com segurança.": steelL("SteelControl automatically generates a unique key during registration. The ESP32, PLC or gateway will use it to send data securely.", "SteelControl genera automáticamente una clave única durante el registro. El ESP32, PLC o gateway la usará para enviar datos de forma segura.", "SteelControl génère automatiquement une clé unique lors de l'enregistrement. L'ESP32, l'automate ou la passerelle l'utilisera pour envoyer les données en toute sécurité.", "SteelControl erzeugt bei der Registrierung automatisch einen eindeutigen Schlüssel. ESP32, SPS oder Gateway verwenden ihn zur sicheren Datenübertragung.", "SteelControl genera automaticamente una chiave univoca durante la registrazione. ESP32, PLC o gateway la useranno per inviare dati in sicurezza."),
+  "Limites operacionais e segurança": steelL("Operating limits and safety", "Límites operativos y seguridad", "Limites de fonctionnement et sécurité", "Betriebsgrenzen und Sicherheit", "Limiti operativi e sicurezza"),
+  "Alertas configuráveis por equipamento": steelL("Configurable alerts per equipment", "Alertas configurables por equipo", "Alertes configurables par équipement", "Konfigurierbare Warnungen pro Gerät", "Avvisi configurabili per apparecchiatura"),
+  "Defina quando o SteelControl deve avisar, gerar alerta crítico e solicitar parada de segurança.": steelL("Define when SteelControl should notify, generate a critical alert and request a safety stop.", "Defina cuándo SteelControl debe avisar, generar una alerta crítica y solicitar una parada de seguridad.", "Définissez quand SteelControl doit avertir, générer une alerte critique et demander un arrêt de sécurité.", "Legen Sie fest, wann SteelControl warnen, einen kritischen Alarm auslösen und einen Sicherheitsstopp anfordern soll.", "Definisci quando SteelControl deve avvisare, generare un allarme critico e richiedere un arresto di sicurezza."),
+  "Temperatura de atenção (°C)": steelL("Warning temperature (°C)", "Temperatura de atención (°C)", "Température d'alerte (°C)", "Warntemperatur (°C)", "Temperatura di attenzione (°C)"),
+  "Temperatura crítica (°C)": steelL("Critical temperature (°C)", "Temperatura crítica (°C)", "Température critique (°C)", "Kritische Temperatur (°C)", "Temperatura critica (°C)"),
+  "Carga elétrica de atenção (%)": steelL("Electrical load warning (%)", "Carga eléctrica de atención (%)", "Alerte de charge électrique (%)", "Warnwert elektrische Last (%)", "Carico elettrico di attenzione (%)"),
+  "Carga elétrica crítica (%)": steelL("Critical electrical load (%)", "Carga eléctrica crítica (%)", "Charge électrique critique (%)", "Kritische elektrische Last (%)", "Carico elettrico critico (%)"),
+  "Vibração de atenção (mm/s)": steelL("Vibration warning (mm/s)", "Vibración de atención (mm/s)", "Alerte de vibration (mm/s)", "Vibrationswarnwert (mm/s)", "Vibrazione di attenzione (mm/s)"),
+  "Vibração crítica (mm/s)": steelL("Critical vibration (mm/s)", "Vibración crítica (mm/s)", "Vibration critique (mm/s)", "Kritische Vibration (mm/s)", "Vibrazione critica (mm/s)"),
+  "Ciclos para manutenção preventiva": steelL("Cycles until preventive maintenance", "Ciclos para mantenimiento preventivo", "Cycles avant maintenance préventive", "Zyklen bis zur vorbeugenden Wartung", "Cicli per manutenzione preventiva"),
+
+  // Painéis, diagnóstico e auditoria
+  "Carga média": steelL("Average load", "Carga media", "Charge moyenne", "Durchschnittliche Last", "Carico medio"),
+  "carga elétrica": steelL("electrical load", "carga eléctrica", "charge électrique", "elektrische Last", "carico elettrico"),
+  "Condição": steelL("Condition", "Condición", "État", "Zustand", "Condizione"),
+  "Corrente informada pelo controlador": steelL("Current reported by the controller", "Corriente informada por el controlador", "Courant indiqué par le contrôleur", "Vom Controller gemeldeter Strom", "Corrente indicata dal controller"),
+  "Diagnóstico da máquina": steelL("Machine diagnostics", "Diagnóstico de la máquina", "Diagnostic de la machine", "Maschinendiagnose", "Diagnostica della macchina"),
+  "Comunicação, último sinal, segurança e configuração do dispositivo.": steelL("Communication, last signal, safety and device configuration.", "Comunicación, última señal, seguridad y configuración del dispositivo.", "Communication, dernier signal, sécurité et configuration de l'appareil.", "Kommunikation, letztes Signal, Sicherheit und Gerätekonfiguration.", "Comunicazione, ultimo segnale, sicurezza e configurazione del dispositivo."),
+  "Verificando conexão": steelL("Checking connection", "Verificando conexión", "Vérification de la connexion", "Verbindung wird geprüft", "Verifica della connessione"),
+  "Último sinal": steelL("Last signal", "Última señal", "Dernier signal", "Letztes Signal", "Ultimo segnale"),
+  "Qualidade": steelL("Quality", "Calidad", "Qualité", "Qualität", "Qualità"),
+  "Chave do dispositivo": steelL("Device key", "Clave del dispositivo", "Clé de l'appareil", "Geräteschlüssel", "Chiave del dispositivo"),
+  "Segurança operacional": steelL("Operational safety", "Seguridad operativa", "Sécurité opérationnelle", "Betriebssicherheit", "Sicurezza operativa"),
+  "Operação liberada": steelL("Operation enabled", "Operación habilitada", "Fonctionnement autorisé", "Betrieb freigegeben", "Operazione abilitata"),
+  "Nenhuma parada de segurança ativa.": steelL("No active safety stop.", "Ninguna parada de seguridad activa.", "Aucun arrêt de sécurité actif.", "Kein aktiver Sicherheitsstopp.", "Nessun arresto di sicurezza attivo."),
+  "Liberar equipamento": steelL("Enable equipment", "Habilitar equipo", "Autoriser l'équipement", "Gerät freigeben", "Abilita apparecchiatura"),
+  "Modo demonstração": steelL("Demo mode", "Modo demostración", "Mode démonstration", "Demomodus", "Modalità demo"),
+  "Use estes cenários para apresentar o TCC sem equipamento físico.": steelL("Use these scenarios to present the project without physical equipment.", "Use estos escenarios para presentar el proyecto sin equipo físico.", "Utilisez ces scénarios pour présenter le projet sans équipement physique.", "Verwenden Sie diese Szenarien, um das Projekt ohne physische Geräte zu präsentieren.", "Usa questi scenari per presentare il progetto senza apparecchiature fisiche."),
+  "Aquecimento": steelL("Heating", "Calentamiento", "Échauffement", "Erwärmung", "Riscaldamento"),
+  "Superaquecimento crítico": steelL("Critical overheating", "Sobrecalentamiento crítico", "Surchauffe critique", "Kritische Überhitzung", "Surriscaldamento critico"),
+  "Normalizar": steelL("Normalize", "Normalizar", "Normaliser", "Normalisieren", "Normalizza"),
+  "Produção e operação vinculadas exclusivamente a este equipamento.": steelL("Production and operation linked exclusively to this equipment.", "Producción y operación vinculadas exclusivamente a este equipo.", "Production et fonctionnement exclusivement liés à cet équipement.", "Produktion und Betrieb ausschließlich mit diesem Gerät verknüpft.", "Produzione e funzionamento collegati esclusivamente a questa apparecchiatura."),
+  "Aguardando dados": steelL("Waiting for data", "Esperando datos", "En attente de données", "Warten auf Daten", "In attesa dei dati"),
+  "Indicador do controlador": steelL("Controller indicator", "Indicador del controlador", "Indicateur du contrôleur", "Controller-Anzeige", "Indicatore del controller"),
+  "Não configurado": steelL("Not configured", "No configurado", "Non configuré", "Nicht konfiguriert", "Non configurato"),
+  "O painel será adaptado aos dados enviados pelo equipamento.": steelL("The dashboard will adapt to the data sent by the equipment.", "El panel se adaptará a los datos enviados por el equipo.", "Le tableau de bord s'adaptera aux données envoyées par l'équipement.", "Das Dashboard passt sich den vom Gerät gesendeten Daten an.", "La dashboard si adatterà ai dati inviati dall'apparecchiatura."),
+  "Plano e histórico técnico exclusivos deste equipamento.": steelL("Technical plan and history exclusive to this equipment.", "Plan e historial técnico exclusivos de este equipo.", "Plan et historique techniques propres à cet équipement.", "Technischer Plan und Verlauf ausschließlich für dieses Gerät.", "Piano e storico tecnico esclusivi di questa apparecchiatura."),
+  "Eventos técnicos gerados somente por este equipamento.": steelL("Technical events generated only by this equipment.", "Eventos técnicos generados únicamente por este equipo.", "Événements techniques générés uniquement par cet équipement.", "Technische Ereignisse, die nur von diesem Gerät erzeugt werden.", "Eventi tecnici generati solo da questa apparecchiatura."),
+  "Auditoria do sistema": steelL("System audit", "Auditoría del sistema", "Audit du système", "Systemprüfung", "Audit del sistema"),
+  "Ações administrativas registradas com usuário, entidade e horário.": steelL("Administrative actions recorded with user, entity and time.", "Acciones administrativas registradas con usuario, entidad y hora.", "Actions administratives enregistrées avec l'utilisateur, l'entité et l'heure.", "Administrative Aktionen mit Benutzer, Entität und Uhrzeit protokolliert.", "Azioni amministrative registrate con utente, entità e orario."),
+  "Atualizar": steelL("Refresh", "Actualizar", "Actualiser", "Aktualisieren", "Aggiorna"),
+  "Eventos exibidos": steelL("Events displayed", "Eventos mostrados", "Événements affichés", "Angezeigte Ereignisse", "Eventi visualizzati"),
+  "Últimos registros": steelL("Latest records", "Últimos registros", "Derniers enregistrements", "Neueste Einträge", "Ultimi registri"),
+  "Usuários envolvidos": steelL("Users involved", "Usuarios involucrados", "Utilisateurs concernés", "Beteiligte Benutzer", "Utenti coinvolti"),
+  "Rastreabilidade por conta": steelL("Traceability by account", "Trazabilidad por cuenta", "Traçabilité par compte", "Rückverfolgbarkeit nach Konto", "Tracciabilità per account"),
+  "Última atividade": steelL("Last activity", "Última actividad", "Dernière activité", "Letzte Aktivität", "Ultima attività"),
+  "Todas as ações": steelL("All actions", "Todas las acciones", "Toutes les actions", "Alle Aktionen", "Tutte le azioni"),
+  "Criar": steelL("Create", "Crear", "Créer", "Erstellen", "Crea"),
+  "Desativar": steelL("Deactivate", "Desactivar", "Désactiver", "Deaktivieren", "Disattiva"),
+  "Carregando auditoria...": steelL("Loading audit...", "Cargando auditoría...", "Chargement de l'audit...", "Audit wird geladen...", "Caricamento audit..."),
+  "PAINEL ADAPTATIVO": steelL("ADAPTIVE DASHBOARD", "PANEL ADAPTATIVO", "TABLEAU DE BORD ADAPTATIF", "ADAPTIVES DASHBOARD", "DASHBOARD ADATTIVA"),
+  "Recursos e telemetria compatíveis com o equipamento selecionado.": steelL("Features and telemetry compatible with the selected equipment.", "Recursos y telemetría compatibles con el equipo seleccionado.", "Fonctions et télémétrie compatibles avec l'équipement sélectionné.", "Mit dem ausgewählten Gerät kompatible Funktionen und Telemetrie.", "Funzioni e telemetria compatibili con l'apparecchiatura selezionata."),
+  "Aguardando telemetria": steelL("Waiting for telemetry", "Esperando telemetría", "En attente de télémétrie", "Warten auf Telemetrie", "In attesa della telemetria"),
+  "Qualidade do sinal": steelL("Signal quality", "Calidad de señal", "Qualité du signal", "Signalqualität", "Qualità del segnale"),
+  "Última leitura": steelL("Last reading", "Última lectura", "Dernière lecture", "Letzter Messwert", "Ultima lettura"),
+  "Indicadores do equipamento": steelL("Equipment indicators", "Indicadores del equipo", "Indicateurs de l'équipement", "Geräteanzeigen", "Indicatori dell'apparecchiatura"),
+  "Integração configurada": steelL("Integration configured", "Integración configurada", "Intégration configurée", "Integration konfiguriert", "Integrazione configurata"),
+  "Capacidades do painel": steelL("Dashboard capabilities", "Capacidades del panel", "Capacités du tableau de bord", "Dashboard-Funktionen", "Funzionalità della dashboard"),
+  "Informações disponíveis": steelL("Available information", "Información disponible", "Informations disponibles", "Verfügbare Informationen", "Informazioni disponibili"),
+  "O painel mostra “Não configurado” quando o controlador ainda não envia determinado dado.": steelL("The dashboard shows “Not configured” when the controller does not yet send a given value.", "El panel muestra «No configurado» cuando el controlador aún no envía un dato determinado.", "Le tableau de bord affiche « Non configuré » lorsque le contrôleur n'envoie pas encore une donnée.", "Das Dashboard zeigt „Nicht konfiguriert“, wenn der Controller einen bestimmten Wert noch nicht sendet.", "La dashboard mostra “Non configurato” quando il controller non invia ancora un determinato dato."),
+  "PAINEL EXCLUSIVO DA MÁQUINA": steelL("MACHINE-SPECIFIC DASHBOARD", "PANEL EXCLUSIVO DE LA MÁQUINA", "TABLEAU DE BORD DÉDIÉ À LA MACHINE", "MASCHINENSPEZIFISCHES DASHBOARD", "DASHBOARD ESCLUSIVA DELLA MACCHINA"),
+  "Aguardando gateway": steelL("Waiting for gateway", "Esperando gateway", "En attente de la passerelle", "Warten auf Gateway", "In attesa del gateway"),
+  "Alarmes": steelL("Alarms", "Alarmas", "Alarmes", "Alarme", "Allarmi"),
+  "Posição do efetuador": steelL("End-effector position", "Posición del efector", "Position de l'effecteur", "Position des Endeffektors", "Posizione dell'effettore"),
+  "Ângulos das juntas": steelL("Joint angles", "Ángulos de las articulaciones", "Angles des articulations", "Gelenkwinkel", "Angoli dei giunti"),
+  "Sensores da célula": steelL("Cell sensors", "Sensores de la celda", "Capteurs de la cellule", "Zellensensoren", "Sensori della cella"),
+  "Não instalado": steelL("Not installed", "No instalado", "Non installé", "Nicht installiert", "Non installato"),
+  "Ferramenta e estado": steelL("Tool and status", "Herramienta y estado", "Outil et état", "Werkzeug und Status", "Strumento e stato"),
+  "Comandos do robô": steelL("Robot commands", "Comandos del robot", "Commandes du robot", "Roboterbefehle", "Comandi del robot"),
+  "Comandos passam pelo backend, PostgreSQL e fila autenticada do equipamento.": steelL("Commands pass through the backend, PostgreSQL and the equipment's authenticated queue.", "Los comandos pasan por el backend, PostgreSQL y la cola autenticada del equipo.", "Les commandes passent par le backend, PostgreSQL et la file authentifiée de l'équipement.", "Befehle laufen über Backend, PostgreSQL und die authentifizierte Gerätewarteschlange.", "I comandi passano attraverso backend, PostgreSQL e coda autenticata dell'apparecchiatura."),
+  "Movimento protegido": steelL("Protected movement", "Movimiento protegido", "Mouvement protégé", "Geschützte Bewegung", "Movimento protetto"),
+  "PARAR": steelL("STOP", "DETENER", "ARRÊTER", "STOPP", "ARRESTA"),
+  "Limpar alarmes": steelL("Clear alarms", "Limpiar alarmas", "Effacer les alarmes", "Alarme löschen", "Cancella allarmi"),
+  "Ventosa ON": steelL("Suction ON", "Ventosa ON", "Ventouse ON", "Sauger EIN", "Ventosa ON"),
+  "Ventosa OFF": steelL("Suction OFF", "Ventosa OFF", "Ventouse OFF", "Sauger AUS", "Ventosa OFF"),
+  "Abrir garra": steelL("Open gripper", "Abrir pinza", "Ouvrir la pince", "Greifer öffnen", "Apri pinza"),
+  "Fechar garra": steelL("Close gripper", "Cerrar pinza", "Fermer la pince", "Greifer schließen", "Chiudi pinza"),
+  "Velocidade (%)": steelL("Speed (%)", "Velocidad (%)", "Vitesse (%)", "Geschwindigkeit (%)", "Velocità (%)"),
+  "Enviar PTP": steelL("Send PTP", "Enviar PTP", "Envoyer PTP", "PTP senden", "Invia PTP")
+});
+
+Object.assign(STEEL_LITERAL_I18N, {
+  "Auditoria": steelL("Audit", "Auditoría", "Audit", "Audit", "Audit"),
+  "Carga": steelL("Load", "Carga", "Charge", "Last", "Carico"),
+  "Carga elétrica": steelL("Electrical load", "Carga eléctrica", "Charge électrique", "Elektrische Last", "Carico elettrico"),
+  "Vibração": steelL("Vibration", "Vibración", "Vibration", "Vibration", "Vibrazione"),
+  "Vibração atual do equipamento": steelL("Current equipment vibration", "Vibración actual del equipo", "Vibration actuelle de l'équipement", "Aktuelle Gerätevibration", "Vibrazione attuale dell'apparecchiatura"),
+  "Elétrica": steelL("Electrical", "Eléctrica", "Électrique", "Elektrisch", "Elettrica"),
+  "Corrente": steelL("Current", "Corriente", "Courant", "Strom", "Corrente"),
+  "Latência": steelL("Latency", "Latencia", "Latence", "Latenz", "Latenza"),
+  "Vibração crítica": steelL("Critical vibration", "Vibración crítica", "Vibration critique", "Kritische Vibration", "Vibrazione critica"),
+  "Braço Robótico Industrial": steelL("Industrial Robotic Arm", "Brazo Robótico Industrial", "Bras Robotique Industriel", "Industrieller Roboterarm", "Braccio Robotico Industriale"),
+  "Linha de Produção A": steelL("Production Line A", "Línea de Producción A", "Ligne de Production A", "Produktionslinie A", "Linea di Produzione A"),
+  "CONTROLADOR": steelL("CONTROLLER", "CONTROLADOR", "CONTRÔLEUR", "CONTROLLER", "CONTROLLER"),
+  "Eventos carregados": steelL("Events loaded", "Eventos cargados", "Événements chargés", "Ereignisse geladen", "Eventi caricati"),
+  "Origem": steelL("Source", "Origen", "Origine", "Quelle", "Origine"),
+  "Controlador": steelL("Controller", "Controlador", "Contrôleur", "Controller", "Controller"),
+  "Escopo": steelL("Scope", "Alcance", "Périmètre", "Umfang", "Ambito"),
+  "RASTREABILIDADE": steelL("TRACEABILITY", "TRAZABILIDAD", "TRAÇABILITÉ", "RÜCKVERFOLGBARKEIT", "TRACCIABILITÀ"),
+  "Horário mais recente": steelL("Most recent time", "Hora más reciente", "Heure la plus récente", "Neueste Uhrzeit", "Orario più recente"),
+  "Login": steelL("Sign in", "Inicio de sesión", "Connexion", "Anmeldung", "Accesso"),
+  "Controlador industrial": steelL("Industrial controller", "Controlador industrial", "Contrôleur industriel", "Industriesteuerung", "Controller industriale"),
+  "TELEMETRIA COMPATÍVEL": steelL("COMPATIBLE TELEMETRY", "TELEMETRÍA COMPATIBLE", "TÉLÉMÉTRIE COMPATIBLE", "KOMPATIBLE TELEMETRIE", "TELEMETRIA COMPATIBILE"),
+  "COMUNICAÇÃO": steelL("COMMUNICATION", "COMUNICACIÓN", "COMMUNICATION", "KOMMUNIKATION", "COMUNICAZIONE"),
+  "RECURSOS DO CONTROLADOR": steelL("CONTROLLER FEATURES", "RECURSOS DEL CONTROLADOR", "FONCTIONS DU CONTRÔLEUR", "CONTROLLER-FUNKTIONEN", "FUNZIONI DEL CONTROLLER"),
+  "QUALIDADE DOS DADOS": steelL("DATA QUALITY", "CALIDAD DE LOS DATOS", "QUALITÉ DES DONNÉES", "DATENQUALITÄT", "QUALITÀ DEI DATI"),
+  "Gateway Python • USB/Serial • Telemetria e comandos pela fila segura do SteelControl": steelL("Python Gateway • USB/Serial • Telemetry and commands through SteelControl's secure queue", "Gateway Python • USB/Serial • Telemetría y comandos mediante la cola segura de SteelControl", "Passerelle Python • USB/Série • Télémétrie et commandes via la file sécurisée de SteelControl", "Python-Gateway • USB/Seriell • Telemetrie und Befehle über die sichere SteelControl-Warteschlange", "Gateway Python • USB/Seriale • Telemetria e comandi tramite la coda sicura di SteelControl"),
+  "POSE CARTESIANA": steelL("CARTESIAN POSE", "POSE CARTESIANA", "POSE CARTÉSIENNE", "KARTESISCHE POSE", "POSA CARTESIANA"),
+  "ARTICULAÇÕES": steelL("JOINTS", "ARTICULACIONES", "ARTICULATIONS", "GELENKE", "GIUNTI"),
+  "INSTRUMENTAÇÃO": steelL("INSTRUMENTATION", "INSTRUMENTACIÓN", "INSTRUMENTATION", "INSTRUMENTIERUNG", "STRUMENTAZIONE"),
+  "O SteelControl não inventa temperatura interna do Dobot. Esses dados entram quando sensores externos/ESP32 estiverem instalados.": steelL("SteelControl does not fabricate Dobot internal temperature data. These values become available when external sensors or an ESP32 are installed.", "SteelControl no inventa la temperatura interna del Dobot. Estos datos estarán disponibles cuando se instalen sensores externos o un ESP32.", "SteelControl n'invente pas la température interne du Dobot. Ces données seront disponibles lorsque des capteurs externes ou un ESP32 seront installés.", "SteelControl erfindet keine internen Dobot-Temperaturdaten. Diese Werte stehen zur Verfügung, sobald externe Sensoren oder ein ESP32 installiert sind.", "SteelControl non inventa la temperatura interna del Dobot. Questi dati saranno disponibili quando verranno installati sensori esterni o un ESP32."),
+  "EFETOR": steelL("END EFFECTOR", "EFECTOR", "EFFECTEUR", "ENDEFFEKTOR", "EFFETTORE"),
+  "Ventosa": steelL("Suction cup", "Ventosa", "Ventouse", "Sauger", "Ventosa"),
+  "Garra": steelL("Gripper", "Pinza", "Pince", "Greifer", "Pinza"),
+  "Fila": steelL("Queue", "Cola", "File", "Warteschlange", "Coda"),
+  "Modo": steelL("Mode", "Modo", "Mode", "Modus", "Modalità"),
+  "CONTROLE SUPERVISIONADO": steelL("SUPERVISED CONTROL", "CONTROL SUPERVISADO", "CONTRÔLE SUPERVISÉ", "ÜBERWACHTE STEUERUNG", "CONTROLLO SUPERVISIONATO"),
+  "HOME": steelL("HOME", "INICIO", "ACCUEIL", "START", "HOME"),
+  "No equipamento real, o gateway inicia com": steelL("On real equipment, the gateway starts with", "En el equipo real, el gateway se inicia con", "Sur l'équipement réel, la passerelle démarre avec", "Am realen Gerät startet das Gateway mit", "Sull'apparecchiatura reale, il gateway si avvia con"),
+  ". STOP permanece disponível; movimentos só são executados após liberação consciente no computador do robô.": steelL(". STOP remains available; movements are executed only after explicit authorization on the robot computer.", ". STOP permanece disponible; los movimientos solo se ejecutan después de una autorización explícita en el ordenador del robot.", ". STOP reste disponible ; les mouvements ne sont exécutés qu'après une autorisation explicite sur l'ordinateur du robot.", ". STOP bleibt verfügbar; Bewegungen werden erst nach ausdrücklicher Freigabe am Robotercomputer ausgeführt.", ". STOP rimane disponibile; i movimenti vengono eseguiti solo dopo un'autorizzazione esplicita sul computer del robot."),
+  "Baud rate": steelL("Baud rate", "Velocidad en baudios", "Débit en bauds", "Baudrate", "Velocità in baud")
+});
+
+Object.assign(STEEL_LITERAL_I18N, {
+  "Informe um CNPJ válido.": steelL("Enter a valid company ID.", "Ingrese un CNPJ válido.", "Saisissez un identifiant d'entreprise valide.", "Geben Sie eine gültige Unternehmens-ID ein.", "Inserisci un CNPJ valido."),
+  "Informe um e-mail real e válido para receber o código de confirmação.": steelL("Enter a real, valid email to receive the confirmation code.", "Ingrese un correo real y válido para recibir el código de confirmación.", "Saisissez une adresse e-mail réelle et valide pour recevoir le code de confirmation.", "Geben Sie eine echte, gültige E-Mail-Adresse ein, um den Bestätigungscode zu erhalten.", "Inserisci un'e-mail reale e valida per ricevere il codice di conferma."),
+  "A senha deve possuir pelo menos 8 caracteres.": steelL("The password must be at least 8 characters long.", "La contraseña debe tener al menos 8 caracteres.", "Le mot de passe doit comporter au moins 8 caractères.", "Das Passwort muss mindestens 8 Zeichen lang sein.", "La password deve contenere almeno 8 caratteri."),
+  "Muitas solicitações de código para este e-mail. Tente novamente mais tarde.": steelL("Too many code requests for this email. Try again later.", "Demasiadas solicitudes de código para este correo. Inténtelo más tarde.", "Trop de demandes de code pour cette adresse. Réessayez plus tard.", "Zu viele Code-Anfragen für diese E-Mail. Versuchen Sie es später erneut.", "Troppe richieste di codice per questa e-mail. Riprova più tardi."),
+  "Enviamos um código de 6 dígitos para o e-mail informado. A conta ainda não foi criada.": steelL("We sent a 6-digit code to the provided email. The account has not been created yet.", "Enviamos un código de 6 dígitos al correo indicado. La cuenta aún no fue creada.", "Nous avons envoyé un code à 6 chiffres à l'adresse indiquée. Le compte n'a pas encore été créé.", "Wir haben einen 6-stelligen Code an die angegebene E-Mail gesendet. Das Konto wurde noch nicht erstellt.", "Abbiamo inviato un codice di 6 cifre all'e-mail indicata. L'account non è ancora stato creato."),
+  "Novo código enviado com sucesso.": steelL("New code sent successfully.", "Nuevo código enviado correctamente.", "Nouveau code envoyé avec succès.", "Neuer Code erfolgreich gesendet.", "Nuovo codice inviato correttamente."),
+  "Informe o código de 6 dígitos enviado para seu e-mail.": steelL("Enter the 6-digit code sent to your email.", "Ingrese el código de 6 dígitos enviado a su correo.", "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail.", "Geben Sie den 6-stelligen Code aus Ihrer E-Mail ein.", "Inserisci il codice di 6 cifre inviato alla tua e-mail."),
+  "O código expirou. Volte ao cadastro e solicite um novo código.": steelL("The code has expired. Return to registration and request a new code.", "El código expiró. Vuelva al registro y solicite uno nuevo.", "Le code a expiré. Revenez à l'inscription et demandez un nouveau code.", "Der Code ist abgelaufen. Kehren Sie zur Registrierung zurück und fordern Sie einen neuen Code an.", "Il codice è scaduto. Torna alla registrazione e richiedi un nuovo codice."),
+  "E-mail ou senha inválidos.": steelL("Invalid email or password.", "Correo o contraseña no válidos.", "E-mail ou mot de passe invalide.", "Ungültige E-Mail oder ungültiges Passwort.", "E-mail o password non validi."),
+  "E-mail e senha são obrigatórios.": steelL("Email and password are required.", "El correo y la contraseña son obligatorios.", "L'e-mail et le mot de passe sont obligatoires.", "E-Mail und Passwort sind erforderlich.", "E-mail e password sono obbligatori."),
+  "A prova de vida é obrigatória para o login facial.": steelL("A liveness check is required for facial sign-in.", "La prueba de vida es obligatoria para el acceso facial.", "Un test de présence est obligatoire pour la connexion faciale.", "Für die Gesichtsanmeldung ist eine Lebenderkennung erforderlich.", "La prova di vitalità è obbligatoria per l'accesso facciale."),
+  "Olhe para a câmera, mova levemente a cabeça e retorne para a posição frontal.": steelL("Look at the camera, move your head slightly and return to the front position.", "Mire a la cámara, mueva ligeramente la cabeza y vuelva a la posición frontal.", "Regardez la caméra, bougez légèrement la tête puis revenez en position frontale.", "Schauen Sie in die Kamera, bewegen Sie den Kopf leicht und kehren Sie in die Frontalposition zurück.", "Guarda la fotocamera, muovi leggermente la testa e torna in posizione frontale."),
+  "A prova de vida não foi confirmada.": steelL("The liveness check was not confirmed.", "La prueba de vida no fue confirmada.", "Le test de présence n'a pas été confirmé.", "Die Lebenderkennung wurde nicht bestätigt.", "La prova di vitalità non è stata confermata."),
+  "Vire levemente a cabeça para um dos lados e retorne para a câmera.": steelL("Turn your head slightly to one side and return to the camera.", "Gire ligeramente la cabeza hacia un lado y vuelva a mirar la cámara.", "Tournez légèrement la tête d'un côté puis revenez vers la caméra.", "Drehen Sie den Kopf leicht zu einer Seite und schauen Sie wieder in die Kamera.", "Gira leggermente la testa da un lato e torna verso la fotocamera."),
+  "Rosto não cadastrado ou não reconhecido.": steelL("Face not registered or not recognized.", "Rostro no registrado o no reconocido.", "Visage non enregistré ou non reconnu.", "Gesicht nicht registriert oder nicht erkannt.", "Volto non registrato o non riconosciuto."),
+  "Entre com seu e-mail e senha ou cadastre seu rosto.": steelL("Sign in with your email and password or register your face.", "Ingrese con su correo y contraseña o registre su rostro.", "Connectez-vous avec votre e-mail et votre mot de passe ou enregistrez votre visage.", "Melden Sie sich mit E-Mail und Passwort an oder registrieren Sie Ihr Gesicht.", "Accedi con e-mail e password oppure registra il tuo volto."),
+  "Não foi possível confirmar sua identidade com segurança.": steelL("We could not confirm your identity securely.", "No fue posible confirmar su identidad de forma segura.", "Nous n'avons pas pu confirmer votre identité de manière sûre.", "Ihre Identität konnte nicht sicher bestätigt werden.", "Non è stato possibile confermare la tua identità in modo sicuro."),
+  "Olhe diretamente para a câmera e tente novamente.": steelL("Look directly at the camera and try again.", "Mire directamente a la cámara e inténtelo nuevamente.", "Regardez directement la caméra et réessayez.", "Schauen Sie direkt in die Kamera und versuchen Sie es erneut.", "Guarda direttamente la fotocamera e riprova.")
+});
+
 
 
 /* =========================================================
@@ -7095,6 +7525,52 @@ function t(
     chave,
     parametros
   );
+}
+
+
+// Traduz mensagens vindas de APIs ou criadas dinamicamente quando elas
+// correspondem a um texto conhecido pelo dicionário global.
+function traduzirTextoLivre(texto) {
+  const valor =
+    String(texto ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (!valor) return "";
+
+  const chave =
+    CHAVE_POR_TEXTO_GLOBAL.get(valor) ||
+    CHAVE_POR_TEXTO_PT.get(valor);
+
+  if (chave) {
+    return pegarTexto(chave);
+  }
+
+  let base =
+    STEEL_LITERAL_I18N[valor]
+      ? valor
+      : null;
+
+  if (!base) {
+    for (const [textoBase, tabela] of Object.entries(STEEL_LITERAL_I18N)) {
+      if (Object.values(tabela).includes(valor)) {
+        base = textoBase;
+        break;
+      }
+    }
+  }
+
+  if (!base) return valor;
+
+  const idioma = pegarIdiomaAtual();
+
+  return idioma === "pt"
+    ? base
+    : (
+        STEEL_LITERAL_I18N[base]?.[idioma] ||
+        STEEL_LITERAL_I18N[base]?.en ||
+        base
+      );
 }
 
 

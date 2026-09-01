@@ -55,4 +55,24 @@ Depois de instalar, valide com:
 py verificar_ambiente.py
 ```
 
+## Testes automatizados
+
+As regras de upload, imagem, caixa facial e embedding podem ser testadas sem
+baixar ou inicializar o modelo `buffalo_l`:
+
+```powershell
+cd face-api
+python -m unittest discover -s tests -v
+```
+
+Os testes usam apenas a biblioteca padrao do Python e as dependencias que a
+Face API ja utiliza.
+
+Na raiz do projeto, o mesmo conjunto pode ser executado com um clique pelo
+PowerShell:
+
+```powershell
+.\TESTAR_FACE_API.ps1
+```
+
 O reconhecimento facial usa o modelo `buffalo_l`. Deixe esse modelo baixado no computador **antes** da apresentação; não dependa de internet no dia da banca.

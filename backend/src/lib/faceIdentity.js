@@ -27,7 +27,6 @@ export async function criarAmostraFacialExclusiva({
   prisma,
   usuarioId,
   embedding,
-  maxSamples,
   nome,
   modelo = "insightface-buffalo_l",
   threshold = FACE_DUPLICATE_THRESHOLD
@@ -37,7 +36,7 @@ export async function criarAmostraFacialExclusiva({
       // O projeto usa PostgreSQL. O advisory lock existe somente durante
       // esta transação e serializa o trecho crítico de cadastro biométrico.
       await tx.$queryRawUnsafe(
-        `SELECT pg_advisory_xact_lock(${FACE_REGISTRATION_LOCK})`
+        `SELECT pg_advisory_xact_lock(${FACE_REGISTRATION_LOCK})::text AS "lock"`
       );
 
       const quantidadeAtual =
@@ -48,12 +47,11 @@ export async function criarAmostraFacialExclusiva({
         });
 
       if (
-        quantidadeAtual >=
-        maxSamples
+        quantidadeAtual >= 1
       ) {
         return {
           ok: false,
-          motivo: "limite",
+          motivo: "perfil_ja_possui_face",
           quantidadeAtual
         };
       }

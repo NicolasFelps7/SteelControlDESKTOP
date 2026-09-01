@@ -1,0 +1,163 @@
+/* ========================================================================== 
+   STEELCONTROL - TIPOGRAFIA DOS PAINEIS POR CONTROLADOR
+   Usa fontes nativas para funcionar offline durante a apresentacao.
+   ========================================================================== */
+
+.controller-runtime,
+.dobot-runtime,
+.machine-scope-banner,
+.production-controller-insight {
+  font-family:
+    "Segoe UI Variable Text",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+  font-style: normal;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.controller-runtime h2,
+.controller-runtime h3,
+.dobot-runtime h2,
+.dobot-runtime h3 {
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+
+.controller-hero h2,
+.dobot-hero h2 {
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.controller-panel-head h3,
+.dobot-panel-head h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.controller-hero-copy > span,
+.controller-panel-head span,
+.dobot-eyebrow,
+.dobot-panel-head span,
+.machine-scope-banner [data-machine-scope-controller] {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.controller-hero p,
+.dobot-hero p,
+.controller-panel-head p,
+.dobot-panel-head p,
+.machine-scope-banner p,
+.production-controller-insight > p {
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+.controller-diagnostics span,
+.dobot-diagnostics span,
+.controller-info-row span,
+.dobot-sensor-list span,
+.dobot-effector-grid span {
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.controller-diagnostics strong,
+.dobot-diagnostics strong,
+.controller-info-row strong,
+.dobot-sensor-list strong,
+.dobot-effector-grid strong,
+.controller-state strong,
+.dobot-state strong,
+.machine-scope-banner [data-machine-scope-name] {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.controller-metric strong,
+.dobot-coordinate-grid strong {
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.controller-metric span,
+.dobot-coordinate-grid span,
+.controller-metric small,
+.dobot-coordinate-grid small {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.controller-capability,
+.controller-quality-row,
+.motion-lock,
+.machine-scope-state,
+.production-compatibility-list span {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.dobot-control-actions button,
+.dobot-ptp-form button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.dobot-ptp-form label,
+.dobot-config-grid label {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+.dobot-ptp-form input,
+.dobot-config-grid input,
+.dobot-config-grid select {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.dobot-note,
+.dobot-safety-copy,
+.controller-honesty {
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+@media (max-width: 620px) {
+  .controller-hero h2,
+  .dobot-hero h2 {
+    font-size: 26px;
+  }
+
+  .controller-panel-head h3,
+  .dobot-panel-head h3 {
+    font-size: 17px;
+  }
+}

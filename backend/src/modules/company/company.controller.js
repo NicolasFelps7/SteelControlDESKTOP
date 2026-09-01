@@ -54,7 +54,7 @@ import {
 } from "../../lib/companyView.js";
 
 
-const MAX_FACE_SAMPLES = 5;
+const MAX_FACE_SAMPLES = 1;
 
 
 // =========================================================
@@ -731,12 +731,19 @@ export async function obterLogoPublica(
 
     res.setHeader(
       "Cache-Control",
-      "public, max-age=31536000, immutable"
+      "no-cache, max-age=0, must-revalidate"
     );
 
     res.setHeader(
       "X-Content-Type-Options",
       "nosniff"
+    );
+
+    // Compatibilidade segura para clientes móveis e versões antigas que
+    // carreguem a imagem por outra origem. A rota contém apenas a logo pública.
+    res.setHeader(
+      "Cross-Origin-Resource-Policy",
+      "cross-origin"
     );
 
     return res.send(
@@ -806,6 +813,18 @@ export async function uploadLogo(
             mime
         }
       });
+
+    if (
+      !empresa.logoData?.length ||
+      empresa.logoMime !== mime
+    ) {
+      const erroPersistencia =
+        new Error(
+          "A logo não foi confirmada no PostgreSQL. Tente novamente."
+        );
+      erroPersistencia.status = 500;
+      throw erroPersistencia;
+    }
 
     await registrarAuditoria({
       req,
@@ -1997,7 +2016,7 @@ export async function removerUsuario(
     return res.json({
 
       mensagem:
-        "Funcionário desativado com sucesso. O acesso e as amostras faciais foram revogados."
+        "Funcionário desativado com sucesso. O acesso e a biometria facial foram revogados."
 
     });
 
@@ -2161,26 +2180,24 @@ export async function cadastrarFaceUsuario(
         embedding,
         nome:
           nomeFacial,
-        maxSamples:
-          MAX_FACE_SAMPLES
       });
 
 
     if (
       !registroFacial.ok &&
       registroFacial.motivo ===
-        "limite"
+        "perfil_ja_possui_face"
     ) {
 
       return res
-        .status(400)
+          .status(409)
         .json({
 
           codigo:
-            "FACE_LIMIT_REACHED",
+            "FACE_PROFILE_ALREADY_REGISTERED",
 
           mensagem:
-            `Este funcionário já possui ${MAX_FACE_SAMPLES} amostras faciais.`,
+            "Este perfil já possui uma biometria facial. Remova a facial atual antes de cadastrar outro rosto.",
 
           quantidadeFaces:
             registroFacial.quantidadeAtual,
@@ -2248,9 +2265,7 @@ export async function cadastrarFaceUsuario(
       .json({
 
         mensagem:
-          quantidadeFaces === 1
-            ? "Reconhecimento facial cadastrado com sucesso."
-            : "Nova amostra facial adicionada com sucesso.",
+          "Reconhecimento facial único cadastrado com sucesso.",
 
         faceId:
           face.id,
@@ -3132,4 +3147,3 @@ export async function confirmarAlteracaoEmail(
     next(erro);
   }
 }
-

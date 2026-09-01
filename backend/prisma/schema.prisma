@@ -195,7 +195,7 @@ model Manutencao {
 
 model FaceEmbedding {
   id        Int      @id @default(autoincrement())
-  usuarioId Int
+  usuarioId Int      @unique
   nome      String
   embedding Json
   modelo    String
@@ -203,7 +203,6 @@ model FaceEmbedding {
 
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  @@index([usuarioId])
   @@index([usuarioId, nome])
   @@index([criadoEm])
 }

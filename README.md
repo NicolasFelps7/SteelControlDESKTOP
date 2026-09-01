@@ -61,7 +61,7 @@ Leia `INTEGRACAO_MAQUINA_REAL.md` e `device-examples/ESP32_HTTP_STEELCONTROL.ino
 - PostgreSQL;
 - Python 3.11 de 64 bits;
 - Microsoft C++ Build Tools com a carga **Desenvolvimento para desktop com C++** (necessário para compilar o InsightFace no Windows);
-- VS Code + Live Server.
+- Navegador moderno. O frontend é servido pelo próprio backend.
 
 ## Iniciar
 
@@ -92,7 +92,8 @@ No Windows, prefira executar `INICIAR_STEELCONTROL.ps1`: ele valida o Python,
 detecta ambientes virtuais incompletos e reinstala as dependências quando o
 `requirements.txt` mudar.
 
-Abra `frontend/login.html` com Live Server.
+Abra `http://localhost:3000/app/login`. Não é necessário instalar ou iniciar
+Live Server: frontend e API usam a mesma origem, como em produção.
 
 Usuário seed:
 

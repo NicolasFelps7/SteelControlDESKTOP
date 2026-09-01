@@ -114,3 +114,133 @@ export function encontrarCorrespondenciaFacial({
 
   return melhor;
 }
+
+
+// =========================================================
+// CLASSIFICAR RECONHECIMENTO E AMBIGUIDADE
+// Considera apenas a melhor amostra de cada usuario. Duas
+// amostras do mesmo perfil nunca geram falsa ambiguidade.
+// =========================================================
+
+export function classificarCorrespondenciaFacial({
+  embedding,
+  faces,
+  threshold = 0.58,
+  margemMinima = 0.08
+}) {
+  if (
+    !Array.isArray(embedding) ||
+    !Array.isArray(faces)
+  ) {
+    return {
+      status: "nao_encontrado",
+      melhor: null,
+      segundo: null,
+      margem: null
+    };
+  }
+
+  const melhoresPorUsuario =
+    new Map();
+
+  for (const face of faces) {
+    const usuarioId =
+      face?.usuarioId ??
+      face?.usuario?.id ??
+      null;
+
+    if (usuarioId === null) {
+      continue;
+    }
+
+    const similaridade =
+      similaridadeCosseno(
+        embedding,
+        face?.embedding
+      );
+
+    if (similaridade < -0.5) {
+      continue;
+    }
+
+    const atual =
+      melhoresPorUsuario.get(
+        usuarioId
+      );
+
+    if (
+      !atual ||
+      similaridade >
+        atual.similaridade
+    ) {
+      melhoresPorUsuario.set(
+        usuarioId,
+        {
+          face,
+          faceId:
+            face?.id ?? null,
+          usuarioId,
+          usuario:
+            face?.usuario ?? null,
+          similaridade
+        }
+      );
+    }
+  }
+
+  const resultados =
+    Array.from(
+      melhoresPorUsuario.values()
+    ).sort(
+      (a, b) =>
+        b.similaridade -
+        a.similaridade
+    );
+
+  const melhor =
+    resultados[0] || null;
+
+  const segundo =
+    resultados[1] || null;
+
+  if (
+    !melhor ||
+    melhor.similaridade < threshold
+  ) {
+    return {
+      status: "nao_encontrado",
+      melhor,
+      segundo,
+      margem:
+        melhor && segundo
+          ? melhor.similaridade -
+            segundo.similaridade
+          : null
+    };
+  }
+
+  const margem =
+    segundo
+      ? melhor.similaridade -
+        segundo.similaridade
+      : 1;
+
+  if (
+    segundo &&
+    margem < margemMinima
+  ) {
+    return {
+      status: "ambiguo",
+      melhor,
+      segundo,
+      margem
+    };
+  }
+
+  return {
+    status: "reconhecido",
+    melhor,
+    segundo,
+    margem
+  };
+}

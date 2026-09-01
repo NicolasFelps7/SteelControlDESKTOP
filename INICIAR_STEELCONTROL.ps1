@@ -49,7 +49,6 @@ function Test-MsvcBuildTools {
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Backend = Join-Path $Root "backend"
 $FaceApi = Join-Path $Root "face-api"
-$Frontend = Join-Path $Root "frontend"
 
 Write-Host "" 
 Write-Host "===========================================" -ForegroundColor Cyan
@@ -169,19 +168,12 @@ Start-Process powershell -ArgumentList @(
   "Set-Location '$FaceApi'; & '.\venv\Scripts\python.exe' -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 )
 
-Write-Host "Abrindo frontend em http://127.0.0.1:5500 ..." -ForegroundColor Green
-Start-Process powershell -ArgumentList @(
-  "-NoExit",
-  "-Command",
-  "Set-Location '$Root'; py -m http.server 5500 --directory '$Frontend'"
-)
-
 Start-Sleep -Seconds 3
-Start-Process "http://127.0.0.1:5500/login.html"
+Start-Process "http://localhost:3000/app/login"
 
 Write-Host ""
 Write-Host "SteelControl iniciado." -ForegroundColor Green
 Write-Host "Backend:  http://localhost:3000" -ForegroundColor Gray
 Write-Host "Face API: http://127.0.0.1:8000" -ForegroundColor Gray
-Write-Host "Frontend: http://127.0.0.1:5500/login.html" -ForegroundColor Gray
+Write-Host "Sistema:  http://localhost:3000/app/login" -ForegroundColor Green
 Write-Host ""

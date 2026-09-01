@@ -172,7 +172,7 @@ async function fetchAutenticado(
     limparSessao();
 
     window.location.href =
-      "login.html";
+      "/app/login";
 
     throw new Error(
       "Sessão expirada."
@@ -215,7 +215,7 @@ if (
 ) {
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 
@@ -754,16 +754,6 @@ const idiomaConfig =
 const temaConfig =
   document.getElementById(
     "temaConfig"
-  );
-
-
-// ======================================================
-// EMPRESA
-// ======================================================
-
-const empresaLogoSidebarEl =
-  document.getElementById(
-    "empresaLogoSidebar"
   );
 
 
@@ -1340,7 +1330,7 @@ async function buscarDados() {
 
     if (!maquinaId) {
       window.location.href =
-        "maquinas.html";
+        "/app/maquinas";
       return;
     }
 
@@ -2616,7 +2606,7 @@ if (formManutencao) {
 
       if (!maquinaId) {
         window.location.href =
-          "maquinas.html";
+          "/app/maquinas";
         return;
       }
 
@@ -2847,14 +2837,23 @@ async function carregarResumoEmpresa() {
     let logoFinal =
       "assets/img/dash.png";
 
+    const logoInformada =
+      empresa.logoUrl ||
+      (
+        empresa.temLogo &&
+        empresa.id
+          ? `/empresa/logo/${empresa.id}`
+          : ""
+      );
+
 
     if (
-      empresa.logoUrl
+      logoInformada
     ) {
 
       const logoUrl =
         String(
-          empresa.logoUrl
+          logoInformada
         );
 
 
@@ -2881,18 +2880,16 @@ async function carregarResumoEmpresa() {
 
 
     if (logoConfigEl) {
-
+      logoConfigEl.onerror = () => {
+        logoConfigEl.onerror = null;
+        logoConfigEl.src =
+          "assets/img/dash.png";
+      };
+      logoConfigEl.onload = () =>
+        prepararLogoParaTema(
+          logoConfigEl
+        );
       logoConfigEl.src =
-        logoFinal;
-
-    }
-
-
-    if (
-      empresaLogoSidebarEl
-    ) {
-
-      empresaLogoSidebarEl.src =
         logoFinal;
 
     }
@@ -3584,6 +3581,35 @@ async function carregarVisaoGeralOperacao() {
 // TROCAR TELAS
 // ======================================================
 
+function registrarDestinoPainelAtual() {
+  const painel =
+    new URLSearchParams(
+      window.location.search
+    ).get("view");
+
+  if (
+    painel !== "controller" &&
+    painel !== "dobot"
+  ) {
+    return;
+  }
+
+  const destino =
+    `/app/dashboard?view=${painel}`;
+
+  localStorage.setItem(
+    "dashboardMaquinaDestino",
+    destino
+  );
+
+  localStorage.setItem(
+    "empresaRetornoDashboard",
+    destino
+  );
+}
+
+registrarDestinoPainelAtual();
+
 function mostrarTela(
   nomeTela,
   botao
@@ -3764,7 +3790,7 @@ function mostrarTelaPorNome() {
 function voltarMaquinas() {
 
   window.location.href =
-    "maquinas.html";
+    "/app/maquinas";
 
 }
 
@@ -3775,13 +3801,43 @@ function voltarMaquinas() {
 
 function abrirMinhaEmpresa() {
 
+  const painelAtual =
+    new URLSearchParams(
+      window.location.search
+    ).get("view");
+
+  const destinoAtual =
+    painelAtual === "dobot"
+      ? "/app/dashboard?view=dobot"
+      : painelAtual === "controller"
+        ? "/app/dashboard?view=controller"
+        : localStorage.getItem(
+            "dashboardMaquinaDestino"
+          );
+
   localStorage.setItem(
     "empresaOrigem",
     "dashboard"
   );
 
+  if (
+    destinoAtual ===
+      "/app/dashboard?view=dobot" ||
+    destinoAtual ===
+      "/app/dashboard?view=controller"
+  ) {
+    localStorage.setItem(
+      "empresaRetornoDashboard",
+      destinoAtual
+    );
+  } else {
+    localStorage.removeItem(
+      "empresaRetornoDashboard"
+    );
+  }
+
   window.location.href =
-    "empresa.html";
+    "/app/empresa";
 
 }
 
@@ -3807,7 +3863,7 @@ function sairSistema() {
 
 
   window.location.href =
-    "login.html";
+    "/app/login";
 
 }
 
@@ -4007,6 +4063,12 @@ configurarSelects();
 
 
 atualizarIdiomaDashboard();
+
+
+// Respeita imediatamente ?view=controller ou ?view=dobot.
+// Sem esta chamada, o HTML mantinha o painel geral antigo
+// como ativo ate o usuario clicar manualmente em Inicio.
+mostrarTelaPorNome();
 
 
 // Máquina selecionada
