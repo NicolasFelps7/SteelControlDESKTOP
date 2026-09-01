@@ -30,6 +30,6 @@
     "node": ">=20 <23"
   },
   "devDependencies": {
-    "prisma": "^6.13.0"
+    "prisma": "^7.10.0"
   }
 }
