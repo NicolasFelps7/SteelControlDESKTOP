@@ -1,0 +1,56 @@
+-- SteelControl Industrial Runtime v3
+-- Migração aditiva e segura: não remove dados existentes.
+
+ALTER TABLE "Maquina"
+ADD COLUMN IF NOT EXISTS "deviceKeyHash" TEXT,
+ADD COLUMN IF NOT EXISTS "deviceKeyHint" TEXT,
+ADD COLUMN IF NOT EXISTS "ultimaTelemetriaEm" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "ultimoHeartbeatEm" TIMESTAMP(3),
+ADD COLUMN IF NOT EXISTS "vibracao" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "corrente" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "tempAtencao" DOUBLE PRECISION NOT NULL DEFAULT 55,
+ADD COLUMN IF NOT EXISTS "tempCritica" DOUBLE PRECISION NOT NULL DEFAULT 70,
+ADD COLUMN IF NOT EXISTS "energiaAtencao" DOUBLE PRECISION NOT NULL DEFAULT 80,
+ADD COLUMN IF NOT EXISTS "energiaCritica" DOUBLE PRECISION NOT NULL DEFAULT 90,
+ADD COLUMN IF NOT EXISTS "vibracaoAtencao" DOUBLE PRECISION NOT NULL DEFAULT 4,
+ADD COLUMN IF NOT EXISTS "vibracaoCritica" DOUBLE PRECISION NOT NULL DEFAULT 7,
+ADD COLUMN IF NOT EXISTS "ciclosManutencao" INTEGER NOT NULL DEFAULT 1000,
+ADD COLUMN IF NOT EXISTS "paradaSeguranca" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN IF NOT EXISTS "motivoParada" TEXT;
+
+ALTER TABLE "TelemetryReading"
+ADD COLUMN IF NOT EXISTS "vibracao" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "corrente" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "qualidadeSinal" INTEGER,
+ADD COLUMN IF NOT EXISTS "latenciaMs" INTEGER;
+
+CREATE TABLE IF NOT EXISTS "ComandoMaquina" (
+  "id" SERIAL NOT NULL,
+  "maquinaId" INTEGER NOT NULL,
+  "comando" TEXT NOT NULL,
+  "payload" JSONB,
+  "status" TEXT NOT NULL DEFAULT 'PENDENTE',
+  "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "entregueEm" TIMESTAMP(3),
+  "concluidoEm" TIMESTAMP(3),
+  CONSTRAINT "ComandoMaquina_pkey" PRIMARY KEY ("id")
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'ComandoMaquina_maquinaId_fkey'
+  ) THEN
+    ALTER TABLE "ComandoMaquina"
+    ADD CONSTRAINT "ComandoMaquina_maquinaId_fkey"
+    FOREIGN KEY ("maquinaId") REFERENCES "Maquina"("id")
+    ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS "Maquina_ultimaTelemetriaEm_idx"
+ON "Maquina"("ultimaTelemetriaEm");
+
+CREATE INDEX IF NOT EXISTS "ComandoMaquina_maquinaId_status_criadoEm_idx"
+ON "ComandoMaquina"("maquinaId", "status", "criadoEm");

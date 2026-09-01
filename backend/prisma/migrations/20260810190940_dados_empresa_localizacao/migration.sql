@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "Empresa" ADD COLUMN     "atualizadaEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "bairro" TEXT,
+ADD COLUMN     "cep" TEXT,
+ADD COLUMN     "cidade" TEXT,
+ADD COLUMN     "complemento" TEXT,
+ADD COLUMN     "email" TEXT,
+ADD COLUMN     "endereco" TEXT,
+ADD COLUMN     "estado" TEXT,
+ADD COLUMN     "latitude" DOUBLE PRECISION,
+ADD COLUMN     "longitude" DOUBLE PRECISION,
+ADD COLUMN     "numero" TEXT,
+ADD COLUMN     "pais" TEXT DEFAULT 'Brasil',
+ADD COLUMN     "site" TEXT,
+ADD COLUMN     "telefone" TEXT;

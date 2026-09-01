@@ -1,0 +1,9 @@
+ALTER TABLE "Maquina"
+ADD COLUMN "protocolo" TEXT,
+ADD COLUMN "host" TEXT,
+ADD COLUMN "porta" INTEGER,
+ADD COLUMN "unitId" INTEGER,
+ADD COLUMN "endpoint" TEXT,
+ADD COLUMN "topico" TEXT,
+ADD COLUMN "intervaloLeitura" INTEGER NOT NULL DEFAULT 2000,
+ADD COLUMN "statusConexao" TEXT NOT NULL DEFAULT 'Não configurada';

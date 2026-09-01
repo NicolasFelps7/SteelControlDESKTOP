@@ -1,0 +1,30 @@
+# Variáveis de ambiente / segredos
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Uploads locais
+backend/uploads/
+
+# Build / containers
+**/.pytest_cache/
+face-api/.insightface/
+*.log

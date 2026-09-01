@@ -1,0 +1,16 @@
+{
+  "name": "steelcontrol-tcc",
+  "version": "3.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20 <23"
+  },
+  "scripts": {
+    "build": "npm --prefix backend ci --include=dev && npm --prefix backend run prisma:generate",
+    "start": "npm --prefix backend run start:prod",
+    "test": "npm --prefix backend test",
+    "check": "node tools/check-production.mjs",
+    "check:dobot": "node tools/check-dobot.mjs",
+    "check:controllers": "node tools/check-controller-panels.mjs"
+  }
+}

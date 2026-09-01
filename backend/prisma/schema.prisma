@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Cargo {
+  ADMINISTRADOR
+  SUPERVISOR
+  TECNICO
+  OPERADOR
+  VISITANTE
+}
+
+model Empresa {
+  id      Int     @id @default(autoincrement())
+  nome    String
+  cnpj    String? @unique
+  logoUrl  String?
+  logoData Bytes?
+  logoMime String?
+
+  telefone String?
+  email    String?
+  site     String?
+
+  cep         String?
+  endereco    String?
+  numero      String?
+  complemento String?
+  bairro      String?
+  cidade      String?
+  estado      String?
+  pais        String? @default("Brasil")
+
+  latitude  Float?
+  longitude Float?
+
+  criadaEm     DateTime @default(now())
+  atualizadaEm DateTime @default(now()) @updatedAt
+
+  usuarios  Usuario[]
+  maquinas  Maquina[]
+  auditLogs AuditLog[]
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  empresaId Int
+  nome      String
+  email     String   @unique
+  senhaHash String
+  cargo     Cargo    @default(VISITANTE)
+  ativo     Boolean  @default(true)
+  criadaEm  DateTime @default(now())
+
+  empresa   Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  faces     FaceEmbedding[]
+  auditLogs AuditLog[]
+
+  @@index([empresaId])
+  @@index([cargo])
+  @@index([ativo])
+}
+
+model Maquina {
+  id         Int @id @default(autoincrement())
+  empresaId  Int
+  nome       String
+  setor      String
+  modelo     String
+  fabricante String?
+  codigo     String
+  tipo       String?
+  descricao  String?
+
+  // Comunicação industrial / gateway.
+  // integracaoMeta armazena configuração específica do fabricante sem
+  // poluir o modelo principal (ex.: Dobot Magician, CNC, CLP).
+  integracaoMeta     Json?
+  controlador      String?
+  protocolo        String?
+  host             String?
+  porta            Int?
+  unitId           Int?
+  endpoint         String?
+  topico           String?
+  intervaloLeitura Int     @default(2000)
+  statusConexao    String  @default("Não configurada")
+
+  // Credencial exclusiva do equipamento. O segredo puro nunca é salvo.
+  deviceKeyHash String?
+  deviceKeyHint String?
+
+  // Última atividade recebida do equipamento real.
+  ultimaTelemetriaEm DateTime?
+  ultimoHeartbeatEm  DateTime?
+
+  // Telemetria atual.
+  status         String @default("Ligada")
+  temperatura    Float  @default(35)
+  vibracao       Float  @default(0)
+  corrente       Float  @default(0)
+  producao       Int    @default(0)
+  ciclos         Int    @default(0)
+  // Percentual normalizado de carga elétrica (0 a 100%).
+  consumoEnergia Float  @default(50)
+
+  // Limites configuráveis por máquina.
+  tempAtencao       Float @default(55)
+  tempCritica       Float @default(70)
+  energiaAtencao    Float @default(80)
+  energiaCritica    Float @default(90)
+  vibracaoAtencao   Float @default(4)
+  vibracaoCritica   Float @default(7)
+  ciclosManutencao       Int   @default(1000)
+  ciclosUltimaManutencao Int   @default(0)
+
+  // Estado de segurança.
+  paradaSeguranca Boolean @default(false)
+  motivoParada    String?
+
+  manutencao        String @default("Normal")
+  ultimaManutencao  String @default("Sem registro")
+  proximaManutencao String @default("A definir")
+
+  modoSimulacao Boolean @default(true)
+  ativo         Boolean @default(true)
+  excluidaEm    DateTime?
+  excluidaPorId Int?
+
+  criadaEm     DateTime @default(now())
+  atualizadaEm DateTime @updatedAt
+
+  empresa     Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  logs        Log[]
+  alertas     Alerta[]
+  manutencoes Manutencao[]
+  telemetria  TelemetryReading[]
+  comandos    ComandoMaquina[]
+
+  @@unique([empresaId, codigo])
+  @@index([empresaId])
+  @@index([status])
+  @@index([ativo])
+  @@index([ultimaTelemetriaEm])
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  maquinaId Int
+  mensagem  String
+  criadoEm  DateTime @default(now())
+
+  maquina Maquina @relation(fields: [maquinaId], references: [id], onDelete: Cascade)
+
+  @@index([maquinaId])
+  @@index([criadoEm])
+}
+
+model Alerta {
+  id        Int      @id @default(autoincrement())
+  maquinaId Int
+  tipo      String
+  mensagem  String
+  criadoEm  DateTime @default(now())
+
+  maquina Maquina @relation(fields: [maquinaId], references: [id], onDelete: Cascade)
+
+  @@index([maquinaId])
+  @@index([criadoEm])
+}
+
+model Manutencao {
+  id            Int      @id @default(autoincrement())
+  maquinaId     Int
+  tipo          String
+  tecnico       String
+  descricao       String
+  ciclosNoRegistro Int?
+  ativa           Boolean  @default(true)
+  excluidaEm    DateTime?
+  excluidaPorId Int?
+  criadaEm      DateTime @default(now())
+
+  maquina Maquina @relation(fields: [maquinaId], references: [id], onDelete: Cascade)
+
+  @@index([maquinaId])
+  @@index([criadaEm])
+  @@index([ativa])
+}
+
+model FaceEmbedding {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  nome      String
+  embedding Json
+  modelo    String
+  criadoEm  DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([usuarioId, nome])
+  @@index([criadoEm])
+}
+
+model TelemetryReading {
+  id             Int      @id @default(autoincrement())
+  maquinaId      Int
+  temperatura    Float
+  vibracao       Float    @default(0)
+  corrente       Float    @default(0)
+  producao       Int
+  ciclos         Int
+  consumoEnergia Float
+  qualidadeSinal Int?
+  latenciaMs     Int?
+  status         String
+  origem         String   @default("SIMULADOR")
+  // Dados específicos do equipamento (pose/juntas/alarmes do Dobot etc.).
+  dadosExtras     Json?
+  criadoEm       DateTime @default(now())
+
+  maquina Maquina @relation(fields: [maquinaId], references: [id], onDelete: Cascade)
+
+  @@index([maquinaId, criadoEm])
+  @@index([criadoEm])
+}
+
+model ComandoMaquina {
+  id        Int      @id @default(autoincrement())
+  maquinaId Int
+  comando   String
+  payload   Json?
+  status            String   @default("PENDENTE")
+  tentativasEntrega Int      @default(0)
+  criadoEm          DateTime @default(now())
+  entregueEm DateTime?
+  concluidoEm DateTime?
+
+  maquina Maquina @relation(fields: [maquinaId], references: [id], onDelete: Cascade)
+
+  @@index([maquinaId, status, criadoEm])
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  empresaId  Int
+  usuarioId  Int?
+  acao       String
+  entidade   String
+  entidadeId Int?
+  detalhes   Json?
+  criadoEm   DateTime @default(now())
+
+  empresa Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([empresaId, criadoEm])
+  @@index([usuarioId])
+  @@index([entidade, entidadeId])
+}

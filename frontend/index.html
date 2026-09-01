@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    SteelControl | Dashboard Industrial
+  </title>
+
+  <link rel="stylesheet" href="assets/css/base.css?v=20260824_TOP_FINAL">
+
+  <link
+    rel="stylesheet"
+    href="assets/css/dashboard.css?v=20260901_MACHINE_SCOPED"
+  >
+
+  <link
+    rel="stylesheet"
+    href="assets/css/industrial-runtime.css?v=20260828_RUNTIME_V3"
+  >
+
+  <link rel="stylesheet" href="assets/vendor/steel-icons/steel-icons.css?v=1">
+
+  <script src="assets/vendor/steel-charts/steel-charts.js?v=1"></script>
+  <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
+  <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DOBOT_PRO">
+  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260901_CONTROLLER_ADAPTIVE">
+
+</head>
+
+
+<body>
+
+
+  <!-- ==================================================
+       SIDEBAR
+  =================================================== -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+
+      <img
+        id="empresaLogoSidebar"
+        src="assets/img/dash.png"
+        alt="Logo da empresa"
+        onerror="this.src='assets/img/dash.png'"
+      >
+
+    </div>
+
+
+    <nav>
+
+      <button
+        id="homeMenuButton"
+        class="menu-btn active"
+        onclick="mostrarTela('inicio', this)"
+        data-i18n="inicio"
+      >
+        <i class="fa-solid fa-gauge-high"></i><span>Início</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        onclick="mostrarTela('producao', this)"
+        data-i18n="producao"
+      >
+        <i class="fa-solid fa-chart-line"></i><span>Produção</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        onclick="mostrarTela('manutencao', this)"
+        data-i18n="manutencao"
+      >
+        <i class="fa-solid fa-screwdriver-wrench"></i><span>Manutenção</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        onclick="mostrarTela('logs', this)"
+        data-i18n="logs"
+      >
+        <i class="fa-solid fa-terminal"></i><span>Logs</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        onclick="mostrarTela('alertas', this)"
+        data-i18n="alertas"
+      >
+        <i class="fa-solid fa-triangle-exclamation"></i><span>Alertas</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        id="auditMenuButton"
+        onclick="mostrarTela('auditoria', this)"
+      >
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Auditoria</span>
+      </button>
+
+
+      <button
+        class="menu-btn"
+        onclick="mostrarTela('configuracoes', this)"
+        data-i18n="configuracoes"
+      >
+        <i class="fa-solid fa-gear"></i><span>Configurações</span>
+      </button>
+
+    </nav>
+
+  </aside>
+
+
+
+  <!-- ==================================================
+       CONTEÚDO PRINCIPAL
+  =================================================== -->
+
+  <main class="main">
+
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <header class="header">
+
+      <div>
+
+        <span class="header-machine-label">
+          MÁQUINA SELECIONADA
+        </span>
+
+        <h1>
+          <span id="dashboardNomeMaquina">
+            Carregando máquina...
+          </span>
+        </h1>
+
+        <p id="dashboardSetorMaquina">
+          Monitoramento em tempo real
+        </p>
+
+      </div>
+
+
+      <div class="header-actions">
+
+        <div
+          id="simulationModeBadge"
+          class="simulation-mode-badge"
+          hidden
+        >
+          <i class="fa-solid fa-flask"></i>
+          <span>Modo simulação</span>
+        </div>
+
+
+
+        <!-- USUÁRIO -->
+
+        <div class="user-box">
+
+          <strong id="nomeUsuario">
+            Usuário
+          </strong>
+
+          <span id="cargoUsuario">
+            Cargo
+          </span>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div
+          class="status-box"
+          id="statusMaquina"
+        >
+
+          <span data-i18n="carregando">
+            Carregando...
+          </span>
+
+        </div>
+
+
+        <!-- MINHA EMPRESA -->
+
+        <button
+          type="button"
+          class="account-btn"
+          onclick="abrirMinhaEmpresa()"
+          title="Gerenciar empresa, funcionários e reconhecimento facial"
+        >
+
+          <i class="fa-solid fa-building"></i>
+
+          <span>
+            Minha Empresa
+          </span>
+
+        </button>
+
+
+        <!-- MÁQUINAS -->
+
+        <button
+          type="button"
+          class="back-btn"
+          onclick="voltarMaquinas()"
+        >
+
+          <i class="fa-solid fa-industry"></i>
+
+          <span data-i18n="maquinas">
+            Máquinas
+          </span>
+
+        </button>
+
+
+        <!-- SAIR -->
+
+        <button
+          type="button"
+          class="logout-btn"
+          onclick="sairSistema()"
+        >
+
+          <i class="fa-solid fa-right-from-bracket"></i>
+
+          <span data-i18n="sair">
+            Sair
+          </span>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         INÍCIO - DASHBOARD INDUSTRIAL
+    =================================================== -->
+
+    <section
+      id="inicio"
+      class="tela ativa"
+    >
+
+
+      <!-- ==================================================
+           CABEÇALHO DA OPERAÇÃO
+      =================================================== -->
+
+      <div class="industrial-overview">
+
+        <div class="industrial-machine-info">
+
+          <div class="industrial-machine-icon">
+            <i class="fa-solid fa-industry"></i>
+          </div>
+
+          <div>
+
+            <span class="industrial-label">
+              Monitoramento ativo
+            </span>
+
+            <h2 id="overviewMachineName">
+              Máquina selecionada
+            </h2>
+
+            <p id="overviewMachineMeta">
+              Acompanhamento da máquina em tempo real
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="industrial-live">
+
+          <span class="live-dot"></span>
+
+          <div>
+
+            <strong>
+              Sistema online
+            </strong>
+
+            <small>
+              Atualização automática
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ==================================================
+           VISÃO GERAL DA OPERAÇÃO
+      =================================================== -->
+
+      <section class="operation-overview-section">
+
+
+        <div class="operation-overview-header">
+
+          <div>
+
+            <span class="operation-overview-eyebrow">
+              VISÃO GERAL
+            </span>
+
+            <h3>
+              Visão geral da operação
+            </h3>
+
+            <p>
+              Indicadores gerais de todas as máquinas cadastradas na empresa.
+            </p>
+
+          </div>
+
+
+          <div
+            class="operation-update-badge"
+            id="operationUpdateBadge"
+          >
+
+            <span></span>
+
+            Dados atualizados
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             KPIS GERAIS DA EMPRESA
+        =================================================== -->
+
+        <div class="factory-kpis">
+
+
+          <!-- EQUIPAMENTOS -->
+
+          <article class="factory-kpi-card">
+
+            <div class="factory-kpi-icon blue">
+
+              <i class="fa-solid fa-industry"></i>
+
+            </div>
+
+
+            <div class="factory-kpi-info">
+
+              <span>
+                Equipamentos
+              </span>
+
+              <strong id="totalMaquinasEmpresa">
+                --
+              </strong>
+
+              <small>
+                Cadastrados na empresa
+              </small>
+
+            </div>
+
+          </article>
+
+
+
+          <!-- EM OPERAÇÃO -->
+
+          <article class="factory-kpi-card">
+
+            <div class="factory-kpi-icon green">
+
+              <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+
+            <div class="factory-kpi-info">
+
+              <span>
+                Em operação
+              </span>
+
+              <strong id="totalMaquinasOperacao">
+                --
+              </strong>
+
+              <small>
+                Funcionando normalmente
+              </small>
+
+            </div>
+
+          </article>
+
+
+
+          <!-- ALERTAS -->
+
+          <article class="factory-kpi-card">
+
+            <div class="factory-kpi-icon red">
+
+              <i class="fa-solid fa-triangle-exclamation"></i>
+
+            </div>
+
+
+            <div class="factory-kpi-info">
+
+              <span>
+                Em alerta
+              </span>
+
+              <strong id="totalMaquinasAlerta">
+                --
+              </strong>
+
+              <small>
+                Precisam de atenção
+              </small>
+
+            </div>
+
+          </article>
+
+
+
+          <!-- MANUTENÇÃO -->
+
+          <article class="factory-kpi-card">
+
+            <div class="factory-kpi-icon yellow">
+
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+
+            </div>
+
+
+            <div class="factory-kpi-info">
+
+              <span>
+                Em manutenção
+              </span>
+
+              <strong id="totalMaquinasManutencao">
+                --
+              </strong>
+
+              <small>
+                Equipamentos indisponíveis
+              </small>
+
+            </div>
+
+          </article>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             SAÚDE + RESUMO OPERACIONAL
+        =================================================== -->
+
+        <div class="factory-health-grid">
+
+
+          <!-- SAÚDE DA OPERAÇÃO -->
+
+          <article class="factory-health-card">
+
+
+            <div class="factory-health-top">
+
+              <div>
+
+                <span class="operation-overview-eyebrow">
+                  DESEMPENHO
+                </span>
+
+                <h3>
+                  Saúde da operação
+                </h3>
+
+                <p id="saudeOperacaoTexto">
+                  Calculando condição geral...
+                </p>
+
+              </div>
+
+
+              <div
+                class="health-percentage"
+                id="saudeOperacaoValor"
+              >
+                --%
+              </div>
+
+            </div>
+
+
+
+            <div class="health-progress">
+
+              <div
+                class="health-progress-bar"
+                id="saudeOperacaoBarra"
+              ></div>
+
+            </div>
+
+
+
+            <div class="health-legend">
+
+              <span>
+
+                <i class="health-dot green"></i>
+
+                Operação normal
+
+              </span>
+
+
+              <span>
+
+                <i class="health-dot yellow"></i>
+
+                Atenção
+
+              </span>
+
+
+              <span>
+
+                <i class="health-dot red"></i>
+
+                Crítico
+
+              </span>
+
+            </div>
+
+          </article>
+
+
+
+          <!-- RESUMO OPERACIONAL -->
+
+          <article class="factory-performance-card">
+
+
+            <div class="factory-performance-title">
+
+              <div>
+
+                <span class="operation-overview-eyebrow">
+                  PRODUÇÃO
+                </span>
+
+                <h3>
+                  Resumo operacional
+                </h3>
+
+              </div>
+
+
+              <i class="fa-solid fa-chart-line"></i>
+
+            </div>
+
+
+
+            <div class="factory-performance-grid">
+
+
+              <div>
+
+                <span>
+                  Produção total
+                </span>
+
+                <strong id="producaoTotalEmpresa">
+                  --
+                </strong>
+
+                <small>
+                  peças
+                </small>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Carga média
+                </span>
+
+                <strong id="energiaMediaEmpresa">
+                  --%
+                </strong>
+
+                <small>
+                  carga elétrica
+                </small>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Ciclos totais
+                </span>
+
+                <strong id="ciclosTotalEmpresa">
+                  --
+                </strong>
+
+                <small>
+                  ciclos
+                </small>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Temperatura média
+                </span>
+
+                <strong id="temperaturaMediaEmpresa">
+                  -- °C
+                </strong>
+
+                <small>
+                  equipamentos
+                </small>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ==================================================
+           KPIs DA MÁQUINA SELECIONADA
+      =================================================== -->
+
+      <div class="industrial-kpis">
+
+
+        <!-- TEMPERATURA -->
+
+        <article class="industrial-kpi-card">
+
+          <div class="kpi-top">
+
+            <div class="kpi-icon">
+              <i class="fa-solid fa-temperature-half"></i>
+            </div>
+
+            <span class="kpi-status">
+              Sensor
+            </span>
+
+          </div>
+
+
+          <div class="kpi-content">
+
+            <span>
+              Temperatura
+            </span>
+
+            <h2 id="temperatura">
+              -- °C
+            </h2>
+
+            <p>
+              Temperatura atual da máquina
+            </p>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- PRODUÇÃO -->
+
+        <article class="industrial-kpi-card">
+
+          <div class="kpi-top">
+
+            <div class="kpi-icon">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+
+            <span class="kpi-status">
+              Produção
+            </span>
+
+          </div>
+
+
+          <div class="kpi-content">
+
+            <span>
+              Produção total
+            </span>
+
+            <h2 id="producao">
+              --
+            </h2>
+
+            <p>
+              Peças produzidas
+            </p>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CICLOS -->
+
+        <article class="industrial-kpi-card">
+
+          <div class="kpi-top">
+
+            <div class="kpi-icon">
+              <i class="fa-solid fa-rotate"></i>
+            </div>
+
+            <span class="kpi-status">
+              Operação
+            </span>
+
+          </div>
+
+
+          <div class="kpi-content">
+
+            <span>
+              Ciclos
+            </span>
+
+            <h2 id="ciclos">
+              --
+            </h2>
+
+            <p>
+              Ciclos executados
+            </p>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- ENERGIA -->
+
+        <article class="industrial-kpi-card">
+
+          <div class="kpi-top">
+
+            <div class="kpi-icon">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+
+            <span class="kpi-status">
+              Carga
+            </span>
+
+          </div>
+
+
+          <div class="kpi-content">
+
+            <span>
+              Carga elétrica
+            </span>
+
+            <h2 id="energia">
+              --%
+            </h2>
+
+            <p>
+              Percentual normalizado (0–100%)
+            </p>
+
+          </div>
+
+        </article>
+
+        <!-- VIBRAÇÃO -->
+
+        <article class="industrial-kpi-card runtime-kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="fa-solid fa-wave-square"></i></div>
+            <span class="kpi-status">Condição</span>
+          </div>
+          <div class="kpi-content">
+            <span>Vibração</span>
+            <h2 id="vibracao">-- mm/s</h2>
+            <p>Vibração atual do equipamento</p>
+          </div>
+        </article>
+
+        <!-- CORRENTE -->
+
+        <article class="industrial-kpi-card runtime-kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="fa-solid fa-plug-circle-bolt"></i></div>
+            <span class="kpi-status">Elétrica</span>
+          </div>
+          <div class="kpi-content">
+            <span>Corrente</span>
+            <h2 id="corrente">-- A</h2>
+            <p>Corrente informada pelo controlador</p>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- ==================================================
+           DIAGNÓSTICO INDUSTRIAL EM TEMPO REAL
+      =================================================== -->
+
+      <section class="runtime-diagnostics" id="runtimeDiagnostics">
+        <div class="runtime-diagnostics-head">
+          <div>
+            <span>Integração industrial</span>
+            <h3>Diagnóstico da máquina</h3>
+            <p>Comunicação, último sinal, segurança e configuração do dispositivo.</p>
+          </div>
+          <div id="runtimeConnectionBadge" class="runtime-connection-badge offline">
+            <span></span>
+            Verificando conexão
+          </div>
+        </div>
+
+        <div class="runtime-diagnostics-grid">
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-microchip"></i>
+            <span>Controlador / Gateway</span>
+            <strong id="runtimeController">--</strong>
+          </div>
+
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-diagram-project"></i>
+            <span>Protocolo</span>
+            <strong id="runtimeProtocol">--</strong>
+          </div>
+
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-signal"></i>
+            <span>Último sinal</span>
+            <strong id="runtimeLastSignal">--</strong>
+          </div>
+
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-wifi"></i>
+            <span>Qualidade</span>
+            <strong id="runtimeSignalQuality">--</strong>
+          </div>
+
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-stopwatch"></i>
+            <span>Latência</span>
+            <strong id="runtimeLatency">--</strong>
+          </div>
+
+          <div class="runtime-diag-item">
+            <i class="fa-solid fa-key"></i>
+            <span>Chave do dispositivo</span>
+            <strong id="runtimeDeviceKeyHint">--</strong>
+          </div>
+        </div>
+
+        <div class="runtime-safety" id="runtimeSafetyBox">
+          <div>
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <span>Segurança operacional</span>
+              <strong id="runtimeSafetyStatus">Operação liberada</strong>
+              <p id="runtimeSafetyReason">Nenhuma parada de segurança ativa.</p>
+            </div>
+          </div>
+          <button type="button" id="runtimeReleaseButton" hidden>
+            <i class="fa-solid fa-play"></i>
+            Liberar equipamento
+          </button>
+        </div>
+
+        <div class="runtime-demo" id="runtimeDemoPanel" hidden>
+          <div>
+            <strong><i class="fa-solid fa-flask-vial"></i> Modo demonstração</strong>
+            <span>Use estes cenários para apresentar o TCC sem equipamento físico.</span>
+          </div>
+          <div class="runtime-demo-actions">
+            <button type="button" data-demo="normal">Normal</button>
+            <button type="button" data-demo="aquecimento">Aquecimento</button>
+            <button type="button" data-demo="vibracao">Vibração crítica</button>
+            <button type="button" data-demo="critico">Superaquecimento crítico</button>
+            <button type="button" data-demo="normalizar">Normalizar</button>
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- ==================================================
+           PRODUÇÃO + CONDIÇÃO OPERACIONAL
+      =================================================== -->
+
+      <div class="industrial-main-grid">
+
+
+        <!-- PRODUÇÃO EM TEMPO REAL -->
+
+        <article class="industrial-panel production-panel">
+
+          <div class="industrial-panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                Produção
+              </span>
+
+              <h3>
+                Produção em tempo real
+              </h3>
+
+              <p>
+                Evolução da produtividade da máquina
+              </p>
+
+            </div>
+
+
+            <div class="panel-live-badge">
+
+              <span></span>
+
+              AO VIVO
+
+            </div>
+
+          </div>
+
+
+          <div class="industrial-chart">
+
+            <canvas id="graficoProducao"></canvas>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CONDIÇÃO -->
+
+        <aside class="industrial-panel operational-panel">
+
+          <div class="industrial-panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                Diagnóstico
+              </span>
+
+              <h3>
+                Condição operacional
+              </h3>
+
+            </div>
+
+
+            <div class="operation-icon">
+
+              <i class="fa-solid fa-microchip"></i>
+
+            </div>
+
+          </div>
+
+
+          <div class="operation-status">
+
+            <div class="operation-status-icon">
+
+              <i class="fa-solid fa-gears"></i>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Situação atual
+              </span>
+
+              <strong>
+                Monitoramento ativo
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="operation-info">
+
+            <div>
+
+              <span>
+                Status da máquina
+              </span>
+
+              <p id="descricaoStatus">
+                Carregando informações...
+              </p>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Manutenção
+              </span>
+
+              <p id="manutencaoResumo">
+                Carregando...
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="operation-details-btn"
+            onclick="mostrarTela('manutencao', document.querySelectorAll('.menu-btn')[3])"
+          >
+
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+            Ver manutenção
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+          </button>
+
+        </aside>
+
+      </div>
+
+
+
+      <!-- ==================================================
+           INDICADORES SECUNDÁRIOS
+      =================================================== -->
+
+      <div class="industrial-section-title">
+
+        <div>
+
+          <span>
+            Análise operacional
+          </span>
+
+          <h3>
+            Indicadores da máquina
+          </h3>
+
+        </div>
+
+        <i class="fa-solid fa-chart-line"></i>
+
+      </div>
+
+
+      <div class="industrial-secondary-grid">
+
+
+        <!-- TEMPERATURA -->
+
+        <article class="industrial-panel">
+
+          <div class="industrial-panel-header compact">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                Sensor térmico
+              </span>
+
+              <h3>
+                Temperatura da máquina
+              </h3>
+
+            </div>
+
+
+            <div class="small-panel-icon">
+
+              <i class="fa-solid fa-temperature-three-quarters"></i>
+
+            </div>
+
+          </div>
+
+
+          <div class="industrial-chart secondary-chart">
+
+            <canvas id="graficoTemperatura"></canvas>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- ENERGIA -->
+
+        <article class="industrial-panel">
+
+          <div class="industrial-panel-header compact">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                Eficiência
+              </span>
+
+              <h3>
+                Carga elétrica (%)
+              </h3>
+
+            </div>
+
+
+            <div class="small-panel-icon">
+
+              <i class="fa-solid fa-bolt"></i>
+
+            </div>
+
+          </div>
+
+
+          <div class="industrial-chart secondary-chart">
+
+            <canvas id="graficoEnergia"></canvas>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+
+      <!-- ==================================================
+           ACESSOS RÁPIDOS
+      =================================================== -->
+
+      <div class="industrial-section-title">
+
+        <div>
+
+          <span>
+            Operação
+          </span>
+
+          <h3>
+            Acessos rápidos
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      <div class="industrial-quick-actions">
+
+
+        <!-- MÁQUINA -->
+
+        <button
+          type="button"
+          onclick="mostrarTela('maquinas', document.querySelectorAll('.menu-btn')[1])"
+        >
+
+          <div class="quick-icon">
+            <i class="fa-solid fa-industry"></i>
+          </div>
+
+
+          <div>
+
+            <strong>
+              Máquina
+            </strong>
+
+            <span>
+              Visualizar informações
+            </span>
+
+          </div>
+
+          <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+
+
+        <!-- MANUTENÇÃO -->
+
+        <button
+          type="button"
+          onclick="mostrarTela('manutencao', document.querySelectorAll('.menu-btn')[3])"
+        >
+
+          <div class="quick-icon">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+
+
+          <div>
+
+            <strong>
+              Manutenção
+            </strong>
+
+            <span>
+              Histórico e registros
+            </span>
+
+          </div>
+
+          <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+
+
+        <!-- ALERTAS -->
+
+        <button
+          type="button"
+          onclick="mostrarTela('alertas', document.querySelectorAll('.menu-btn')[5])"
+        >
+
+          <div class="quick-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+
+          <div>
+
+            <strong>
+              Alertas
+            </strong>
+
+            <span>
+              Ocorrências da máquina
+            </span>
+
+          </div>
+
+          <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         MÁQUINAS
+    =================================================== -->
+
+    <section
+      id="maquinas"
+      class="tela"
+    >
+
+      <div class="titulo-secao">
+
+        <h2 data-i18n="maquinaSelecionada">
+          Máquina selecionada
+        </h2>
+
+        <p data-i18n="maquinaSelecionadaDesc">
+          Visualização da máquina monitorada pelo sistema
+        </p>
+
+      </div>
+
+
+      <div class="maquina-card">
+
+        <div>
+
+          <h3 id="nomeMaquina">
+            Braço Robótico Industrial
+          </h3>
+
+          <p id="setorMaquina">
+            Linha de Produção A
+          </p>
+
+        </div>
+
+
+        <div class="maquina-info">
+
+          <span id="statusMaquinaLista">
+            Ligada
+          </span>
+
+
+          <button
+            type="button"
+            onclick="mostrarTelaPorNome()"
+            data-i18n="verDetalhes"
+          >
+            Ver detalhes
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         PRODUÇÃO
+    =================================================== -->
+
+    <section
+      id="producaoTela"
+      class="tela"
+    >
+
+      <div class="machine-scope-banner">
+        <div class="machine-scope-icon"><i class="fa-solid fa-industry"></i></div>
+        <div><span data-machine-scope-controller>CONTROLADOR</span><strong data-machine-scope-name>Máquina selecionada</strong><p>Produção e operação vinculadas exclusivamente a este equipamento.</p></div>
+        <span class="machine-scope-state" data-machine-scope-state>Aguardando dados</span>
+      </div>
+
+      <div class="titulo-secao">
+
+        <h2 id="machineProductionTitle">
+          Produção da máquina
+        </h2>
+
+        <p id="machineProductionDescription">
+          Acompanhamento da produção realizada em tempo real
+        </p>
+
+      </div>
+
+
+      <div class="content">
+
+
+        <div class="box maior">
+
+          <h3 data-i18n="graficoProducao">
+            Gráfico de produção
+          </h3>
+
+          <canvas id="graficoProducao2"></canvas>
+
+        </div>
+
+
+        <div class="box">
+
+          <h3 data-i18n="resumoProdutivo">
+            Resumo produtivo
+          </h3>
+
+
+          <p>
+
+            <span id="productionPrimaryLabel">
+              Total produzido:
+            </span>
+
+            <strong id="totalProduzido">
+              --
+            </strong>
+
+          </p>
+
+
+          <p>
+
+            <span id="productionCycleLabel">
+              Ciclos executados:
+            </span>
+
+            <strong id="totalCiclos">
+              --
+            </strong>
+
+          </p>
+
+
+          <p>
+
+            <span data-i18n="status">
+              Status:
+            </span>
+
+            <strong id="statusProducao">
+              --
+            </strong>
+
+          </p>
+
+          <div class="production-controller-insight">
+            <span id="productionControllerMetricLabel">Indicador do controlador</span>
+            <strong id="productionControllerMetric">Não configurado</strong>
+            <p id="productionSystemDescription">O painel será adaptado aos dados enviados pelo equipamento.</p>
+            <div id="productionCompatibilityList" class="production-compatibility-list"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         MANUTENÇÃO
+    =================================================== -->
+
+    <section
+      id="manutencaoTela"
+      class="tela"
+    >
+
+      <div class="machine-scope-banner">
+        <div class="machine-scope-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <div><span data-machine-scope-controller>CONTROLADOR</span><strong data-machine-scope-name>Máquina selecionada</strong><p>Plano e histórico técnico exclusivos deste equipamento.</p></div>
+        <span class="machine-scope-state" data-machine-scope-state>Aguardando dados</span>
+      </div>
+
+      <div class="titulo-secao">
+
+        <h2 id="machineMaintenanceTitle">
+          Manutenção
+        </h2>
+
+        <p id="machineMaintenanceDescription">
+          Controle de manutenção preventiva e corretiva da máquina
+        </p>
+
+      </div>
+
+
+      <div class="cards maintenance-kpis">
+
+
+        <div class="card maintenance-kpi-card">
+
+          <span data-i18n="ultimaManutencao">
+            Última manutenção
+          </span>
+
+          <h2 id="ultimaManutencao">
+            --
+          </h2>
+
+          <p data-i18n="ultimaManutencaoDesc">
+            Registro mais recente
+          </p>
+
+        </div>
+
+
+        <div class="card maintenance-kpi-card">
+
+          <span data-i18n="proximaManutencao">
+            Próxima manutenção
+          </span>
+
+          <h2 id="proximaManutencao">
+            --
+          </h2>
+
+          <p data-i18n="proximaManutencaoDesc">
+            Previsão preventiva
+          </p>
+
+        </div>
+
+
+        <div class="card maintenance-kpi-card">
+
+          <span data-i18n="situacao">
+            Situação
+          </span>
+
+          <h2 id="statusManutencao">
+            --
+          </h2>
+
+          <p data-i18n="situacaoDesc">
+            Status atual
+          </p>
+
+        </div>
+
+
+        <div class="card maintenance-kpi-card">
+
+          <span data-i18n="ciclos">
+            Ciclos
+          </span>
+
+          <h2 id="ciclosManutencao">
+            --
+          </h2>
+
+          <p data-i18n="ciclosManutencaoDesc">
+            Base para revisão
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="maintenance-toolbar">
+        <div class="maintenance-toolbar-icon">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <div class="maintenance-toolbar-copy">
+          <strong data-i18n="maintenanceCentralTitle">Central de manutenção</strong>
+          <span data-i18n="maintenanceCentralDesc">Registre intervenções e mantenha um histórico técnico rastreável da máquina selecionada.</span>
+        </div>
+        <span id="maintenanceAdminBadge" class="maintenance-admin-badge" hidden>
+          <i class="fa-solid fa-shield-halved"></i>
+          <span data-i18n="maintenanceAdminOnly">Administrador: exclusão de registros habilitada</span>
+        </span>
+      </div>
+
+      <div class="content manutencao-area">
+
+
+        <!-- CADASTRO -->
+
+        <div class="box maintenance-panel maintenance-form-panel">
+
+          <div class="maintenance-panel-heading">
+            <span class="maintenance-panel-icon"><i class="fa-solid fa-clipboard-check"></i></span>
+            <div>
+              <h3 data-i18n="cadastrarManutencao">
+            Cadastrar manutenção
+              </h3>
+              <p data-i18n="maintenanceFormHelp">Registre uma manutenção realizada nesta máquina.</p>
+            </div>
+          </div>
+
+
+          <form
+            id="formManutencao"
+            class="form-manutencao"
+          >
+
+
+            <div class="form-group">
+
+              <label
+                for="tipoManutencao"
+                data-i18n="tipoManutencao"
+              >
+                Tipo de manutenção
+              </label>
+
+
+              <select
+                id="tipoManutencao"
+                required
+              >
+
+                <option value="">
+                  Selecione o tipo
+                </option>
+
+                <option value="Preventiva">
+                  Preventiva
+                </option>
+
+                <option value="Corretiva">
+                  Corretiva
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label
+                for="tecnicoManutencao"
+                data-i18n="nomeTecnico"
+              >
+                Nome do técnico
+              </label>
+
+
+              <input
+                type="text"
+                id="tecnicoManutencao"
+                placeholder="Digite o nome do técnico" data-i18n-placeholder="nomeTecnicoPlaceholder"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label
+                for="descricaoManutencao"
+                data-i18n="descricao"
+              >
+                Descrição
+              </label>
+
+
+              <textarea
+                id="descricaoManutencao"
+                placeholder="Descreva o serviço realizado" data-i18n-placeholder="descricaoManutencaoPlaceholder"
+                required
+              ></textarea>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="save-btn"
+              data-i18n="salvarManutencao"
+            >
+              Salvar manutenção
+            </button>
+
+
+            <p
+              id="mensagemManutencao"
+              class="mensagem-manutencao"
+            ></p>
+
+          </form>
+
+        </div>
+
+
+        <!-- HISTÓRICO -->
+
+        <div class="box maintenance-panel maintenance-history-panel">
+
+          <div class="maintenance-panel-heading">
+            <span class="maintenance-panel-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+            <div>
+              <h3 data-i18n="historicoManutencoes">
+            Histórico de manutenções
+              </h3>
+              <p data-i18n="maintenanceHistoryHelp">Linha do tempo das intervenções registradas para a máquina.</p>
+            </div>
+          </div>
+
+
+          <ul
+            id="listaManutencoes"
+            class="lista manutencao-lista"
+          >
+
+            <li>
+              Carregando histórico...
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         LOGS
+    =================================================== -->
+
+    <section
+      id="logsTela"
+      class="tela"
+    >
+
+      <div class="machine-scope-banner">
+        <div class="machine-scope-icon"><i class="fa-solid fa-terminal"></i></div>
+        <div><span data-machine-scope-controller>CONTROLADOR</span><strong data-machine-scope-name>Máquina selecionada</strong><p>Eventos técnicos gerados somente por este equipamento.</p></div>
+        <span class="machine-scope-state" data-machine-scope-state>Aguardando dados</span>
+      </div>
+
+      <div class="titulo-secao">
+
+        <h2 id="machineLogsTitle">
+          Logs da máquina
+        </h2>
+
+        <p id="machineLogsDescription">
+          Histórico de eventos gerados automaticamente
+        </p>
+
+      </div>
+
+
+      <div class="logs-summary-grid">
+        <article><i class="fa-solid fa-list-check"></i><span>Eventos carregados</span><strong id="machineLogsCount">0</strong></article>
+        <article><i class="fa-solid fa-microchip"></i><span>Origem</span><strong id="machineLogsOrigin">Controlador</strong></article>
+        <article><i class="fa-solid fa-filter-circle-check"></i><span>Escopo</span><strong>Máquina selecionada</strong></article>
+      </div>
+
+      <div class="box machine-logs-panel">
+
+        <ul
+          id="listaLogs"
+          class="lista machine-log-list"
+        ></ul>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         ALERTAS
+    =================================================== -->
+
+    <section
+      id="alertasTela"
+      class="tela"
+    >
+
+      <div class="titulo-secao">
+
+        <h2 data-i18n="alertasTitulo">
+          Alertas
+        </h2>
+
+        <p data-i18n="alertasDesc">
+          Ocorrências que precisam de atenção
+        </p>
+
+      </div>
+
+
+      <div class="box">
+
+        <ul
+          id="listaAlertas"
+          class="lista"
+        ></ul>
+
+      </div>
+
+    </section>
+
+
+
+
+    <!-- ==================================================
+         AUDITORIA
+    =================================================== -->
+
+    <section
+      id="auditoriaTela"
+      class="tela"
+    >
+      <div class="titulo-secao audit-title-row">
+        <div>
+          <span class="audit-eyebrow">RASTREABILIDADE</span>
+          <h2>Auditoria do sistema</h2>
+          <p>
+            Ações administrativas registradas com usuário,
+            entidade e horário.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="audit-refresh-btn"
+          id="btnAtualizarAuditoria"
+        >
+          <i class="fa-solid fa-rotate"></i>
+          Atualizar
+        </button>
+      </div>
+
+      <div class="audit-kpis">
+        <article class="audit-kpi">
+          <span>Eventos exibidos</span>
+          <strong id="auditTotal">0</strong>
+          <small>Últimos registros</small>
+        </article>
+
+        <article class="audit-kpi">
+          <span>Usuários envolvidos</span>
+          <strong id="auditUsuarios">0</strong>
+          <small>Rastreabilidade por conta</small>
+        </article>
+
+        <article class="audit-kpi">
+          <span>Última atividade</span>
+          <strong id="auditUltimaAtividade">--</strong>
+          <small>Horário mais recente</small>
+        </article>
+      </div>
+
+      <div class="audit-panel">
+        <div class="audit-toolbar">
+          <div class="audit-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="search"
+              id="auditSearch" aria-label="Buscar eventos de auditoria"
+              placeholder="Buscar por usuário, ação ou entidade..."
+            >
+          </div>
+
+          <select id="auditActionFilter" aria-label="Filtrar auditoria por ação">
+            <option value="">Todas as ações</option>
+            <option value="CRIAR">Criar</option>
+            <option value="ATUALIZAR">Atualizar</option>
+            <option value="DESATIVAR">Desativar</option>
+            <option value="EXCLUIR">Excluir</option>
+            <option value="LOGIN">Login</option>
+          </select>
+        </div>
+
+        <div
+          id="auditState"
+          class="audit-state"
+        >
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Carregando auditoria...
+        </div>
+
+        <div
+          id="auditTimeline"
+          class="audit-timeline"
+        ></div>
+      </div>
+    </section>
+
+
+    <section id="controllerTela" class="tela controller-runtime" aria-label="Painel adaptativo do controlador">
+      <div class="controller-hero" id="controllerHero">
+        <div class="controller-hero-icon"><i id="controllerHeroIcon" class="fa-solid fa-microchip"></i></div>
+        <div class="controller-hero-copy">
+          <span id="controllerEyebrow">PAINEL ADAPTATIVO</span>
+          <h2 id="controllerTitle">Controlador industrial</h2>
+          <p id="controllerDescription">Recursos e telemetria compatíveis com o equipamento selecionado.</p>
+        </div>
+        <div id="controllerConnectionBadge" class="controller-state offline"><span></span><strong>Aguardando telemetria</strong></div>
+      </div>
+
+      <div class="controller-diagnostics">
+        <article><i class="fa-solid fa-network-wired"></i><span>Protocolo</span><strong id="controllerProtocol">--</strong></article>
+        <article><i class="fa-solid fa-stopwatch"></i><span>Latência</span><strong id="controllerLatency">--</strong></article>
+        <article><i class="fa-solid fa-signal"></i><span>Qualidade do sinal</span><strong id="controllerSignal">--</strong></article>
+        <article><i class="fa-solid fa-clock-rotate-left"></i><span>Última leitura</span><strong id="controllerLastReading">--</strong></article>
+      </div>
+
+      <div class="controller-grid">
+        <article class="controller-panel">
+          <div class="controller-panel-head"><div><span>TELEMETRIA COMPATÍVEL</span><h3>Indicadores do equipamento</h3></div><i class="fa-solid fa-chart-line"></i></div>
+          <div id="controllerMetrics" class="controller-metrics"></div>
+        </article>
+        <article class="controller-panel">
+          <div class="controller-panel-head"><div><span>COMUNICAÇÃO</span><h3>Integração configurada</h3></div><i class="fa-solid fa-diagram-project"></i></div>
+          <div id="controllerIntegration" class="controller-info-list"></div>
+        </article>
+      </div>
+
+      <div class="controller-grid">
+        <article class="controller-panel">
+          <div class="controller-panel-head"><div><span>RECURSOS DO CONTROLADOR</span><h3>Capacidades do painel</h3></div><i class="fa-solid fa-layer-group"></i></div>
+          <div id="controllerCapabilities" class="controller-capabilities"></div>
+        </article>
+        <article class="controller-panel">
+          <div class="controller-panel-head"><div><span>QUALIDADE DOS DADOS</span><h3>Informações disponíveis</h3></div><i class="fa-solid fa-shield-halved"></i></div>
+          <div id="controllerDataQuality" class="controller-data-quality"></div>
+          <p class="controller-honesty"><i class="fa-solid fa-circle-info"></i> O painel mostra “Não configurado” quando o controlador ainda não envia determinado dado.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="dobotTela" class="tela">
+      <div class="dobot-hero">
+        <div><span class="dobot-eyebrow">PAINEL EXCLUSIVO DA MÁQUINA</span><h2 id="dobotMachineName">Dobot Magician</h2><p>Gateway Python • USB/Serial • Telemetria e comandos pela fila segura do SteelControl</p></div>
+        <div id="dobotStateBadge" class="dobot-state waiting"><span></span><strong>Aguardando gateway</strong></div>
+      </div>
+      <div class="dobot-diagnostics" id="dobotDiagnostics">
+        <article><i class="fa-solid fa-server"></i><span>Gateway</span><strong id="dobotGatewayState">--</strong></article>
+        <article><i class="fa-solid fa-usb"></i><span>Porta</span><strong id="dobotPort">--</strong></article>
+        <article><i class="fa-solid fa-stopwatch"></i><span>Latência</span><strong id="dobotLatency">--</strong></article>
+        <article><i class="fa-solid fa-triangle-exclamation"></i><span>Alarmes</span><strong id="dobotAlarmsCount">--</strong></article>
+      </div>
+      <div class="dobot-main-grid">
+        <article class="dobot-panel"><div class="dobot-panel-head"><div><span>POSE CARTESIANA</span><h3>Posição do efetuador</h3></div><i class="fa-solid fa-location-crosshairs"></i></div><div class="dobot-coordinate-grid"><div><span>X</span><strong id="dobotX">--</strong><small>mm</small></div><div><span>Y</span><strong id="dobotY">--</strong><small>mm</small></div><div><span>Z</span><strong id="dobotZ">--</strong><small>mm</small></div><div><span>R</span><strong id="dobotR">--</strong><small>°</small></div></div></article>
+        <article class="dobot-panel"><div class="dobot-panel-head"><div><span>ARTICULAÇÕES</span><h3>Ângulos das juntas</h3></div><i class="fa-solid fa-arrows-spin"></i></div><div class="dobot-coordinate-grid joints"><div><span>J1</span><strong id="dobotJ1">--</strong><small>°</small></div><div><span>J2</span><strong id="dobotJ2">--</strong><small>°</small></div><div><span>J3</span><strong id="dobotJ3">--</strong><small>°</small></div><div><span>J4</span><strong id="dobotJ4">--</strong><small>°</small></div></div></article>
+      </div>
+      <div class="dobot-main-grid">
+        <article class="dobot-panel"><div class="dobot-panel-head"><div><span>INSTRUMENTAÇÃO</span><h3>Sensores da célula</h3></div><i class="fa-solid fa-wave-square"></i></div><div class="dobot-sensor-list"><div><span>Temperatura</span><strong id="dobotSensorTemp">Não instalado</strong></div><div><span>Vibração</span><strong id="dobotSensorVibration">Não instalado</strong></div><div><span>Corrente</span><strong id="dobotSensorCurrent">Não instalado</strong></div></div><p class="dobot-note"><i class="fa-solid fa-circle-info"></i> O SteelControl não inventa temperatura interna do Dobot. Esses dados entram quando sensores externos/ESP32 estiverem instalados.</p></article>
+        <article class="dobot-panel"><div class="dobot-panel-head"><div><span>EFETOR</span><h3>Ferramenta e estado</h3></div><i class="fa-solid fa-hand"></i></div><div class="dobot-effector-grid"><div><span>Ventosa</span><strong id="dobotSuction">--</strong></div><div><span>Garra</span><strong id="dobotGripper">--</strong></div><div><span>Fila</span><strong id="dobotQueue">--</strong></div><div><span>Modo</span><strong id="dobotMode">--</strong></div></div></article>
+      </div>
+      <article class="dobot-panel dobot-control-panel">
+        <div class="dobot-panel-head"><div><span>CONTROLE SUPERVISIONADO</span><h3>Comandos do robô</h3><p>Comandos passam pelo backend, PostgreSQL e fila autenticada do equipamento.</p></div><div id="dobotMotionLock" class="motion-lock"><i class="fa-solid fa-lock"></i> Movimento protegido</div></div>
+        <div class="dobot-control-actions"><button type="button" data-dobot-command="DOBOT_HOME"><i class="fa-solid fa-house"></i> HOME</button><button type="button" class="danger" data-dobot-command="DOBOT_STOP"><i class="fa-solid fa-stop"></i> PARAR</button><button type="button" data-dobot-command="DOBOT_CLEAR_ALARMS"><i class="fa-solid fa-broom"></i> Limpar alarmes</button><button type="button" data-dobot-command="DOBOT_SUCTION_ON">Ventosa ON</button><button type="button" data-dobot-command="DOBOT_SUCTION_OFF">Ventosa OFF</button><button type="button" data-dobot-command="DOBOT_GRIPPER_OPEN">Abrir garra</button><button type="button" data-dobot-command="DOBOT_GRIPPER_CLOSE">Fechar garra</button></div>
+        <form id="dobotPtpForm" class="dobot-ptp-form"><div><label>X (mm)</label><input name="x" type="number" step="0.1" required></div><div><label>Y (mm)</label><input name="y" type="number" step="0.1" required></div><div><label>Z (mm)</label><input name="z" type="number" step="0.1" required></div><div><label>R (°)</label><input name="r" type="number" step="0.1" required></div><div><label>Velocidade (%)</label><input name="velocidade" type="number" min="1" max="100" value="40"></div><button type="submit"><i class="fa-solid fa-location-arrow"></i> Enviar PTP</button></form>
+        <p class="dobot-safety-copy"><i class="fa-solid fa-shield-halved"></i> No equipamento real, o gateway inicia com <code>DOBOT_ALLOW_MOTION=false</code>. STOP permanece disponível; movimentos só são executados após liberação consciente no computador do robô.</p>
+      </article>
+    </section>
+
+    <!-- ==================================================
+         CONFIGURAÇÕES
+    =================================================== -->
+
+    <section
+      id="configuracoesTela"
+      class="tela"
+    >
+
+      <div class="titulo-secao">
+
+        <h2 data-i18n="configuracoes">
+          Configurações
+        </h2>
+
+        <p>
+          Personalize o SteelControl e gerencie sua empresa.
+        </p>
+
+      </div>
+
+
+      <div class="config-dashboard-grid">
+
+
+        <!-- APARÊNCIA -->
+
+        <article class="config-modern-card">
+
+          <div class="config-card-header">
+
+            <div class="config-card-icon">
+              <i class="fa-solid fa-palette"></i>
+            </div>
+
+
+            <div>
+
+              <span class="config-eyebrow">
+                Personalização
+              </span>
+
+              <h3>
+                Aparência
+              </h3>
+
+              <p>
+                Escolha o idioma e o tema visual do sistema.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="config-modern-item">
+
+            <div class="config-item-title">
+
+              <div>
+
+                <i class="fa-solid fa-language"></i>
+
+                <span>
+                  Idioma
+                </span>
+
+              </div>
+
+              <small>
+                Idioma utilizado na interface
+              </small>
+
+            </div>
+
+
+            <select id="idiomaConfig" aria-label="Idioma do sistema">
+
+              <option value="pt">
+                Português
+              </option>
+
+              <option value="en">
+                English
+              </option>
+
+              <option value="es">
+                Español
+              </option>
+
+              <option value="fr">
+                Français
+              </option>
+
+              <option value="de">
+                Deutsch
+              </option>
+
+              <option value="it">
+                Italiano
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="config-modern-item">
+
+            <div class="config-item-title">
+
+              <div>
+
+                <i class="fa-solid fa-circle-half-stroke"></i>
+
+                <span>
+                  Tema
+                </span>
+
+              </div>
+
+              <small>
+                Aparência geral do SteelControl
+              </small>
+
+            </div>
+
+
+            <select id="temaConfig" aria-label="Tema do sistema">
+
+              <option value="claro">
+                Claro
+              </option>
+
+              <option value="escuro">
+                Escuro
+              </option>
+
+            </select>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- MINHA EMPRESA -->
+
+        <article class="config-modern-card company-settings-card">
+
+          <div class="config-card-header">
+
+            <div class="config-card-icon company-config-icon">
+
+              <i class="fa-solid fa-building"></i>
+
+            </div>
+
+
+            <div>
+
+              <span class="config-eyebrow">
+                Organização
+              </span>
+
+              <h3>
+                Minha Empresa
+              </h3>
+
+              <p>
+                Informações da empresa vinculada à sua conta.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="config-company-profile">
+
+            <div class="config-company-logo">
+
+              <img
+                id="configEmpresaLogo"
+                src="assets/img/dash.png"
+                alt="Logo da empresa"
+                onerror="this.src='assets/img/dash.png'"
+              >
+
+            </div>
+
+
+            <div class="config-company-info">
+
+              <span>
+                Empresa
+              </span>
+
+              <h4 id="configEmpresaNome">
+                Carregando...
+              </h4>
+
+              <p id="configEmpresaCnpj">
+                CNPJ: -
+              </p>
+
+
+              <div class="company-active-badge">
+
+                <span></span>
+
+                Empresa ativa
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="config-company-stats">
+
+
+            <div class="company-stat">
+
+              <div class="company-stat-icon">
+
+                <i class="fa-solid fa-users"></i>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Funcionários
+                </span>
+
+                <strong id="configTotalFuncionarios">
+                  -
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="company-stat">
+
+              <div class="company-stat-icon face-stat-icon">
+
+                <i class="fa-solid fa-face-viewfinder"></i>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Com facial
+                </span>
+
+                <strong id="configTotalFacial">
+                  -
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="open-company-settings-btn"
+            onclick="abrirMinhaEmpresa()"
+          >
+
+            <div>
+
+              <i class="fa-solid fa-building-shield"></i>
+
+              <span>
+                Gerenciar Minha Empresa
+              </span>
+
+            </div>
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+          </button>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- ==================================================
+       SCRIPTS
+  =================================================== -->
+
+  <script src="assets/js/config.js?v=20260831_PROD_FINAL"></script>
+
+  <script src="assets/js/dashboard.js?v=20260901_MACHINE_SCOPED"></script>
+
+  <script src="assets/js/industrial-runtime.js?v=20260831_PROD_FINAL"></script>
+  <script src="assets/js/controller-runtime.js?v=20260901_CONTROLLER_ADAPTIVE"></script>
+  <script src="assets/js/dobot-runtime.js?v=20260901_DOBOT_DEDICADO"></script>
+
+</body>
+
+</html>

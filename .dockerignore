@@ -1,0 +1,16 @@
+.git
+.gitignore
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.production.example
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.venv
+**/venv
+backend/uploads
+*.zip
+*.log
+.DS_Store
+Thumbs.db

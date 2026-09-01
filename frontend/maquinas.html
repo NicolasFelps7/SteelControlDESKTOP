@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Equipamentos | SteelControl
+  </title>
+
+  <link rel="stylesheet" href="assets/css/base.css?v=20260824_TOP_FINAL">
+
+  <link
+    rel="stylesheet"
+    href="assets/css/maquinas.css?v=20260901_CONTROLLER_ADAPTIVE"
+  >
+
+  <link rel="stylesheet" href="assets/vendor/steel-icons/steel-icons.css?v=1">
+
+  <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
+  <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DOBOT_PRO">
+
+</head>
+
+
+<body>
+
+  <main class="page">
+
+
+    <!-- =====================================================
+         TOPO
+    ====================================================== -->
+
+    <header class="topbar">
+
+
+      <a
+        href="index.html"
+        class="brand"
+      >
+
+        <div class="brand-symbol">
+
+          <img
+            src="assets/img/steel-icon.png"
+            alt="SteelControl"
+          >
+
+        </div>
+
+
+        <div class="brand-text">
+
+          <strong>
+            SteelControl
+          </strong>
+
+          <span>
+            Gestão Industrial
+          </span>
+
+        </div>
+
+      </a>
+
+
+
+      <div class="topbar-actions">
+
+
+
+
+        <a
+          href="empresa.html"
+          class="company-btn"
+          title="Gerenciar empresa e funcionários"
+          onclick="localStorage.setItem('empresaOrigem','maquinas');"
+        >
+          <i class="fa-solid fa-building"></i>
+          Minha Empresa
+        </a>
+
+        <div class="user-area">
+
+          <div class="user-icon">
+
+            <i class="fa-solid fa-user"></i>
+
+          </div>
+
+
+          <div class="user-box">
+
+            <strong id="usuarioLogado">
+              Usuário
+            </strong>
+
+            <span id="cargoUsuario">
+              Cargo
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <button
+          onclick="sair()"
+          class="logout-btn"
+        >
+
+          <i class="fa-solid fa-right-from-bracket"></i>
+
+          <span data-i18n="sair">
+            Sair
+          </span>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="hero">
+
+
+      <div class="hero-content">
+
+
+        <h1>
+          Equipamentos da sua empresa
+        </h1>
+
+
+        <p>
+
+          Cadastre máquinas, robôs industriais e outros equipamentos
+          da sua operação. O SteelControl organiza os dados e acompanha
+          temperatura, produção, ciclos, energia, manutenção e alertas.
+
+        </p>
+
+
+        <div class="hero-features">
+
+          <span>
+
+            <i class="fa-solid fa-check"></i>
+
+            Monitoramento centralizado
+
+          </span>
+
+
+          <span>
+
+            <i class="fa-solid fa-check"></i>
+
+            Histórico operacional
+
+          </span>
+
+
+          <span>
+
+            <i class="fa-solid fa-check"></i>
+
+            Manutenção integrada
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="hero-icon">
+
+        <div class="hero-icon-circle">
+
+          <i class="fa-solid fa-robot"></i>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESUMO
+    ====================================================== -->
+
+    <section class="summary-grid">
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon blue">
+
+          <i class="fa-solid fa-industry"></i>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Equipamentos
+          </span>
+
+          <strong id="totalMaquinas">
+            0
+          </strong>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon green">
+
+          <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Em operação
+          </span>
+
+          <strong id="totalLigadas">
+            0
+          </strong>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon yellow">
+
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Em manutenção
+          </span>
+
+          <strong id="totalManutencao">
+            0
+          </strong>
+
+        </div>
+
+      </article>
+
+
+
+      <article class="summary-card">
+
+        <div class="summary-icon red">
+
+          <i class="fa-solid fa-triangle-exclamation"></i>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Com alerta
+          </span>
+
+          <strong id="totalAlertas">
+            0
+          </strong>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CADASTRO
+    ====================================================== -->
+
+    <section class="cadastro-maquina-box">
+
+
+      <div class="cadastro-header">
+
+
+        <div>
+
+          <span class="section-label">
+            GESTÃO DE EQUIPAMENTOS
+          </span>
+
+
+          <h2>
+            Cadastrar novo equipamento
+          </h2>
+
+
+          <p>
+
+            Cadastre a identificação e, se desejar, deixe preparada
+            a configuração de comunicação para integração com o equipamento real.
+
+          </p>
+
+        </div>
+
+
+        <button
+          class="toggle-form-btn"
+          onclick="abrirFormularioMaquina()"
+        >
+
+          <i class="fa-solid fa-plus"></i>
+
+          <span>
+            Novo equipamento
+          </span>
+
+        </button>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           FORM
+      ==================================================== -->
+
+      <form
+        id="formMaquina"
+        class="form-maquina"
+      >
+
+
+        <div class="form-info">
+
+          <div class="form-info-icon">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+          </div>
+
+
+          <div>
+
+            <strong>
+              Cadastre qualquer equipamento industrial
+            </strong>
+
+            <span>
+
+              Inclusive braços robóticos, esteiras,
+              prensas, tornos, máquinas de corte
+              e equipamentos personalizados.
+
+            </span>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ATALHO BRAÇO ROBÓTICO -->
+
+        <div class="robot-preset">
+
+          <div>
+
+            <div class="robot-preset-icon">
+
+              <i class="fa-solid fa-robot"></i>
+
+            </div>
+
+
+            <div>
+
+              <strong>
+                Vai cadastrar um braço robótico?
+              </strong>
+
+              <span>
+                Preencha automaticamente um exemplo e altere
+                apenas os dados do seu equipamento.
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            onclick="preencherBracoRobotico()"
+          >
+
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+            Usar modelo
+
+          </button>
+
+        </div>
+
+
+
+        <div class="form-section-title">
+
+          <span>
+            01
+          </span>
+
+          Identificação do equipamento
+
+        </div>
+
+
+
+        <div class="form-grid">
+
+
+          <div class="form-group">
+
+            <label for="nomeMaquinaInput">
+              Nome do equipamento
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-industry"></i>
+
+              <input
+                type="text"
+                id="nomeMaquinaInput"
+                placeholder="Ex: Braço robótico 01"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="setorMaquinaInput">
+              Setor
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-location-dot"></i>
+
+              <input
+                type="text"
+                id="setorMaquinaInput"
+                placeholder="Ex: Automação"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="tipoInput">
+              Tipo de equipamento
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-gears"></i>
+
+              <select
+                id="tipoInput"
+                required
+              >
+
+                <option value="">
+                  Selecione o tipo
+                </option>
+
+                <option value="Braço robótico">
+                  Braço robótico
+                </option>
+
+                <option value="Robô industrial">
+                  Robô industrial
+                </option>
+
+                <option value="Esteira industrial">
+                  Esteira industrial
+                </option>
+
+                <option value="Prensa">
+                  Prensa
+                </option>
+
+                <option value="Torno">
+                  Torno
+                </option>
+
+                <option value="Solda">
+                  Solda
+                </option>
+
+                <option value="Corte">
+                  Corte
+                </option>
+
+                <option value="Embalagem">
+                  Embalagem
+                </option>
+
+                <option value="CNC">
+                  CNC
+                </option>
+
+                <option value="Impressora 3D">
+                  Impressora 3D
+                </option>
+
+                <option value="Outro">
+                  Outro
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="modeloMaquinaInput">
+              Modelo
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-barcode"></i>
+
+              <input
+                type="text"
+                id="modeloMaquinaInput"
+                placeholder="Ex: RB-500"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="fabricanteInput">
+              Fabricante
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-building"></i>
+
+              <input
+                type="text"
+                id="fabricanteInput"
+                placeholder="Ex: ABB, KUKA, FANUC..."
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="codigoInput">
+              Código / Patrimônio
+            </label>
+
+            <div class="form-control">
+
+              <i class="fa-solid fa-qrcode"></i>
+
+              <input
+                type="text"
+                id="codigoInput"
+                placeholder="Ex: ROB-001"
+                required
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="form-section-title description-title">
+
+          <span>
+            02
+          </span>
+
+          Função no processo industrial
+
+        </div>
+
+
+
+        <div class="form-group">
+
+          <label for="descricaoInput">
+            Descrição
+          </label>
+
+          <textarea
+            id="descricaoInput"
+            placeholder="Ex: Braço robótico responsável pela movimentação e posicionamento de peças na linha de automação."
+            required
+          ></textarea>
+
+        </div>
+
+
+
+
+
+        <div class="form-section-title connection-title">
+
+          <span>
+            03
+          </span>
+
+          Comunicação industrial
+        </div>
+
+        <div class="connection-help">
+          <i class="fa-solid fa-network-wired"></i>
+          <div>
+            <strong>Configuração opcional para equipamento real</strong>
+            <p>
+              Informe o controlador, protocolo e dados de comunicação fornecidos
+              pelo fabricante, CLP, gateway ou controlador do equipamento.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid connection-grid">
+
+          <div class="form-group full-width">
+            <label for="modoOperacaoInput">Modo de operação</label>
+            <div class="form-control">
+              <i class="fa-solid fa-tower-broadcast"></i>
+              <select id="modoOperacaoInput">
+                <option value="simulacao">Simulação do SteelControl</option>
+                <option value="real">Equipamento real</option>
+              </select>
+            </div>
+            <small class="operation-mode-help" id="modoOperacaoHelp">
+              Use simulação enquanto não houver um equipamento físico conectado.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="controladorInput">Controlador / Gateway</label>
+            <div class="form-control">
+              <i class="fa-solid fa-microchip"></i>
+              <select id="controladorInput">
+                <option value="">Selecione</option>
+                <option value="ESP32">ESP32</option>
+                <option value="DOBOT_MAGICIAN">Dobot Magician</option>
+                <option value="CLP_PLC">CLP / PLC</option>
+                <option value="CONTROLADOR_ROBOTICO">Controlador robótico</option>
+                <option value="CNC">Controlador CNC</option>
+                <option value="GATEWAY_INDUSTRIAL">Gateway industrial</option>
+                <option value="OUTRO">Outro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="protocoloInput">Protocolo</label>
+            <div class="form-control">
+              <i class="fa-solid fa-diagram-project"></i>
+              <select id="protocoloInput">
+                <option value="">Configurar depois</option>
+                <option value="MODBUS_TCP">Modbus TCP</option>
+                <option value="OPC_UA">OPC UA</option>
+                <option value="MQTT">MQTT</option>
+                <option value="HTTP_REST">HTTP / REST</option>
+                <option value="USB_SERIAL">USB / Serial (Dobot)</option>
+                <option value="TCP_IP">TCP/IP</option>
+                <option value="OUTRO">Outro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group full-width controller-profile-preview" id="controllerProfilePanel" hidden>
+            <div class="controller-profile-icon"><i id="controllerProfileIcon" class="fa-solid fa-microchip"></i></div>
+            <div class="controller-profile-copy">
+              <span>PAINEL QUE SERÁ CRIADO</span>
+              <strong id="controllerProfileTitle">Painel adaptativo</strong>
+              <p id="controllerProfileDescription"></p>
+              <div id="controllerProfileFeatures" class="controller-profile-features"></div>
+            </div>
+          </div>
+
+          <div class="form-group full-width dobot-config-panel" id="dobotConfigPanel" hidden>
+            <div class="dobot-config-head">
+              <i class="fa-solid fa-robot"></i>
+              <div><strong>Dobot Magician Gateway</strong><p>Deixe tudo preparado agora em MOCK e troque para REAL quando conectar o braço.</p></div>
+            </div>
+            <div class="dobot-config-grid">
+              <label>Modo do gateway
+                <select id="dobotModeInput"><option value="MOCK">MOCK — sem braço</option><option value="REAL">REAL — USB físico</option></select>
+              </label>
+              <label>Porta serial
+                <input id="dobotPortInput" type="text" value="AUTO" placeholder="AUTO ou COM4">
+              </label>
+              <label>Baud rate
+                <input id="dobotBaudInput" type="number" value="115200" readonly>
+              </label>
+              <label class="dobot-check"><input id="dobotAllowMotionInput" type="checkbox"> <span>Preparar controle físico (continua protegido pelo gateway)</span></label>
+            </div>
+            <small><i class="fa-solid fa-shield-halved"></i> Segurança: no gateway, DOBOT_ALLOW_MOTION=false continua bloqueando movimento mesmo que a interface esteja preparada.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="hostInput">IP / Host</label>
+            <div class="form-control">
+              <i class="fa-solid fa-globe"></i>
+              <input
+                type="text"
+                id="hostInput"
+                placeholder="Ex: 192.168.0.50"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portaInput">Porta</label>
+            <div class="form-control">
+              <i class="fa-solid fa-plug"></i>
+              <input
+                type="number"
+                id="portaInput"
+                min="1"
+                max="65535"
+                placeholder="Ex: 502"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="unitIdInput">Unit ID / Device ID</label>
+            <div class="form-control">
+              <i class="fa-solid fa-hashtag"></i>
+              <input
+                type="number"
+                id="unitIdInput"
+                min="0"
+                placeholder="Ex: 1"
+              >
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="endpointInput">Endpoint / caminho</label>
+            <div class="form-control">
+              <i class="fa-solid fa-link"></i>
+              <input
+                type="text"
+                id="endpointInput"
+                placeholder="Ex: /api/telemetria ou opc.tcp://192.168.0.50:4840"
+              >
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="topicoInput">Tópico MQTT (se aplicável)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-wave-square"></i>
+              <input
+                type="text"
+                id="topicoInput"
+                placeholder="Ex: fabrica/robo01/telemetria"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="intervaloLeituraInput">Intervalo esperado de leitura</label>
+            <div class="form-control">
+              <i class="fa-solid fa-stopwatch"></i>
+              <input
+                type="number"
+                id="intervaloLeituraInput"
+                min="500"
+                max="60000"
+                step="100"
+                value="2000"
+                placeholder="2000"
+              >
+            </div>
+            <small class="operation-mode-help">Valor em milissegundos. Ex.: 2000 = 2 segundos.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Credencial do equipamento</label>
+            <div class="connection-credential-note">
+              <i class="fa-solid fa-key"></i>
+              <span>O SteelControl gera automaticamente uma chave exclusiva no cadastro. Ela será usada pelo ESP32, CLP ou gateway para enviar dados com segurança.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-section-title connection-title">
+          <span>04</span>
+          Limites operacionais e segurança
+        </div>
+
+        <div class="connection-help">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <strong>Alertas configuráveis por equipamento</strong>
+            <p>Defina quando o SteelControl deve avisar, gerar alerta crítico e solicitar parada de segurança.</p>
+          </div>
+        </div>
+
+        <div class="form-grid connection-grid threshold-grid">
+          <div class="form-group">
+            <label for="tempAtencaoInput">Temperatura de atenção (°C)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-temperature-half"></i>
+              <input type="number" id="tempAtencaoInput" step="0.1" value="55">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tempCriticaInput">Temperatura crítica (°C)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-temperature-arrow-up"></i>
+              <input type="number" id="tempCriticaInput" step="0.1" value="70">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="energiaAtencaoInput">Carga elétrica de atenção (%)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-bolt"></i>
+              <input type="number" id="energiaAtencaoInput" min="0" max="99.9" step="0.1" value="80">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="energiaCriticaInput">Carga elétrica crítica (%)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <input type="number" id="energiaCriticaInput" min="0.1" max="100" step="0.1" value="90">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="vibracaoAtencaoInput">Vibração de atenção (mm/s)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-wave-square"></i>
+              <input type="number" id="vibracaoAtencaoInput" step="0.1" value="4">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="vibracaoCriticaInput">Vibração crítica (mm/s)</label>
+            <div class="form-control">
+              <i class="fa-solid fa-arrows-left-right-to-line"></i>
+              <input type="number" id="vibracaoCriticaInput" step="0.1" value="7">
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="ciclosManutencaoInput">Ciclos para manutenção preventiva</label>
+            <div class="form-control">
+              <i class="fa-solid fa-rotate"></i>
+              <input type="number" id="ciclosManutencaoInput" min="1" step="1" value="1000">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+
+
+          <button
+            type="button"
+            class="cancel-machine-btn"
+            onclick="fecharFormularioMaquina()"
+          >
+
+            Cancelar
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="save-machine-btn"
+          >
+
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            Cadastrar equipamento
+
+          </button>
+
+        </div>
+
+
+        <p
+          id="mensagemMaquina"
+          class="mensagem-maquina"
+        ></p>
+
+      </form>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LISTA
+    ====================================================== -->
+
+    <section class="machines-section">
+
+
+      <div class="machines-section-header">
+
+
+        <div>
+
+          <span class="section-label">
+            PARQUE INDUSTRIAL
+          </span>
+
+
+          <h2>
+            Equipamentos cadastrados
+          </h2>
+
+
+          <p>
+            Consulte e acesse os equipamentos da sua empresa.
+          </p>
+
+        </div>
+
+
+        <div class="machine-filters">
+
+
+          <div class="search-machine">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="text"
+              id="buscaMaquina" aria-label="Buscar equipamento"
+              placeholder="Buscar equipamento..."
+            >
+
+          </div>
+
+
+          <select id="filtroTipo" aria-label="Filtrar equipamentos por tipo">
+
+            <option value="todos">
+              Todos os tipos
+            </option>
+
+            <option value="robo">
+              Robótica
+            </option>
+
+            <option value="esteira">
+              Esteiras
+            </option>
+
+            <option value="prensa">
+              Prensas
+            </option>
+
+            <option value="outro">
+              Outros
+            </option>
+
+          </select>
+
+
+          <select id="filtroStatus" aria-label="Filtrar equipamentos por status">
+
+            <option value="todos">
+              Todos os status
+            </option>
+
+            <option value="Ligada">
+              Em operação
+            </option>
+
+            <option value="Manutenção">
+              Manutenção
+            </option>
+
+            <option value="Alerta">
+              Alerta
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <section
+        class="maquinas-grid"
+        id="maquinasGrid"
+      >
+
+        <div class="carregando">
+
+          <i class="fa-solid fa-spinner fa-spin"></i>
+
+          Carregando equipamentos...
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+
+
+  <script src="assets/js/config.js?v=20260831_PROD_FINAL"></script>
+
+  <script src="assets/js/maquinas.js?v=20260901_CONTROLLER_ADAPTIVE"></script>
+
+</body>
+
+</html>

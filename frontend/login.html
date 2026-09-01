@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>
+    Entrar | SteelControl
+  </title>
+<meta content="Acesse sua empresa no SteelControl e gerencie máquinas, equipes, manutenção, alertas e segurança industrial." name="description"/>
+<link href="assets/css/base.css?v=20260824_CLIENTE_FINAL" rel="stylesheet"/>
+<link href="assets/css/login.css?v=20260824_CLIENTE_FINAL" rel="stylesheet"/>
+<link href="assets/vendor/steel-icons/steel-icons.css?v=1" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
+
+</head>
+<body>
+<main class="login-page">
+<!-- =====================================================
+         PAINEL ESQUERDO
+    ====================================================== -->
+<section class="login-panel">
+<!-- ===================================================
+           TOPO
+      ==================================================== -->
+<header class="top-login">
+<!-- LOGO -->
+<a class="brand" href="home.html" title="Voltar para o início">
+<img alt="SteelControl" class="logo-img" src="assets/img/dash.png"/>
+</a>
+<div class="top-actions">
+<!-- VOLTAR AO SITE -->
+<a class="home-link" href="home.html">
+<i class="fa-solid fa-arrow-left"></i>
+<span>
+              Site
+            </span>
+</a>
+<!-- IDIOMA -->
+<div class="language-box">
+<button class="language-btn" onclick="abrirIdiomas()" type="button">
+<i class="fa-solid fa-globe"></i>
+<span id="idiomaAtual">
+                PT
+              </span>
+<i class="fa-solid fa-chevron-down"></i>
+</button>
+<div class="language-menu" id="languageMenu">
+<button onclick="trocarIdioma('pt')" type="button">
+                PT - Português
+              </button>
+<button onclick="trocarIdioma('en')" type="button">
+                EN - English
+              </button>
+<button onclick="trocarIdioma('es')" type="button">
+                ES - Español
+              </button>
+<button onclick="trocarIdioma('fr')" type="button">
+                FR - Français
+              </button>
+<button onclick="trocarIdioma('de')" type="button">
+                DE - Deutsch
+              </button>
+<button onclick="trocarIdioma('it')" type="button">
+                IT - Italiano
+              </button>
+</div>
+</div>
+</div>
+</header>
+<!-- ===================================================
+           ÁREA DE LOGIN
+      ==================================================== -->
+<section class="login-content" id="areaLogin">
+<!-- MINI LABEL -->
+<div class="login-label">
+<span class="login-label-dot"></span>
+
+          Plataforma de gestão industrial
+
+        </div>
+<!-- TÍTULO -->
+<h1>
+          Acesse sua empresa
+        </h1>
+<p class="login-description">
+
+          Entre com seu e-mail corporativo e acesse
+          o ambiente de gestão da sua empresa no SteelControl.
+
+        </p>
+<!-- =================================================
+             MENSAGEM DE CONFIANÇA
+        ================================================== -->
+<div class="trust-box">
+<div class="trust-box-icon">
+<i class="fa-solid fa-shield-halved"></i>
+</div>
+<div>
+<strong>
+              Confie sua operação ao SteelControl
+            </strong>
+<p>
+              Centralize máquinas, manutenção, produção,
+              equipes e segurança em uma única plataforma.
+            </p>
+</div>
+</div>
+<!-- =================================================
+             FORM LOGIN
+        ================================================== -->
+<form id="loginForm">
+<!-- EMAIL -->
+<div class="input-group">
+<label data-i18n="emailLabel" for="email">
+              E-mail
+            </label>
+<div class="input-box">
+<i class="fa-regular fa-envelope"></i>
+<input autocomplete="email" id="email" placeholder="nome@empresa.com" required="" type="email"/>
+</div>
+</div>
+<!-- SENHA -->
+<div class="input-group">
+<label data-i18n="senhaLabel" for="senha">
+              Senha
+            </label>
+<div class="input-box">
+<i class="fa-solid fa-lock"></i>
+<input autocomplete="current-password" id="senha" placeholder="Digite sua senha" required="" type="password"/>
+<button aria-label="Mostrar senha" class="show-password" onclick="mostrarSenha()" type="button">
+<i class="fa-regular fa-eye" id="iconeSenha"></i>
+</button>
+</div>
+</div>
+<!-- LOGIN -->
+<button class="access-btn" type="submit">
+<span>
+              Acessar minha empresa
+            </span>
+<i class="fa-solid fa-arrow-right"></i>
+</button>
+<!-- FACIAL -->
+<button class="face-btn" id="btnFacePython" onclick="abrirFaceId()" type="button">
+<span class="face-button-icon">
+<i class="fa-solid fa-face-viewfinder"></i>
+</span>
+<span class="face-button-content">
+<strong>
+                Entrar com reconhecimento facial
+              </strong>
+<small>
+                Acesso rápido e seguro por biometria
+              </small>
+</span>
+<i class="fa-solid fa-chevron-right button-arrow"></i>
+</button>
+<!-- MENSAGEM API -->
+<p class="message" id="mensagem"></p>
+</form>
+<!-- =================================================
+             EMPRESA AINDA NÃO CADASTRADA
+        ================================================== -->
+<div class="company-register-box">
+<div class="register-header">
+<div class="register-icon">
+<i class="fa-solid fa-industry"></i>
+</div>
+<div>
+<span>
+                NOVA EMPRESA
+              </span>
+<strong>
+                Sua empresa ainda não está no SteelControl?
+              </strong>
+</div>
+</div>
+<p>
+
+            Cadastre sua organização e comece a estruturar
+            uma gestão industrial mais conectada,
+            organizada e inteligente.
+
+          </p>
+<div class="register-benefits">
+<span>
+<i class="fa-solid fa-check"></i>
+
+              Gestão centralizada
+
+            </span>
+<span>
+<i class="fa-solid fa-check"></i>
+
+              Equipes e acessos
+
+            </span>
+<span>
+<i class="fa-solid fa-check"></i>
+
+              Monitoramento industrial
+
+            </span>
+</div>
+<button class="create-account-btn" onclick="abrirCriarConta()" type="button">
+<span>
+              Cadastrar minha empresa
+            </span>
+<i class="fa-solid fa-arrow-right"></i>
+</button>
+</div>
+</section>
+<!-- ===================================================
+           CADASTRO EMPRESA
+      ==================================================== -->
+<section class="login-content cadastro-content" id="areaCadastro" style="display:none">
+<div class="login-label">
+<span class="login-label-dot"></span>
+
+          Comece no SteelControl
+
+        </div>
+<h1>
+          Cadastre sua empresa
+        </h1>
+<p class="login-description">
+
+          Crie o ambiente da sua organização
+          e cadastre o primeiro administrador do sistema.
+
+        </p>
+<div class="signup-info">
+<i class="fa-solid fa-circle-info"></i>
+<div>
+<strong>
+              Primeiro acesso
+            </strong>
+<span>
+              O usuário criado abaixo será o primeiro
+              administrador da empresa.
+            </span>
+</div>
+</div>
+<form id="cadastroForm">
+<div class="form-section-title">
+<span>
+              01
+            </span>
+
+            Dados da empresa
+
+          </div>
+<!-- EMPRESA -->
+<div class="input-group">
+<label for="empresaNome">
+              Nome da empresa
+            </label>
+<div class="input-box">
+<i class="fa-solid fa-industry"></i>
+<input id="empresaNome" placeholder="Ex: SteelTech Indústria" required="" type="text"/>
+</div>
+</div>
+<!-- CNPJ -->
+<div class="input-group">
+<label for="empresaCnpj">
+
+              CNPJ
+
+              <span class="required-badge">
+                Obrigatório
+              </span>
+</label>
+<div class="input-box">
+<i class="fa-solid fa-building"></i>
+<input id="empresaCnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required="" type="text"/>
+</div>
+</div>
+<div class="form-section-title admin-title">
+<span>
+              02
+            </span>
+
+            Administrador
+
+          </div>
+<!-- ADMIN -->
+<div class="input-group">
+<label for="nomeCadastro">
+              Nome do administrador
+            </label>
+<div class="input-box">
+<i class="fa-regular fa-user"></i>
+<input id="nomeCadastro" placeholder="Seu nome completo" required="" type="text"/>
+</div>
+</div>
+<!-- EMAIL -->
+<div class="input-group">
+<label for="emailCadastro">
+              E-mail corporativo
+            </label>
+<div class="input-box">
+<i class="fa-regular fa-envelope"></i>
+<input autocomplete="email" id="emailCadastro" placeholder="admin@empresa.com" required="" type="email"/>
+</div>
+</div>
+<!-- SENHA -->
+<div class="input-group">
+<label for="senhaCadastro">
+              Senha
+            </label>
+<div class="input-box">
+<i class="fa-solid fa-lock"></i>
+<input autocomplete="new-password" id="senhaCadastro" minlength="8" placeholder="Mínimo 8 caracteres" required="" type="password"/>
+</div>
+</div>
+
+<div class="registration-face-next" id="cadastroFacialEtapaInfo">
+  <span class="registration-face-next-icon">
+    <i class="fa-solid fa-face-smile"></i>
+  </span>
+  <div>
+    <strong>03 &nbsp; Biometria facial</strong>
+    <p>
+      Depois de confirmar o código do e-mail, a câmera abrirá automaticamente
+      para cadastrar o rosto do administrador.
+    </p>
+  </div>
+</div>
+
+<!-- VERIFICAÇÃO DE E-MAIL: fica dentro do formulário e NÃO cria overlay -->
+<div class="email-verification-panel" id="emailVerificationPanel" hidden>
+  <div class="verification-heading">
+    <span class="verification-icon">
+      <i class="fa-solid fa-envelope-circle-check"></i>
+    </span>
+    <div>
+      <strong>Confirme seu e-mail</strong>
+      <p>
+        Enviamos um código de 6 dígitos para
+        <b id="verificationEmail">seu e-mail</b>.
+        A empresa só será criada depois da confirmação.
+      </p>
+    </div>
+  </div>
+
+  <div class="verification-code-wrap">
+    <label for="codigoCadastro">Código de confirmação</label>
+    <input
+      id="codigoCadastro"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="6"
+      pattern="[0-9]{6}"
+      placeholder="000000"
+      type="text"
+    />
+  </div>
+
+  <div class="verification-actions">
+    <button class="access-btn verification-confirm-btn" id="btnConfirmarCodigo" type="button">
+      <span>Confirmar e criar conta</span>
+      <i class="fa-solid fa-check"></i>
+    </button>
+
+    <button class="verification-secondary-btn" id="btnReenviarCodigo" type="button">
+      <i class="fa-regular fa-paper-plane"></i>
+      <span id="textoReenvio">Reenviar código</span>
+    </button>
+
+    <button class="verification-secondary-btn" id="btnEditarCadastro" type="button">
+      <i class="fa-solid fa-pen"></i>
+      Alterar dados
+    </button>
+  </div>
+</div>
+
+<!-- PRIMEIRO PASSO: apenas enviar o código -->
+<button class="access-btn create-company-main" id="btnSolicitarCodigo" type="submit">
+<span>
+              Verificar e-mail e continuar
+            </span>
+<i class="fa-solid fa-arrow-right"></i>
+</button>
+<!-- VOLTAR -->
+<button class="back-login-btn" onclick="voltarLogin()" type="button">
+<i class="fa-solid fa-arrow-left"></i>
+
+            Voltar para o acesso
+
+          </button>
+<p class="message" id="mensagemCadastro"></p>
+</form>
+</section>
+<!-- ===================================================
+           RODAPÉ
+      ==================================================== -->
+<footer class="secure">
+<div>
+<i class="fa-solid fa-shield-halved"></i>
+<span data-i18n="ambienteSeguro">
+            Ambiente seguro
+          </span>
+</div>
+<span class="secure-divider"></span>
+<div>
+<i class="fa-solid fa-lock"></i>
+<span>
+            Acesso protegido
+          </span>
+</div>
+</footer>
+</section>
+<!-- =====================================================
+         PAINEL DIREITO
+    ====================================================== -->
+<section class="image-area">
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="industrial-message">
+<div class="industrial-badge">
+<span></span>
+
+          SteelControl Gestão Industrial
+
+        </div>
+<h2>
+
+          Sua operação industrial
+          <span>
+            conectada
+          </span>
+          em um só lugar.
+
+        </h2>
+<p>
+
+          Mais controle, mais segurança e mais
+          informação para decisões melhores.
+
+        </p>
+</div>
+<!-- INDICADORES -->
+
+<!-- CARD -->
+
+<!-- FEATURES LATERAIS -->
+
+<div class="image-bottom">
+<i class="fa-solid fa-shield-halved"></i>
+
+        Tecnologia para ambientes industriais
+
+      </div>
+</section>
+</main>
+<!-- =====================================================
+       MODAL FACIAL
+  ====================================================== -->
+<div aria-hidden="true" class="face-modal" id="faceModal">
+<div class="face-card face-card-flutter">
+<button aria-label="Fechar reconhecimento facial" class="close-modal" data-i18n-aria-label="fecharReconhecimentoFacial" onclick="fecharFaceId()" type="button">
+<i class="fa-solid fa-xmark"></i>
+</button>
+<div class="face-flutter-header">
+<span class="face-flutter-kicker" data-i18n="reconhecimentoFacial">Reconhecimento facial</span>
+<h2 data-i18n="facePrepareTitulo">Prepare-se para o reconhecimento facial</h2>
+<p data-i18n="facePrepareTexto">
+        Centralize seu rosto dentro do oval. O reconhecimento acontece automaticamente.
+      </p>
+</div>
+<div class="face-oval-shell">
+<div class="camera-container face-oval-camera">
+<video autoplay="" id="faceVideo" muted="" playsinline=""></video>
+<canvas id="faceOverlay"></canvas>
+<div class="camera-loading" id="cameraLoading">
+<i class="fa-solid fa-spinner fa-spin"></i>
+<span data-i18n="iniciandoCamera">Iniciando câmera...</span>
+</div>
+<div aria-hidden="true" class="face-oval-guide"></div>
+</div>
+</div>
+<div class="face-status analisando face-status-flutter" id="faceStatus">
+<div class="status-indicator"></div>
+<div>
+<strong data-i18n="procurandoRosto" id="faceStatusTitulo">Procurando rosto...</strong>
+<span data-i18n="olharCamera" id="faceStatusTexto">Olhe diretamente para a câmera</span>
+</div>
+</div>
+<div class="face-auto-note">
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+<span data-i18n="faceAutomatico">Reconhecimento automático — não é necessário apertar nenhum botão.</span>
+</div>
+<div class="face-security">
+<i class="fa-solid fa-shield-halved"></i>
+<span data-i18n="cameraSomenteAutenticacao">
+        A câmera é utilizada somente durante a autenticação.
+      </span>
+</div>
+</div>
+</div>
+<!-- CANVAS -->
+<canvas id="captureCanvas" style="display:none"></canvas>
+<!-- SCRIPTS -->
+<script src="assets/js/config.js?v=20260831_PROD_FINAL"></script>
+<script src="assets/js/login.js?v=20260831_PROD_FINAL"></script>
+</body>
+</html>
