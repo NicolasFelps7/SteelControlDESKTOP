@@ -1,7 +1,7 @@
 /* SteelControl — acabamento tipográfico corporativo e legibilidade desktop. */
 
 :root {
-  --sc-font: "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --sc-font: "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
 html,
@@ -34,7 +34,7 @@ h6 {
 
 strong,
 b {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .section-label,
@@ -66,7 +66,7 @@ b {
 .machine-key-btn,
 .machine-card-btn {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .maquina-card h3 {
@@ -100,7 +100,7 @@ b {
 .machine-connection strong,
 .machine-maintenance strong {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .machine-metrics strong {

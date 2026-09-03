@@ -241,7 +241,7 @@ export async function excluir(
     ) {
       return res.status(403).json({
         mensagem:
-          "Somente administradores podem remover registros de manutenção."
+          "Somente administradores podem arquivar registros de manutenção."
       });
     }
 

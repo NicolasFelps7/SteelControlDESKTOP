@@ -418,6 +418,27 @@ body {
 }
 
 
+.status-offline {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.status-instavel {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+html[data-theme="escuro"] .status-offline {
+  background: rgba(148, 163, 184, .14);
+  color: #cbd5e1;
+}
+
+html[data-theme="escuro"] .status-instavel {
+  background: rgba(245, 158, 11, .12);
+  color: #fbbf24;
+}
+
+
 /* =========================================================
    BOTÕES HEADER
 ========================================================= */

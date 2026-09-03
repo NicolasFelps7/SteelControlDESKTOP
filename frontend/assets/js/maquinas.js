@@ -334,24 +334,66 @@ function formatarProtocoloLista(protocolo) {
   return mapa[protocolo] || protocolo || "Não definido";
 }
 
+function traduzirLiteralMaquinas(texto) {
+  return typeof traduzirTextoLivre === "function"
+    ? traduzirTextoLivre(texto)
+    : texto;
+}
+
 function statusConexaoLista(maquina) {
   const codigo = String(
     maquina?.estadoConexao?.codigo || ""
   ).toUpperCase();
 
   if (codigo === "CONECTADA") {
-    return { texto: "Conectada", classe: "connected" };
+    return { texto: traduzirLiteralMaquinas("Conectada"), classe: "connected" };
   }
 
   if (codigo === "INSTAVEL") {
-    return { texto: "Instável", classe: "unstable" };
+    return { texto: traduzirLiteralMaquinas("Instável"), classe: "unstable" };
   }
 
   if (codigo === "SIMULACAO") {
-    return { texto: "Simulação", classe: "simulation" };
+    return { texto: traduzirLiteralMaquinas("Simulação"), classe: "simulation" };
   }
 
-  return { texto: "Offline", classe: "offline" };
+  return { texto: traduzirLiteralMaquinas("Offline"), classe: "offline" };
+}
+
+function statusAtualMaquina(maquina) {
+  const codigoConexao =
+    String(
+      maquina?.estadoConexao?.codigo ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+  if (maquina?.modoSimulacao === false && codigoConexao === "OFFLINE") {
+    return {
+      valor: "Offline",
+      texto: traduzirLiteralMaquinas("Offline"),
+      classe: "offline-status"
+    };
+  }
+
+  if (maquina?.modoSimulacao === false && codigoConexao === "INSTAVEL") {
+    return {
+      valor: "Instável",
+      texto: traduzirLiteralMaquinas("Conexão instável"),
+      classe: "unstable-status"
+    };
+  }
+
+  const valor =
+    maquina?.status ||
+    "Sem status";
+
+  return {
+    valor,
+    texto: traduzirStatus(valor),
+    classe: classeStatus(valor)
+  };
 }
 
 async function copiarTextoSeguro(valor) {
@@ -902,7 +944,7 @@ function atualizarResumo() {
   const ligadas =
     maquinas.filter(
       maquina =>
-        maquina.status ===
+        statusAtualMaquina(maquina).valor ===
         "Ligada"
     ).length;
 
@@ -910,7 +952,7 @@ function atualizarResumo() {
   const manutencao =
     maquinas.filter(
       maquina =>
-        maquina.status ===
+        statusAtualMaquina(maquina).valor ===
         "Manutenção"
     ).length;
 
@@ -918,7 +960,7 @@ function atualizarResumo() {
   const alertas =
     maquinas.filter(
       maquina =>
-        maquina.status ===
+        statusAtualMaquina(maquina).valor ===
         "Alerta"
     ).length;
 
@@ -980,38 +1022,17 @@ function traduzirStatus(
   status
 ) {
 
-  if (
-    status === "Ligada"
-  ) {
-
-    return "Em operação";
-
-  }
-
-
-  if (
-    status === "Alerta"
-  ) {
-
-    return "Alerta";
-
-  }
-
-
-  if (
-    status === "Manutenção"
-  ) {
-
-    return "Manutenção";
-
-  }
-
-
-  return (
+  let base =
     status ||
-    "Sem status"
-  );
+    "Sem status";
 
+  if (status === "Ligada") {
+    base = "Em operação";
+  }
+
+  return traduzirLiteralMaquinas(
+    base
+  );
 }
 
 
@@ -1138,6 +1159,14 @@ function classeStatus(
   status
 ) {
 
+  if (status === "Offline") {
+    return "offline-status";
+  }
+
+  if (status === "Instável" || status === "Conexão instável") {
+    return "unstable-status";
+  }
+
   if (
     status === "Alerta"
   ) {
@@ -1235,10 +1264,13 @@ function criarCardMaquina(
     );
 
 
-  const statusClass =
-    classeStatus(
-      maquina.status
+  const statusAtual =
+    statusAtualMaquina(
+      maquina
     );
+
+  const statusClass =
+    statusAtual.classe;
 
   const conexao =
     statusConexaoLista(maquina);
@@ -1286,9 +1318,7 @@ function criarCardMaquina(
       <span class="status ${statusClass}">
 
         ${escaparHtml(
-          traduzirStatus(
-            maquina.status
-          )
+          statusAtual.texto
         )}
 
       </span>
@@ -2050,7 +2080,7 @@ function aplicarFiltros() {
         const combinaStatus =
           statusSelecionado ===
           "todos" ||
-          maquina.status ===
+          statusAtualMaquina(maquina).valor ===
           statusSelecionado;
 
 

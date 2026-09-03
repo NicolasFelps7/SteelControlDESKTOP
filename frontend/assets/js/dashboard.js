@@ -454,6 +454,64 @@ function obterEstadoOperacao(
 }
 
 
+function obterStatusExibicao(maquina) {
+  const estadoOperacao =
+    obterEstadoOperacao(
+      maquina
+    );
+
+  if (estadoOperacao.codigo === "OFFLINE") {
+    return {
+      codigo: "OFFLINE",
+      texto:
+        typeof traduzirTextoLivre === "function"
+          ? traduzirTextoLivre("Offline")
+          : "Offline",
+      classe: "status-offline"
+    };
+  }
+
+  if (estadoOperacao.codigo === "INSTAVEL") {
+    return {
+      codigo: "INSTAVEL",
+      texto:
+        typeof traduzirTextoLivre === "function"
+          ? traduzirTextoLivre("Conexão instável")
+          : "Conexão instável",
+      classe: "status-instavel"
+    };
+  }
+
+  const status =
+    String(
+      maquina?.status ||
+      ""
+    ).trim();
+
+  if (status === "Alerta" || status === "Parada de segurança") {
+    return {
+      codigo: status === "Parada de segurança" ? "PARADA_SEGURANCA" : "ALERTA",
+      texto: traduzirStatus(status),
+      classe: "status-alerta"
+    };
+  }
+
+  if (status === "Manutenção") {
+    return {
+      codigo: "MANUTENCAO",
+      texto: traduzirStatus(status),
+      classe: "status-manutencao"
+    };
+  }
+
+  return {
+    codigo: estadoOperacao.codigo === "SIMULACAO" ? "SIMULACAO" : "OPERACIONAL",
+    texto: traduzirStatus(status || "Ligada"),
+    classe: ""
+  };
+}
+
+
 function atualizarBadgeModoOperacao(maquina) {
   const badge =
     document.getElementById(
@@ -1381,7 +1439,7 @@ async function buscarDados() {
           : "API offline";
 
       statusEl.className =
-        "status-box status-alerta";
+        "status-box status-offline";
     }
 
     if (descricaoStatusEl) {
@@ -1427,11 +1485,15 @@ function traduzirStatus(
   }
 
 
+  if (status === "Parada de segurança") {
+    return typeof traduzirTextoLivre === "function"
+      ? traduzirTextoLivre("Parada de segurança")
+      : status;
+  }
+
   if (
     status ===
-    "Alerta" ||
-    status ===
-    "Parada de segurança"
+    "Alerta"
   ) {
 
     return pegarTexto(
@@ -1569,6 +1631,11 @@ function atualizarTela(
 
   atualizarContextoMaquina(maquina);
 
+  const statusExibicao =
+    obterStatusExibicao(
+      maquina
+    );
+
 
   const maquinaSelecionada =
     localStorage.getItem(
@@ -1617,9 +1684,7 @@ function atualizarTela(
   if (statusEl) {
 
     statusEl.textContent =
-      traduzirStatus(
-        maquina.status
-      );
+      statusExibicao.texto;
 
   }
 
@@ -1705,9 +1770,7 @@ function atualizarTela(
   ) {
 
     statusMaquinaListaEl.textContent =
-      traduzirStatus(
-        maquina.status
-      );
+      statusExibicao.texto;
 
   }
 
@@ -1737,9 +1800,7 @@ function atualizarTela(
   ) {
 
     statusProducaoEl.textContent =
-      traduzirStatus(
-        maquina.status
-      );
+      statusExibicao.texto;
 
   }
 
@@ -1787,12 +1848,13 @@ function atualizarTela(
 
 
   atualizarStatusVisual(
-    maquina.status
+    statusExibicao
   );
 
 
   atualizarDescricaoStatus(
-    maquina
+    maquina,
+    statusExibicao
   );
 
 
@@ -1814,82 +1876,44 @@ function atualizarTela(
 // ======================================================
 
 function atualizarStatusVisual(
-  status
+  statusExibicao
 ) {
 
   if (!statusEl) {
-
     return;
-
   }
-
 
   statusEl.className =
     "status-box";
 
-
-  if (
-    statusMaquinaListaEl
-  ) {
-
-    statusMaquinaListaEl.style.background =
-      "#dcfce7";
-
-    statusMaquinaListaEl.style.color =
-      "#166534";
-
-  }
-
-
-  if (
-    status ===
-    "Alerta"
-  ) {
-
+  if (statusExibicao?.classe) {
     statusEl.classList.add(
-      "status-alerta"
+      statusExibicao.classe
     );
-
-
-    if (
-      statusMaquinaListaEl
-    ) {
-
-      statusMaquinaListaEl.style.background =
-        "#fee2e2";
-
-      statusMaquinaListaEl.style.color =
-        "#991b1b";
-
-    }
-
   }
 
-
-  if (
-    status ===
-    "Manutenção"
-  ) {
-
-    statusEl.classList.add(
-      "status-manutencao"
-    );
-
-
-    if (
-      statusMaquinaListaEl
-    ) {
-
-      statusMaquinaListaEl.style.background =
-        "#fef3c7";
-
-      statusMaquinaListaEl.style.color =
-        "#92400e";
-
-    }
-
+  if (!statusMaquinaListaEl) {
+    return;
   }
 
+  const codigo =
+    statusExibicao?.codigo ||
+    "OPERACIONAL";
+
+  const visual =
+    codigo === "OFFLINE"
+      ? { fundo: "#e2e8f0", texto: "#475569" }
+      : codigo === "INSTAVEL" || codigo === "MANUTENCAO"
+        ? { fundo: "#fef3c7", texto: "#92400e" }
+        : codigo === "ALERTA" || codigo === "PARADA_SEGURANCA"
+          ? { fundo: "#fee2e2", texto: "#991b1b" }
+          : { fundo: "#dcfce7", texto: "#166534" };
+
+  statusMaquinaListaEl.style.background =
+    visual.fundo;
+
+  statusMaquinaListaEl.style.color =
+    visual.texto;
 }
 
 
@@ -1898,7 +1922,8 @@ function atualizarStatusVisual(
 // ======================================================
 
 function atualizarDescricaoStatus(
-  maquina
+  maquina,
+  statusExibicao = obterStatusExibicao(maquina)
 ) {
 
   if (
@@ -1909,6 +1934,24 @@ function atualizarDescricaoStatus(
 
   }
 
+
+  if (statusExibicao?.codigo === "OFFLINE") {
+    descricaoStatusEl.textContent =
+      textoEstadoOperacao(
+        "awaitingRealTelemetry",
+        "Aguardando telemetria real"
+      );
+    return;
+  }
+
+  if (statusExibicao?.codigo === "INSTAVEL") {
+    descricaoStatusEl.textContent =
+      maquina?.estadoConexao?.detalhe ||
+      (typeof traduzirTextoLivre === "function"
+        ? traduzirTextoLivre("Conexão instável")
+        : "Conexão instável");
+    return;
+  }
 
   if (
     typeof pegarTexto !==
@@ -2371,7 +2414,7 @@ async function carregarManutencoes() {
           const deleteTitle =
             typeof pegarTexto === "function"
               ? pegarTexto("maintenanceDelete")
-              : "Excluir registro de manutenção";
+              : "Arquivar registro de manutenção";
 
           const deleteAction =
             typeof pegarTexto === "function"
@@ -2411,7 +2454,7 @@ async function carregarManutencoes() {
                     aria-label="${escaparHtml(deleteTitle)}"
                     data-maintenance-id="${escaparHtml(item.id)}"
                   >
-                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    <i class="fa-solid fa-box-archive" aria-hidden="true"></i>
                     <span>${escaparHtml(deleteAction)}</span>
                   </button>
                 `
@@ -2463,7 +2506,7 @@ async function carregarManutencoes() {
 
 
 // ======================================================
-// EXCLUIR MANUTENÇÃO
+// ARQUIVAR MANUTENÇÃO (SOFT-DELETE)
 // SOMENTE ADMINISTRADOR
 // ======================================================
 
@@ -2474,7 +2517,7 @@ async function excluirManutencao(
     alert(
       typeof pegarTexto === "function"
         ? pegarTexto("maintenanceOnlyAdminDelete")
-        : "Somente administradores podem excluir registros de manutenção."
+        : "Somente administradores podem arquivar registros de manutenção."
     );
     return;
   }
@@ -2486,7 +2529,7 @@ async function excluirManutencao(
     alert(
       typeof pegarTexto === "function"
         ? pegarTexto("maintenanceNoMachine")
-        : "Selecione uma máquina antes de excluir o registro."
+        : "Selecione uma máquina antes de arquivar o registro."
     );
     return;
   }
@@ -2499,7 +2542,7 @@ async function excluirManutencao(
   const mensagemConfirmacao =
     typeof pegarTexto === "function"
       ? pegarTexto("maintenanceDeleteConfirm")
-      : "Este registro será removido permanentemente do histórico técnico. Esta ação não pode ser desfeita.";
+      : "Este registro será arquivado e deixará a lista ativa, mas continuará preservado no histórico de auditoria.";
 
   if (!window.SteelUI?.confirm) {
     console.error("SteelUI.confirm não está disponível. Exclusão bloqueada por segurança.");
@@ -2511,13 +2554,13 @@ async function excluirManutencao(
       titulo:
         typeof pegarTexto === "function"
           ? pegarTexto("maintenanceDeleteTitle")
-          : "Excluir registro de manutenção?",
+          : "Arquivar registro de manutenção?",
       mensagem:
         `${mensagemConfirmacao}\n\nRegistro #${manutencaoId} • ${nomeMaquina}`,
       confirmar:
         typeof pegarTexto === "function"
           ? pegarTexto("maintenanceDeleteAction")
-          : "Excluir registro",
+          : "Arquivar registro",
       cancelar:
         typeof pegarTexto === "function"
           ? pegarTexto("cancelar")
@@ -2557,7 +2600,7 @@ async function excluirManutencao(
           dados,
           typeof pegarTexto === "function"
             ? pegarTexto("maintenanceDeleteError")
-            : "Não foi possível excluir o registro."
+            : "Não foi possível arquivar o registro."
         )
       );
     }
@@ -2568,7 +2611,7 @@ async function excluirManutencao(
         (
           typeof pegarTexto === "function"
             ? pegarTexto("maintenanceDeleteSuccess")
-            : "Registro excluído com sucesso."
+            : "Registro arquivado com sucesso."
         );
 
       mensagemManutencaoEl.className =
@@ -2579,13 +2622,13 @@ async function excluirManutencao(
       titulo:
         typeof pegarTexto === "function"
           ? pegarTexto("maintenanceDeleteSuccessTitle")
-          : "Registro excluído",
+          : "Registro arquivado",
       mensagem:
         dados.mensagem ||
         (
           typeof pegarTexto === "function"
             ? pegarTexto("maintenanceDeleteSuccess")
-            : "O histórico de manutenção foi atualizado com sucesso."
+            : "O registro saiu da lista ativa e continua preservado no histórico de auditoria."
         ),
       tipo: "success"
     });
@@ -2595,7 +2638,7 @@ async function excluirManutencao(
 
   } catch (erro) {
     console.error(
-      "Erro ao excluir manutenção:",
+      "Erro ao arquivar manutenção:",
       erro
     );
 
@@ -2605,7 +2648,7 @@ async function excluirManutencao(
         (
           typeof pegarTexto === "function"
             ? pegarTexto("maintenanceDeleteError")
-            : "Erro ao excluir manutenção."
+            : "Erro ao arquivar manutenção."
         );
 
       mensagemManutencaoEl.className =
@@ -2618,7 +2661,7 @@ async function excluirManutencao(
       botao.disabled = false;
       botao.innerHTML =
         htmlAnterior ||
-        '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+        '<i class="fa-solid fa-box-archive" aria-hidden="true"></i>';
     }
   }
 }
@@ -3122,11 +3165,20 @@ async function carregarVisaoGeralOperacao() {
               .toLowerCase();
 
 
+          const disponivelAgora =
+            maquina?.modoSimulacao !== false ||
+            ["CONECTADA", "INSTAVEL"].includes(
+              String(maquina?.estadoConexao?.codigo || "").toUpperCase()
+            );
+
           return (
-            status ===
-            "ligada" ||
-            status.includes(
-              "ligada"
+            disponivelAgora &&
+            (
+              status ===
+              "ligada" ||
+              status.includes(
+                "ligada"
+              )
             )
           );
 
@@ -3146,8 +3198,17 @@ async function carregarVisaoGeralOperacao() {
               .toLowerCase();
 
 
-          return status.includes(
-            "alerta"
+          const disponivelAgora =
+            maquina?.modoSimulacao !== false ||
+            ["CONECTADA", "INSTAVEL"].includes(
+              String(maquina?.estadoConexao?.codigo || "").toUpperCase()
+            );
+
+          return (
+            disponivelAgora &&
+            status.includes(
+              "alerta"
+            )
           );
 
         }
@@ -3309,6 +3370,15 @@ async function carregarVisaoGeralOperacao() {
             ""
           )
             .toLowerCase();
+
+        const offlineReal =
+          maquina?.modoSimulacao === false &&
+          String(maquina?.estadoConexao?.codigo || "").toUpperCase() === "OFFLINE";
+
+        if (offlineReal) {
+          pontosSaude += 10;
+          return;
+        }
 
 
         if (
