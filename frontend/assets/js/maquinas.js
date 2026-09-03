@@ -48,6 +48,9 @@ function textoMaquinas(
 
 let maquinas = [];
 let maquinaEditandoId = null;
+let dispositivosDescobertos = [];
+let discoveryRefreshTimer = null;
+let discoveryDiagnostics = null;
 
 
 // =========================================================
@@ -799,6 +802,276 @@ function preencherBracoRobotico() {
 
 
 // =========================================================
+// DESCOBERTA AUTOMÁTICA DE EQUIPAMENTOS
+// =========================================================
+
+function discoveryMessage(texto, tipo = "") {
+  const elemento = document.getElementById("discoveryMessage");
+  if (!elemento) return;
+  elemento.textContent = texto || "";
+  elemento.className = `discovery-message ${tipo}`.trim();
+}
+
+function formatarTempoDescoberta(value) {
+  const data = new Date(value);
+  if (Number.isNaN(data.getTime())) return "agora";
+  const segundos = Math.max(0, Math.round((Date.now() - data.getTime()) / 1000));
+  return segundos < 5 ? "agora" : `${segundos}s atrás`;
+}
+
+function formatarHorarioDiagnostico(value) {
+  if (!value) return "Ainda não recebido";
+  const data = new Date(value);
+  if (Number.isNaN(data.getTime())) return "-";
+  return data.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function renderDiagnosticoDescoberta(diagnostico) {
+  const content = document.getElementById("discoveryDiagnosticsContent");
+  const details = document.getElementById("discoveryDiagnostics");
+  if (!content) return;
+
+  discoveryDiagnostics = diagnostico || null;
+  if (!diagnostico) {
+    content.innerHTML = '<div class="discovery-diagnostic-loading">Diagnóstico indisponível.</div>';
+    return;
+  }
+
+  const interfaces = Array.isArray(diagnostico.interfaces) ? diagnostico.interfaces : [];
+  const issues = Array.isArray(diagnostico.issues) ? diagnostico.issues : [];
+  const targets = Array.isArray(diagnostico.lastScanTargets) ? diagnostico.lastScanTargets : [];
+  const socketOk = Boolean(diagnostico.socketReady);
+  const ativos = Number(diagnostico.activeDevices || 0);
+
+  const interfaceHtml = interfaces.length
+    ? interfaces.map(item => `<span class="diagnostic-chip"><i class="fa-solid fa-network-wired"></i>${escaparHtml(item.name || "Rede")}: ${escaparHtml(item.address || "-")}</span>`).join("")
+    : '<span class="diagnostic-chip warning"><i class="fa-solid fa-triangle-exclamation"></i>Nenhuma interface IPv4 privada detectada</span>';
+
+  const issuesHtml = issues.length
+    ? `<div class="diagnostic-issues">${issues.map(issue => `
+        <div class="diagnostic-issue ${escaparHtml(issue.severity || "info")}">
+          <i class="fa-solid ${issue.severity === "error" ? "fa-circle-xmark" : issue.severity === "warning" ? "fa-triangle-exclamation" : "fa-circle-info"}"></i>
+          <span>${escaparHtml(issue.message || "Diagnóstico de rede")}</span>
+        </div>`).join("")}
+      </div>`
+    : '<div class="diagnostic-ok"><i class="fa-solid fa-circle-check"></i>Nenhum problema de descoberta foi identificado pelo backend.</div>';
+
+  content.innerHTML = `
+    <div class="diagnostic-summary-grid">
+      <div><small>Listener UDP/${escaparHtml(diagnostico.port)}</small><b class="${socketOk ? "ok" : "erro"}">${socketOk ? "ATIVO" : "INDISPONÍVEL"}</b></div>
+      <div><small>Equipamentos visíveis</small><b>${ativos}</b></div>
+      <div><small>Última resposta válida</small><b>${escaparHtml(formatarHorarioDiagnostico(diagnostico.lastValidPacketAt))}</b></div>
+      <div><small>Broadcasts da última busca</small><b>${targets.length || 0}</b></div>
+    </div>
+    <div class="diagnostic-interface-list">${interfaceHtml}</div>
+    ${issuesHtml}
+    <p class="diagnostic-footnote">Se o UDP estiver bloqueado, use <strong>Detectar pelo IP</strong>. O fallback consulta apenas <code>/steelcontrol/discovery</code> em IPv4 privado/local e não envia START.</p>`;
+
+  // Mantém o diagnóstico recolhido por padrão para a tela ficar compacta.
+  // Depois que o usuário abrir/fechar manualmente, respeitamos a escolha dele.
+  if (details && !details.dataset.userToggled) {
+    details.open = false;
+  }
+}
+
+const discoveryDetailsElement = document.getElementById("discoveryDiagnostics");
+if (discoveryDetailsElement && !discoveryDetailsElement.dataset.compactListener) {
+  discoveryDetailsElement.addEventListener("toggle", () => {
+    discoveryDetailsElement.dataset.userToggled = "1";
+  });
+  discoveryDetailsElement.dataset.compactListener = "1";
+}
+
+async function carregarDiagnosticoDescoberta({ silencioso = true } = {}) {
+  if (!usuarioEhAdministrador()) return;
+  try {
+    const resposta = await fetchAutenticado(`${API_URL}/descoberta/diagnostico`, { cache: "no-store" });
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(dados?.mensagem || "Não foi possível obter o diagnóstico da rede.");
+    renderDiagnosticoDescoberta(dados);
+  } catch (erro) {
+    if (!silencioso) discoveryMessage(erro?.message || "Diagnóstico de descoberta indisponível.", "erro");
+  }
+}
+
+async function descobrirDispositivoPorIp() {
+  if (!usuarioEhAdministrador()) return;
+  const ipInput = document.getElementById("discoveryIpInput");
+  const portInput = document.getElementById("discoveryPortInput");
+  const button = document.getElementById("discoveryIpBtn");
+  const host = String(ipInput?.value || "").trim();
+  const port = Number(portInput?.value || 80);
+
+  if (!host) {
+    discoveryMessage("Informe o IPv4 do equipamento, por exemplo 192.168.0.87.", "erro");
+    ipInput?.focus();
+    return;
+  }
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    discoveryMessage("Informe uma porta válida entre 1 e 65535.", "erro");
+    portInput?.focus();
+    return;
+  }
+
+  if (button) button.disabled = true;
+  discoveryMessage(`Consultando ${host}:${port} pelo fallback IP...`);
+  try {
+    const resposta = await fetchAutenticado(`${API_URL}/descoberta/por-ip`, {
+      method: "POST",
+      body: JSON.stringify({ host, port })
+    });
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) {
+      if (dados?.diagnostico) renderDiagnosticoDescoberta(dados.diagnostico);
+      throw new Error(dados?.mensagem || "Nenhum equipamento SteelControl foi identificado nesse IP.");
+    }
+
+    discoveryMessage(dados.mensagem || "Equipamento identificado pelo IP.", "sucesso");
+    await carregarDispositivosDescobertos({ silencioso: true });
+    await carregarDiagnosticoDescoberta({ silencioso: true });
+  } catch (erro) {
+    discoveryMessage(erro?.message || "Falha ao detectar o equipamento pelo IP.", "erro");
+    await carregarDiagnosticoDescoberta({ silencioso: true });
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function renderDispositivosDescobertos() {
+  const grid = document.getElementById("discoveredDevicesGrid");
+  if (!grid) return;
+
+  if (!dispositivosDescobertos.length) {
+    grid.innerHTML = `
+      <div class="discovery-empty">
+        Nenhum equipamento SteelControl respondeu ainda. Use “Procurar novamente”, confira o diagnóstico abaixo ou detecte pelo IP quando o broadcast estiver bloqueado.
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = dispositivosDescobertos.map(device => {
+    const controlador = formatarControladorLista(device.controller);
+    const protocolo = formatarProtocoloLista(device.protocol);
+    const claimedHere = Boolean(device.claimedByThisCompany);
+    const claimed = Boolean(device.claimed);
+    const disabled = claimed ? "disabled" : "";
+    const buttonLabel = claimedHere ? "Já adicionado" : claimed ? "Indisponível" : "Adicionar ao SteelControl";
+    const buttonIcon = claimed ? "fa-circle-check" : "fa-link";
+
+    return `
+      <article class="discovered-device-card">
+        <div class="discovered-device-top">
+          <div class="discovered-device-icon"><i class="fa-solid fa-microchip"></i></div>
+          <div class="discovered-device-copy">
+            <strong>${escaparHtml(device.name || "Equipamento encontrado")}</strong>
+            <span>${escaparHtml(device.manufacturer || "Fabricante não informado")} • ${escaparHtml(device.model || "Modelo não informado")}</span>
+          </div>
+          <span class="discovery-online">${escaparHtml(device.discoverySource || "LAN")}</span>
+        </div>
+        <div class="discovered-device-meta">
+          <div><small>Controlador</small><b>${escaparHtml(controlador)}</b></div>
+          <div><small>Protocolo</small><b>${escaparHtml(protocolo)}</b></div>
+          <div><small>Endereço</small><b>${escaparHtml(device.host)}:${escaparHtml(device.port)}</b></div>
+          <div><small>Último sinal</small><b>${escaparHtml(formatarTempoDescoberta(device.lastSeenAt))}</b></div>
+        </div>
+        <button type="button" class="discovery-approve-btn" ${disabled}
+          onclick="aprovarDispositivoDescoberto('${encodeURIComponent(device.id)}')">
+          <i class="fa-solid ${buttonIcon}"></i> ${buttonLabel}
+        </button>
+      </article>`;
+  }).join("");
+}
+
+async function carregarDispositivosDescobertos({ silencioso = false } = {}) {
+  if (!usuarioEhAdministrador()) return;
+  try {
+    const resposta = await fetchAutenticado(`${API_URL}/descoberta`, { cache: "no-store" });
+    const dados = await resposta.json().catch(() => []);
+    if (!resposta.ok) throw new Error(dados?.mensagem || "Não foi possível consultar a descoberta automática.");
+    dispositivosDescobertos = Array.isArray(dados) ? dados : [];
+    renderDispositivosDescobertos();
+    if (!silencioso && dispositivosDescobertos.length) {
+      discoveryMessage(`${dispositivosDescobertos.length} equipamento(s) compatível(is) visível(is) na rede.`, "sucesso");
+    }
+  } catch (erro) {
+    if (!silencioso) discoveryMessage(erro?.message || "Erro ao consultar equipamentos da rede.", "erro");
+  }
+}
+
+async function varrerDispositivos() {
+  if (!usuarioEhAdministrador()) return;
+  const button = document.getElementById("discoveryScanBtn");
+  const label = button?.querySelector("span");
+  if (button) button.disabled = true;
+  if (label) label.textContent = "Procurando...";
+  discoveryMessage("Procurando equipamentos SteelControl na rede local...");
+  try {
+    const resposta = await fetchAutenticado(`${API_URL}/descoberta/varrer`, { method: "POST" });
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(dados.mensagem || "Não foi possível iniciar a busca.");
+    discoveryMessage(dados.mensagem || "Busca enviada. Aguardando respostas...");
+    await new Promise(resolve => setTimeout(resolve, 1400));
+    await carregarDispositivosDescobertos();
+    await carregarDiagnosticoDescoberta({ silencioso: true });
+    setTimeout(async () => {
+      await carregarDispositivosDescobertos({ silencioso: true });
+      await carregarDiagnosticoDescoberta({ silencioso: true });
+    }, 2300);
+  } catch (erro) {
+    discoveryMessage(erro?.message || "Erro ao buscar equipamentos.", "erro");
+    await carregarDiagnosticoDescoberta({ silencioso: true });
+  } finally {
+    if (button) button.disabled = false;
+    if (label) label.textContent = "Procurar novamente";
+  }
+}
+
+async function aprovarDispositivoDescoberto(encodedId) {
+  if (!usuarioEhAdministrador()) return;
+  const id = decodeURIComponent(encodedId);
+  const device = dispositivosDescobertos.find(item => item.id === id);
+  if (!device || device.claimed) return;
+
+  const confirmado = window.confirm(
+    `Adicionar "${device.name}" ao SteelControl?\n\n` +
+    `IP: ${device.host}\nControlador: ${formatarControladorLista(device.controller)}\n\n` +
+    "O monitoramento será provisionado automaticamente quando o dispositivo suportar. O controle remoto continuará DESATIVADO por segurança."
+  );
+  if (!confirmado) return;
+
+  discoveryMessage(`Provisionando ${device.name}...`);
+  try {
+    const resposta = await fetchAutenticado(`${API_URL}/descoberta/${encodeURIComponent(id)}/aprovar`, {
+      method: "POST",
+      body: JSON.stringify({})
+    });
+    const dados = await resposta.json().catch(() => ({}));
+    if (!resposta.ok) throw new Error(dados.mensagem || "Não foi possível adicionar o equipamento.");
+
+    discoveryMessage(dados.mensagem || "Equipamento adicionado.", "sucesso");
+    if (dados.deviceKey) {
+      mostrarDeviceKey(dados.deviceKey, "Chave do equipamento — configuração manual necessária");
+    }
+    await Promise.all([carregarMaquinas(), carregarDispositivosDescobertos({ silencioso: true })]);
+  } catch (erro) {
+    discoveryMessage(erro?.message || "Falha no provisionamento.", "erro");
+  }
+}
+
+function iniciarDescobertaAutomatica() {
+  const box = document.getElementById("deviceDiscoveryBox");
+  if (!box || !usuarioEhAdministrador()) return;
+  box.hidden = false;
+  carregarDispositivosDescobertos({ silencioso: true });
+  carregarDiagnosticoDescoberta({ silencioso: true });
+  varrerDispositivos();
+  if (discoveryRefreshTimer) clearInterval(discoveryRefreshTimer);
+  discoveryRefreshTimer = setInterval(() => {
+    if (document.visibilityState === "visible") carregarDispositivosDescobertos({ silencioso: true });
+  }, 6000);
+}
+
+// =========================================================
 // CARREGAR
 // =========================================================
 
@@ -1235,6 +1508,24 @@ function atualizarPerfilControlador() {
 
 document.getElementById("controladorInput")?.addEventListener("change", atualizarPerfilControlador);
 atualizarPerfilControlador();
+
+function atualizarPainelIhm() {
+  const controlador = String(document.getElementById("controladorInput")?.value || "").toUpperCase();
+  const modo = document.getElementById("modoOperacaoInput")?.value || "simulacao";
+  const painel = document.getElementById("hmiConfigPanel");
+  const check = document.getElementById("hmiRemoteEnabledInput");
+  if (!painel) return;
+  const visivel = Boolean(controlador) && controlador !== "DOBOT_MAGICIAN";
+  painel.hidden = !visivel;
+  if (check) {
+    check.disabled = !visivel || modo !== "real";
+    if (modo !== "real") check.checked = false;
+  }
+}
+
+document.getElementById("controladorInput")?.addEventListener("change", atualizarPainelIhm);
+document.getElementById("modoOperacaoInput")?.addEventListener("change", atualizarPainelIhm);
+atualizarPainelIhm();
 
 function criarCardMaquina(
   maquina
@@ -1838,9 +2129,13 @@ function editarMaquina(
   if (dobotBaud) dobotBaud.value = Number(dobot.baudRate || 115200);
   if (dobotMotion) dobotMotion.checked = Boolean(dobot.allowMotion);
 
+  const hmiRemote = document.getElementById("hmiRemoteEnabledInput");
+  if (hmiRemote) hmiRemote.checked = Boolean(maquina.integracaoMeta?.hmi?.remoteControlEnabled);
+
   atualizarAjudaModoOperacao();
   atualizarPainelDobot();
   atualizarPerfilControlador();
+  atualizarPainelIhm();
 
   formMaquina?.classList.add(
     "ativo"
@@ -2136,6 +2431,7 @@ document
   );
 
 atualizarAjudaModoOperacao();
+atualizarPainelIhm();
 
 
 // =========================================================
@@ -2325,7 +2621,14 @@ formMaquina
             allowMotion: Boolean(document.getElementById("dobotAllowMotionInput")?.checked),
             externalSensors: { temperature: false, vibration: false, current: false }
           }}
-        : null;
+        : controlador
+          ? { hmi: {
+              enabled: true,
+              remoteControlEnabled: modoSimulacao
+                ? false
+                : Boolean(document.getElementById("hmiRemoteEnabledInput")?.checked)
+            }}
+          : null;
 
 
       if (
@@ -2498,6 +2801,7 @@ formMaquina
         formMaquina.reset();
         atualizarPainelDobot();
         atualizarPerfilControlador();
+        atualizarPainelIhm();
 
         maquinaEditandoId =
           null;
@@ -2708,3 +3012,4 @@ function aplicarPermissoesDeGestao() {
 }
 
 aplicarPermissoesDeGestao();
+iniciarDescobertaAutomatica();

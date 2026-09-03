@@ -68,6 +68,7 @@ model Usuario {
 
 model Maquina {
   id         Int @id @default(autoincrement())
+  discoveryId String? @unique
   empresaId  Int
   nome       String
   setor      String

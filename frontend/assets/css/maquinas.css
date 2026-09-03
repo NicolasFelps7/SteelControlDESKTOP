@@ -3134,3 +3134,272 @@ html[data-theme="escuro"] .form-disclosure[open] {
     width: 100%;
   }
 }
+
+/* IHM SteelControl - configuração explícita de controle remoto */
+.hmi-config-panel{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:flex-start;padding:15px;border:1px solid #bfdbfe;border-radius:14px;background:#f8fbff}.hmi-config-panel[hidden]{display:none}.hmi-config-icon{width:45px;height:45px;display:grid;place-items:center;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-size:18px}.hmi-config-copy{display:grid;gap:4px}.hmi-config-copy>span{font-size:9px;font-weight:900;letter-spacing:1px;color:#2563eb}.hmi-config-copy>strong{font-size:13px;color:#0f172a}.hmi-config-copy>p{margin:0 0 7px;color:#64748b;font-size:10px;line-height:1.45}.hmi-remote-check{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid #dbe3ef;border-radius:10px;background:#fff;cursor:pointer}.hmi-remote-check input{margin-top:2px}.hmi-remote-check span{display:grid;gap:2px}.hmi-remote-check b{font-size:10px;color:#334155}.hmi-remote-check small{font-size:9px;line-height:1.4;color:#64748b}html[data-theme="escuro"] .hmi-config-panel{border-color:#334155;background:#111c31}html[data-theme="escuro"] .hmi-config-copy>strong,html[data-theme="escuro"] .hmi-remote-check b{color:#e5edf8}html[data-theme="escuro"] .hmi-remote-check{border-color:#334155;background:#172238}
+
+
+/* =========================================================
+   DESCOBERTA AUTOMÁTICA DE EQUIPAMENTOS
+========================================================= */
+.device-discovery-box{margin-top:22px;padding:24px;border:1px solid var(--borda);border-radius:20px;background:var(--card);box-shadow:0 14px 38px rgba(15,23,42,.06)}
+.device-discovery-box[hidden]{display:none}.device-discovery-header{display:flex;align-items:flex-start;justify-content:space-between;gap:22px}.device-discovery-header h2{margin:5px 0 5px;color:var(--texto);font-size:21px}.device-discovery-header p{max-width:760px;margin:0;color:var(--texto-suave);font-size:12px;line-height:1.55}.discovery-scan-btn{min-height:44px;padding:0 16px;border:0;border-radius:12px;background:var(--azul);color:#fff;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap}.discovery-scan-btn:disabled{opacity:.6;cursor:wait}.discovery-security-note{margin-top:16px;padding:12px 14px;border:1px solid #bfdbfe;border-radius:13px;background:#eff6ff;color:#1e3a8a;display:flex;gap:10px;align-items:flex-start;font-size:11px;line-height:1.5}.discovered-devices-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.discovered-device-card{padding:15px;border:1px solid var(--borda);border-radius:15px;background:var(--card-soft);display:grid;gap:11px}.discovered-device-top{display:flex;gap:10px;align-items:flex-start}.discovered-device-icon{width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:rgba(37,99,235,.1);color:var(--azul);display:grid;place-items:center;font-size:17px}.discovered-device-copy{min-width:0;flex:1}.discovered-device-copy strong{display:block;color:var(--texto);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.discovered-device-copy span{display:block;margin-top:2px;color:var(--texto-suave);font-size:10px}.discovery-online{display:inline-flex;align-items:center;gap:5px;color:#15803d;font-size:9px;font-weight:800}.discovery-online::before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e}.discovered-device-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px}.discovered-device-meta div{padding:8px 9px;border:1px solid var(--borda);border-radius:10px;background:var(--card)}.discovered-device-meta small{display:block;color:var(--texto-suave);font-size:8px;text-transform:uppercase;font-weight:800;letter-spacing:.45px}.discovered-device-meta b{display:block;margin-top:2px;color:var(--texto);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.discovery-approve-btn{width:100%;min-height:40px;border:0;border-radius:10px;background:#0f172a;color:#fff;font-size:11px;font-weight:800;cursor:pointer}.discovery-approve-btn:disabled{background:#94a3b8;cursor:not-allowed}.discovery-empty{grid-column:1/-1;padding:24px;border:1px dashed var(--borda);border-radius:13px;text-align:center;color:var(--texto-suave);font-size:12px}.discovery-message{min-height:18px;margin:10px 0 0;font-size:11px;color:var(--texto-suave)}.discovery-message.erro{color:#b91c1c}.discovery-message.sucesso{color:#15803d}
+html[data-theme="escuro"] .device-discovery-box{background:#0f192b;border-color:#2b3b55}html[data-theme="escuro"] .discovery-security-note{background:#111f38;border-color:#27456f;color:#bfdbfe}html[data-theme="escuro"] .discovered-device-card{background:#111c31;border-color:#2b3b55}html[data-theme="escuro"] .discovered-device-meta div{background:#0e1728;border-color:#2b3b55}html[data-theme="escuro"] .discovery-approve-btn{background:#2563eb}
+@media(max-width:980px){.discovered-devices-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.device-discovery-header{flex-direction:column}.discovery-scan-btn{width:100%;justify-content:center}.discovered-devices-grid{grid-template-columns:1fr}}
+
+/* SteelControl — descoberta resiliente: fallback por IP + diagnóstico */
+.discovery-ip-fallback{margin-top:14px;padding:14px;border:1px solid var(--borda);border-radius:14px;background:var(--card-soft);display:grid;grid-template-columns:minmax(220px,1fr) minmax(360px,1.2fr);gap:14px;align-items:end}
+.discovery-ip-copy{display:grid;gap:4px}.discovery-ip-copy strong{color:var(--texto);font-size:12px}.discovery-ip-copy span{color:var(--texto-suave);font-size:10px;line-height:1.5}
+.discovery-ip-controls{display:grid;grid-template-columns:minmax(170px,1fr) 92px auto;gap:8px;align-items:end}.discovery-ip-field,.discovery-port-field{display:grid;gap:5px}.discovery-ip-field span,.discovery-port-field span{font-size:8px;text-transform:uppercase;letter-spacing:.55px;font-weight:800;color:var(--texto-suave)}.discovery-ip-field input,.discovery-port-field input{width:100%;height:40px;padding:0 11px;border:1px solid var(--borda);border-radius:10px;background:var(--card);color:var(--texto);font:inherit;font-size:11px;outline:none}.discovery-ip-field input:focus,.discovery-port-field input:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(37,99,235,.10)}.discovery-ip-btn{height:40px;padding:0 13px;border:0;border-radius:10px;background:#0f172a;color:#fff;font-size:10px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}.discovery-ip-btn:disabled{opacity:.55;cursor:wait}
+.discovery-diagnostics{margin-top:12px;border:1px solid var(--borda);border-radius:14px;background:var(--card);overflow:hidden}.discovery-diagnostics>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--texto)}.discovery-diagnostics>summary::-webkit-details-marker{display:none}.discovery-diagnostics>summary span{font-size:11px;font-weight:800;display:flex;align-items:center;gap:7px}.discovery-diagnostics>summary span i{color:var(--azul)}.discovery-diagnostics>summary small{color:var(--texto-suave);font-size:9px;font-weight:600}.discovery-diagnostics[open]>summary{border-bottom:1px solid var(--borda)}.discovery-diagnostics-content{padding:13px 14px;display:grid;gap:10px}.discovery-diagnostic-loading{color:var(--texto-suave);font-size:10px}
+.diagnostic-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.diagnostic-summary-grid>div{padding:9px 10px;border:1px solid var(--borda);border-radius:10px;background:var(--card-soft)}.diagnostic-summary-grid small{display:block;color:var(--texto-suave);font-size:8px;text-transform:uppercase;font-weight:800;letter-spacing:.35px}.diagnostic-summary-grid b{display:block;margin-top:3px;color:var(--texto);font-size:10px}.diagnostic-summary-grid b.ok{color:#15803d}.diagnostic-summary-grid b.erro{color:#b91c1c}
+.diagnostic-interface-list{display:flex;flex-wrap:wrap;gap:6px}.diagnostic-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--borda);border-radius:999px;background:var(--card-soft);color:var(--texto-suave);font-size:9px;font-weight:700}.diagnostic-chip i{color:var(--azul)}.diagnostic-chip.warning i{color:#d97706}
+.diagnostic-issues{display:grid;gap:6px}.diagnostic-issue,.diagnostic-ok{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:10px;font-size:9.5px;line-height:1.45}.diagnostic-issue.info{background:#eff6ff;color:#1e3a8a}.diagnostic-issue.warning{background:#fffbeb;color:#92400e}.diagnostic-issue.error{background:#fef2f2;color:#991b1b}.diagnostic-ok{background:#f0fdf4;color:#166534}.diagnostic-issue i,.diagnostic-ok i{margin-top:2px}.diagnostic-footnote{margin:0;color:var(--texto-suave);font-size:9px;line-height:1.5}.diagnostic-footnote code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--texto);font-size:9px}
+html[data-theme="escuro"] .discovery-ip-fallback,html[data-theme="escuro"] .diagnostic-summary-grid>div,html[data-theme="escuro"] .diagnostic-chip{background:#111c31;border-color:#2b3b55}html[data-theme="escuro"] .discovery-ip-field input,html[data-theme="escuro"] .discovery-port-field input,html[data-theme="escuro"] .discovery-diagnostics{background:#0f192b;border-color:#2b3b55}html[data-theme="escuro"] .discovery-ip-btn{background:#2563eb}html[data-theme="escuro"] .diagnostic-issue.info{background:#10213d;color:#bfdbfe}html[data-theme="escuro"] .diagnostic-issue.warning{background:#2b2110;color:#fde68a}html[data-theme="escuro"] .diagnostic-issue.error{background:#321618;color:#fecaca}html[data-theme="escuro"] .diagnostic-ok{background:#10271a;color:#bbf7d0}
+@media(max-width:980px){.discovery-ip-fallback{grid-template-columns:1fr}.diagnostic-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.discovery-ip-controls{grid-template-columns:1fr 90px}.discovery-ip-btn{grid-column:1/-1}.discovery-diagnostics>summary{align-items:flex-start;flex-direction:column}.diagnostic-summary-grid{grid-template-columns:1fr 1fr}}@media(max-width:430px){.discovery-ip-controls{grid-template-columns:1fr}.discovery-port-field{max-width:none}.discovery-ip-btn{grid-column:auto}.diagnostic-summary-grid{grid-template-columns:1fr}}
+
+
+/* SteelControl — Discovery UI Professional 2026-09-03 */
+.device-discovery-box{
+  --discovery-font:"Segoe UI Variable Text","Segoe UI Variable","Segoe UI",Arial,sans-serif;
+  margin-top:26px;
+  padding:28px;
+  border:1px solid color-mix(in srgb,var(--borda) 88%,#94a3b8 12%);
+  border-radius:22px;
+  background:var(--card);
+  box-shadow:0 18px 52px rgba(15,23,42,.07);
+  font-family:var(--discovery-font);
+}
+.device-discovery-box *{font-family:inherit}
+.device-discovery-header{align-items:center;gap:28px}
+.device-discovery-header>div{min-width:0}
+.device-discovery-header .section-label{
+  display:block;
+  margin-bottom:7px;
+  color:#2563eb;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.14em;
+}
+.device-discovery-header h2{
+  margin:0;
+  color:var(--texto);
+  font-size:26px;
+  font-weight:720;
+  line-height:1.18;
+  letter-spacing:-.035em;
+}
+.device-discovery-header p{
+  max-width:840px;
+  margin:7px 0 0;
+  color:var(--texto-suave);
+  font-size:13.5px;
+  font-weight:400;
+  line-height:1.6;
+}
+.discovery-scan-btn{
+  min-height:46px;
+  padding:0 18px;
+  border-radius:12px;
+  box-shadow:0 7px 18px rgba(37,99,235,.18);
+  font-size:13px;
+  font-weight:650;
+  letter-spacing:0;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.discovery-scan-btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(37,99,235,.22)}
+.discovery-security-note{
+  margin-top:20px;
+  padding:13px 15px;
+  border-color:#c7dcff;
+  border-radius:12px;
+  background:#f3f7ff;
+  color:#244577;
+  gap:11px;
+  font-size:12px;
+  font-weight:450;
+  line-height:1.55;
+}
+.discovery-security-note i{margin-top:2px;color:#2563eb;font-size:14px}
+.discovery-ip-fallback{
+  margin-top:16px;
+  padding:18px;
+  border-color:color-mix(in srgb,var(--borda) 90%,#94a3b8 10%);
+  border-radius:16px;
+  background:color-mix(in srgb,var(--card-soft) 55%,var(--card) 45%);
+  grid-template-columns:minmax(280px,.9fr) minmax(520px,1.35fr);
+  gap:24px;
+  align-items:center;
+}
+.discovery-ip-copy{gap:6px;padding-right:8px}
+.discovery-ip-copy strong{color:var(--texto);font-size:14px;font-weight:700;letter-spacing:-.012em}
+.discovery-ip-copy span{max-width:560px;color:var(--texto-suave);font-size:12px;font-weight:400;line-height:1.55}
+.discovery-ip-controls{grid-template-columns:minmax(230px,1fr) 104px auto;gap:10px;align-items:end}
+.discovery-ip-field,.discovery-port-field{gap:7px}
+.discovery-ip-field span,.discovery-port-field span{
+  color:var(--texto-suave);
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.discovery-ip-field input,.discovery-port-field input{
+  height:46px;
+  padding:0 13px;
+  border-radius:11px;
+  background:var(--card);
+  color:var(--texto);
+  font-size:13px;
+  font-weight:450;
+  font-variant-numeric:tabular-nums;
+}
+.discovery-ip-field input::placeholder{color:#94a3b8}
+.discovery-ip-btn{
+  height:46px;
+  padding:0 16px;
+  border-radius:11px;
+  background:#15223a;
+  font-size:12px;
+  font-weight:650;
+  transition:transform .16s ease,background .16s ease;
+}
+.discovery-ip-btn:not(:disabled):hover{transform:translateY(-1px);background:#0f172a}
+.discovery-diagnostics{
+  margin-top:16px;
+  border-radius:16px;
+  box-shadow:0 5px 18px rgba(15,23,42,.025);
+}
+.discovery-diagnostics>summary{padding:15px 17px;min-height:56px}
+.discovery-diagnostics>summary span{font-size:13px;font-weight:700;gap:9px}
+.discovery-diagnostics>summary span i{font-size:15px}
+.discovery-diagnostics>summary small{font-size:10.5px;font-weight:450;line-height:1.4}
+.discovery-diagnostics-content{padding:16px 17px 17px;gap:13px}
+.discovery-diagnostic-loading{font-size:12px}
+.diagnostic-summary-grid{gap:10px}
+.diagnostic-summary-grid>div{
+  min-height:68px;
+  padding:12px 13px;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.diagnostic-summary-grid small{font-size:9px;font-weight:700;letter-spacing:.07em}
+.diagnostic-summary-grid b{margin-top:5px;font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums}
+.diagnostic-interface-list{gap:8px}
+.diagnostic-chip{padding:7px 10px;border-radius:999px;font-size:10.5px;font-weight:550}
+.diagnostic-issues{gap:8px}
+.diagnostic-issue,.diagnostic-ok{padding:10px 12px;border-radius:11px;font-size:11px;font-weight:450;line-height:1.5}
+.diagnostic-footnote{font-size:10.5px;line-height:1.55}
+.diagnostic-footnote code{font-size:10px}
+.discovered-devices-grid{gap:14px;margin-top:18px}
+.discovered-device-card{padding:17px;border-radius:16px;gap:13px}
+.discovered-device-icon{width:46px;height:46px;flex-basis:46px;border-radius:13px;font-size:18px}
+.discovered-device-copy strong{font-size:14px;font-weight:700}
+.discovered-device-copy span{font-size:11px;line-height:1.45}
+.discovery-online{font-size:10px;font-weight:650}
+.discovered-device-meta{gap:8px}
+.discovered-device-meta div{padding:9px 10px;border-radius:10px}
+.discovered-device-meta small{font-size:8.5px;font-weight:700}
+.discovered-device-meta b{font-size:11px;font-weight:600}
+.discovery-approve-btn{min-height:42px;border-radius:11px;font-size:12px;font-weight:650}
+.discovery-empty{
+  min-height:76px;
+  padding:24px 26px;
+  border-color:color-mix(in srgb,var(--borda) 75%,#94a3b8 25%);
+  border-radius:15px;
+  background:color-mix(in srgb,var(--card-soft) 62%,transparent 38%);
+  color:var(--texto-suave);
+  font-size:12.5px;
+  font-weight:400;
+  line-height:1.55;
+  display:grid;
+  place-items:center;
+}
+.discovery-empty strong{color:var(--texto);font-weight:650}
+.discovery-message{min-height:20px;margin:11px 2px 0;font-size:11.5px;line-height:1.5}
+html[data-theme="escuro"] .device-discovery-box{background:#0e192b;border-color:#2a3a54;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+html[data-theme="escuro"] .discovery-security-note{background:#10213b;border-color:#294c7a;color:#c7dcff}
+html[data-theme="escuro"] .discovery-ip-fallback{background:#101c30;border-color:#2b3b55}
+html[data-theme="escuro"] .discovery-ip-btn{background:#2563eb}
+html[data-theme="escuro"] .discovery-empty{background:#101b2d;border-color:#334155}
+@media(max-width:1180px){.discovery-ip-fallback{grid-template-columns:1fr;gap:16px}.discovery-ip-copy{padding-right:0}}
+@media(max-width:760px){.device-discovery-box{padding:20px;border-radius:18px}.device-discovery-header{align-items:stretch}.device-discovery-header h2{font-size:23px}.device-discovery-header p{font-size:12.5px}.discovery-ip-controls{grid-template-columns:1fr 100px}.discovery-ip-btn{grid-column:1/-1}.discovery-diagnostics>summary small{display:none}}
+@media(max-width:480px){.device-discovery-box{padding:16px}.device-discovery-header h2{font-size:21px}.discovery-ip-fallback{padding:15px}.discovery-ip-controls{grid-template-columns:1fr}.discovery-ip-btn{grid-column:auto}.diagnostic-summary-grid{grid-template-columns:1fr}.discovery-security-note{font-size:11.5px}}
+
+
+/* SteelControl — Discovery UI Compact 2026-09-03
+   Mantém todas as funções, reduz a altura e evita excesso de informação visual. */
+.device-discovery-box{
+  margin-top:18px;
+  padding:18px 20px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(15,23,42,.05);
+}
+.device-discovery-header{gap:18px;align-items:center}
+.device-discovery-header .section-label{margin-bottom:4px;font-size:9px;letter-spacing:.12em}
+.device-discovery-header h2{font-size:22px;line-height:1.15;letter-spacing:-.025em}
+.device-discovery-header p{margin-top:4px;font-size:11.5px;line-height:1.4;max-width:800px}
+.discovery-scan-btn{min-height:38px;padding:0 14px;border-radius:10px;font-size:11.5px;box-shadow:0 5px 14px rgba(37,99,235,.14)}
+.discovery-security-note{margin-top:12px;padding:8px 11px;border-radius:10px;gap:8px;font-size:10.5px;line-height:1.35;align-items:center}
+.discovery-security-note i{margin-top:0;font-size:12px}
+.discovery-ip-fallback{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:13px;
+  grid-template-columns:minmax(220px,.72fr) minmax(540px,1.45fr);
+  gap:18px;
+  align-items:end;
+}
+.discovery-ip-copy{gap:3px;padding-right:0}
+.discovery-ip-copy strong{font-size:12.5px}
+.discovery-ip-copy span{font-size:10.5px;line-height:1.35}
+.discovery-ip-controls{grid-template-columns:minmax(210px,1fr) 86px auto;gap:8px}
+.discovery-ip-field,.discovery-port-field{gap:4px}
+.discovery-ip-field span,.discovery-port-field span{font-size:8px;letter-spacing:.07em}
+.discovery-ip-field input,.discovery-port-field input{height:38px;padding:0 11px;border-radius:9px;font-size:11.5px}
+.discovery-ip-btn{height:38px;padding:0 13px;border-radius:9px;font-size:10.5px}
+.discovery-diagnostics{margin-top:10px;border-radius:13px;box-shadow:none}
+.discovery-diagnostics>summary{padding:10px 13px;min-height:42px}
+.discovery-diagnostics>summary span{font-size:11.5px;gap:7px}
+.discovery-diagnostics>summary span i{font-size:13px}
+.discovery-diagnostics>summary small{font-size:9px}
+.discovery-diagnostics-content{padding:11px 13px 12px;gap:9px}
+.diagnostic-summary-grid{gap:7px}
+.diagnostic-summary-grid>div{min-height:48px;padding:8px 10px;border-radius:9px}
+.diagnostic-summary-grid small{font-size:7.5px}
+.diagnostic-summary-grid b{margin-top:2px;font-size:10.5px}
+.diagnostic-interface-list{gap:6px}
+.diagnostic-chip{padding:5px 8px;font-size:9px}
+.diagnostic-issues{gap:6px}
+.diagnostic-issue,.diagnostic-ok{padding:7px 9px;border-radius:9px;font-size:9.5px;line-height:1.35}
+.diagnostic-footnote{font-size:9px;line-height:1.35}
+.diagnostic-footnote code{font-size:8.5px}
+.discovered-devices-grid{gap:10px;margin-top:12px}
+.discovered-device-card{padding:12px;border-radius:13px;gap:9px}
+.discovered-device-icon{width:38px;height:38px;flex-basis:38px;border-radius:10px;font-size:16px}
+.discovered-device-copy strong{font-size:12.5px}
+.discovered-device-copy span{font-size:10px}
+.discovered-device-meta{gap:6px}
+.discovered-device-meta div{padding:7px 8px;border-radius:9px}
+.discovered-device-meta small{font-size:7.5px}
+.discovered-device-meta b{font-size:9.5px}
+.discovery-approve-btn{min-height:36px;border-radius:9px;font-size:10.5px}
+.discovery-empty{min-height:46px;padding:12px 16px;border-radius:12px;font-size:10.5px;line-height:1.35}
+.discovery-message{min-height:14px;margin:7px 2px 0;font-size:9.5px;line-height:1.35}
+@media(max-width:1180px){
+  .discovery-ip-fallback{grid-template-columns:1fr;gap:10px}
+  .discovery-ip-copy span{max-width:none}
+}
+@media(max-width:760px){
+  .device-discovery-box{padding:16px;border-radius:16px}
+  .device-discovery-header h2{font-size:20px}
+  .device-discovery-header p{font-size:11px}
+  .discovery-ip-controls{grid-template-columns:1fr 88px}
+  .discovery-ip-btn{grid-column:1/-1}
+}
+@media(max-width:480px){
+  .device-discovery-box{padding:14px}
+  .discovery-ip-fallback{padding:11px}
+  .discovery-security-note{font-size:10px}
+  .diagnostic-summary-grid{grid-template-columns:1fr 1fr}
+}

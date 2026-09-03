@@ -1,0 +1,21 @@
+SteelControl Desktop — correção de sincronização AUTO/MANUAL da IHM
+
+O que foi corrigido:
+- o badge superior AUTO/MANUAL passa a refletir imediatamente o modo escolhido;
+- o botão ativo AUTO/MANUAL fica sincronizado com o estado persistido da simulação;
+- respostas antigas de polling não sobrescrevem mais um comando mais recente;
+- requisições de diagnóstico usam no-store para evitar estado antigo de cache;
+- em equipamento real, a telemetria do controlador continua sendo a fonte autoritativa;
+- cache-busting do controller-runtime atualizado no index.html.
+
+Instalação:
+1. Feche o SteelControl.
+2. Extraia este PATCH na raiz do projeto principal.
+3. Escolha substituir os arquivos existentes.
+4. Inicie novamente com INICIAR_STEELCONTROL.ps1.
+5. No navegador, faça Ctrl+F5 uma vez.
+
+Validação executada:
+- npm run quality: OK
+- 44/44 testes do backend: OK
+- validações estática, controladores, Dobot, segredos, Docker e code-freeze: OK

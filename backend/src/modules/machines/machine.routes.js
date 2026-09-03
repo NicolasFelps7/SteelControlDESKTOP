@@ -14,6 +14,7 @@ import {
   regenerarDeviceKey,
   liberarSeguranca,
   streamMaquina,
+  criarComandoIhm,
   criarComandoDobot
 } from "./machine.controller.js";
 
@@ -28,6 +29,7 @@ machineRoutes.get("/:id/stream", streamMaquina);
 machineRoutes.get("/:id/diagnostico", diagnostico);
 machineRoutes.post("/:id/device-key/regenerar", regenerarDeviceKey);
 machineRoutes.post("/:id/liberar-seguranca", liberarSeguranca);
+machineRoutes.post("/:id/ihm/comandos", criarComandoIhm);
 machineRoutes.post("/:id/comandos", criarComandoDobot);
 machineRoutes.post("/:id/demonstracao", demonstracao);
 

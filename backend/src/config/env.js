@@ -112,6 +112,24 @@ if (
   );
 }
 
+
+const discoveryPort =
+  Math.max(
+    1024,
+    Math.min(
+      65535,
+      Number(process.env.DISCOVERY_PORT || 4210) || 4210
+    )
+  );
+
+const discoveryEnabled =
+  !["0", "false", "off", "no"].includes(
+    texto("DISCOVERY_ENABLED").toLowerCase()
+  );
+
+const discoveryAdvertiseUrl =
+  texto("DISCOVERY_ADVERTISE_URL");
+
 const corsPadrao =
   nodeEnv === "production"
     ? ""
@@ -166,6 +184,10 @@ export const env = {
           item.trim()
       )
       .filter(Boolean),
+
+  discoveryPort,
+  discoveryEnabled,
+  discoveryAdvertiseUrl,
 
   deviceCommandLeaseMs:
     Math.max(

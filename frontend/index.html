@@ -30,7 +30,7 @@
   <script src="assets/vendor/steel-charts/steel-charts.js?v=1"></script>
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
   <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DARK_COMPLETE">
-  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260902_BRAND_STANDARD">
+  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260903_IHM_SUPERVISIONADA">
   <link rel="stylesheet" href="assets/css/runtime-typography.css?v=20260902_PRO_TYPOGRAPHY">
   <link rel="stylesheet" href="assets/css/professional-ui.css?v=20260903_DESKTOP_POLISH">
 
@@ -1951,6 +1951,105 @@
         <article><i class="fa-solid fa-clock-rotate-left"></i><span>Última leitura</span><strong id="controllerLastReading">--</strong></article>
       </div>
 
+      <article class="hmi-console" id="hmiConsole">
+        <div class="hmi-console-head">
+          <div>
+            <span class="hmi-eyebrow">IHM • CONTROLE SUPERVISIONADO</span>
+            <h3>Processo da máquina</h3>
+            <p>Visualização do processo, sensores, intertravamentos e comandos operacionais.</p>
+          </div>
+          <div class="hmi-head-badges">
+            <span id="hmiModeBadge" class="hmi-pill mode">AUTO</span>
+            <span id="hmiRunBadge" class="hmi-pill stopped"><i></i><strong>PARADA</strong></span>
+          </div>
+        </div>
+
+        <div class="hmi-layout">
+          <div class="hmi-process-card">
+            <div class="hmi-process-topbar">
+              <div><span>LINHA / CÉLULA</span><strong id="hmiProcessName">Processo principal</strong></div>
+              <div class="hmi-flow-status" id="hmiFlowStatus"><i class="fa-solid fa-circle-pause"></i> Processo parado</div>
+            </div>
+
+            <div class="hmi-process" id="hmiProcessDiagram" aria-label="Representação do processo industrial">
+              <div class="hmi-station source">
+                <div class="hmi-station-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <span>Entrada</span>
+                <strong>Alimentação</strong>
+              </div>
+
+              <div class="hmi-conveyor" data-zone="entry">
+                <div class="hmi-track"><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="hmi-sensor" id="hmiSensorEntry"><i></i><span>S1</span></div>
+                <small>Esteira A</small>
+              </div>
+
+              <div class="hmi-station center">
+                <div class="hmi-machine-block">
+                  <i class="fa-solid fa-gears"></i>
+                  <span id="hmiMachineBlockState">AGUARDANDO</span>
+                </div>
+                <div class="hmi-sensor vertical" id="hmiSensorMiddle"><i></i><span>S2</span></div>
+                <strong>Estação de processo</strong>
+              </div>
+
+              <div class="hmi-conveyor" data-zone="exit">
+                <div class="hmi-track"><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="hmi-sensor" id="hmiSensorExit"><i></i><span>S3</span></div>
+                <small>Esteira B</small>
+              </div>
+
+              <div class="hmi-station output">
+                <div class="hmi-station-icon"><i class="fa-solid fa-box-open"></i></div>
+                <span>Saída</span>
+                <strong>Produto</strong>
+              </div>
+              <div class="hmi-product" id="hmiAnimatedProduct" aria-hidden="true"><i class="fa-solid fa-cube"></i></div>
+            </div>
+
+            <div class="hmi-process-footer">
+              <div><span>Produção</span><strong id="hmiProduction">--</strong></div>
+              <div><span>Ciclos</span><strong id="hmiCycles">--</strong></div>
+              <div><span>Temperatura</span><strong id="hmiTemperature">--</strong></div>
+              <div><span>Vibração</span><strong id="hmiVibration">--</strong></div>
+            </div>
+          </div>
+
+          <aside class="hmi-side">
+            <section class="hmi-status-panel">
+              <div class="hmi-section-title"><span>CADEIA DE OPERAÇÃO</span><strong>Intertravamentos</strong></div>
+              <div class="hmi-lamp-row" id="hmiInterlockStart"><i></i><span>Permissão de START</span><strong>Não informado</strong></div>
+              <div class="hmi-lamp-row" id="hmiInterlockEstop"><i></i><span>Circuito E-stop</span><strong>Não informado</strong></div>
+              <div class="hmi-lamp-row" id="hmiInterlockDoor"><i></i><span>Porta / proteção</span><strong>Não informado</strong></div>
+              <div class="hmi-lamp-row" id="hmiAlarmLamp"><i></i><span>Alarme de processo</span><strong>Normal</strong></div>
+            </section>
+
+            <section class="hmi-command-panel">
+              <div class="hmi-section-title"><span>COMANDOS</span><strong>Operação supervisionada</strong></div>
+              <div class="hmi-command-grid">
+                <button type="button" class="hmi-command start" data-hmi-command="IHM_START"><i class="fa-solid fa-play"></i><span>START</span></button>
+                <button type="button" class="hmi-command stop" data-hmi-command="IHM_STOP"><i class="fa-solid fa-stop"></i><span>STOP</span></button>
+                <button type="button" class="hmi-command" data-hmi-command="IHM_RESET"><i class="fa-solid fa-rotate"></i><span>RESET</span></button>
+                <button type="button" class="hmi-command" data-hmi-command="IHM_ACK"><i class="fa-solid fa-check-double"></i><span>ACK</span></button>
+              </div>
+              <div class="hmi-mode-control">
+                <span>Modo operacional</span>
+                <div>
+                  <button type="button" data-hmi-command="IHM_MODE_AUTO">AUTO</button>
+                  <button type="button" data-hmi-command="IHM_MODE_MANUAL">MANUAL</button>
+                </div>
+              </div>
+              <div class="hmi-command-state" id="hmiCommandState"><i class="fa-solid fa-shield-halved"></i><span>Controle aguardando diagnóstico.</span></div>
+            </section>
+          </aside>
+        </div>
+
+        <div class="hmi-safety-note">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div><strong>STOP da tela é uma parada operacional.</strong><span>Não substitui botão de emergência, relé de segurança, Safety PLC, cortina de luz ou outros dispositivos físicos certificados. START real só é liberado após telemetria recente e confirmação positiva dos intertravamentos pelo equipamento.</span></div>
+        </div>
+      </article>
+
       <div class="controller-grid">
         <article class="controller-panel">
           <div class="controller-panel-head"><div><span>TELEMETRIA COMPATÍVEL</span><h3>Indicadores do equipamento</h3></div><i class="fa-solid fa-chart-line"></i></div>
@@ -2308,12 +2407,12 @@
        SCRIPTS
   =================================================== -->
 
-  <script src="assets/js/config.js?v=20260903_I18N_OBSERVER_FIX"></script>
+  <script src="assets/js/config.js?v=20260903_IHM_I18N"></script>
 
   <script src="assets/js/dashboard.js?v=20260903_STATUS_ARCHIVE_I18N"></script>
 
   <script src="assets/js/industrial-runtime.js?v=20260831_PROD_FINAL"></script>
-  <script src="assets/js/controller-runtime.js?v=20260902_NAVIGATION_STABLE"></script>
+  <script src="assets/js/controller-runtime.js?v=20260903_IHM_MODE_SYNC1"></script>
   <script src="assets/js/dobot-runtime.js?v=20260901_DOBOT_DEDICADO"></script>
 
 </body>

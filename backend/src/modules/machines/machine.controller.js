@@ -4,6 +4,7 @@ import { podeAcionarSimulacao, calcularEstadoConexao } from "../../lib/machinePo
 import { gerarDeviceKey, hashDeviceKey, deviceKeyHint } from "../../lib/deviceSecurity.js";
 import { processarTelemetria, validarLimitesMaquina } from "../../lib/telemetryService.js";
 import { publicarEventoMaquina, assinarEventosMaquina } from "../../lib/realtime.js";
+import { normalizarComandoIhm, politicaComandoIhm, cargoPodeComandoIhm, expiraEmComandoIhm, avaliarPermissaoStartIhm, controleRemotoIhmHabilitado } from "../../lib/hmiPolicy.js";
 
 function ehAdministrador(req) {
   return req.auth?.cargo === "ADMINISTRADOR";
@@ -100,6 +101,44 @@ function validarPayloadDobot(comando, payload = {}) {
   const velocidade = Number(payload?.velocidade ?? 40);
   resultado.velocidade = Math.max(1, Math.min(100, Number.isFinite(velocidade) ? velocidade : 40));
   return resultado;
+}
+
+function metaIhmComPatch(maquina, patch = {}) {
+  const metaAtual = maquina?.integracaoMeta && typeof maquina.integracaoMeta === "object" && !Array.isArray(maquina.integracaoMeta)
+    ? maquina.integracaoMeta
+    : {};
+  const hmiAtual = metaAtual.hmi && typeof metaAtual.hmi === "object" && !Array.isArray(metaAtual.hmi)
+    ? metaAtual.hmi
+    : {};
+  return {
+    ...metaAtual,
+    hmi: {
+      enabled: true,
+      remoteControlEnabled: Boolean(hmiAtual.remoteControlEnabled),
+      ...hmiAtual,
+      ...patch
+    }
+  };
+}
+
+function estadoHmiAtual(maquina, dadosExtras = null) {
+  const hmiTelemetria = dadosExtras?.hmi || {};
+  const hmiMeta = maquina?.integracaoMeta?.hmi || {};
+  const simulation = maquina?.modoSimulacao !== false;
+  const running = simulation && typeof hmiMeta.running === "boolean"
+    ? hmiMeta.running
+    : typeof hmiTelemetria.running === "boolean"
+      ? hmiTelemetria.running
+      : typeof hmiMeta.running === "boolean"
+        ? hmiMeta.running
+        : String(maquina?.status || "").toLowerCase() === "ligada";
+  return {
+    running,
+    mode: String(simulation ? (hmiMeta.mode || hmiTelemetria.mode || "AUTO") : (hmiTelemetria.mode || hmiMeta.mode || "AUTO")).toUpperCase(),
+    alarm: Boolean(hmiTelemetria.alarm || maquina?.paradaSeguranca),
+    interlocks: hmiTelemetria.interlocks || null,
+    sensors: hmiTelemetria.sensors || null
+  };
 }
 
 function formatarData(data) {
@@ -645,21 +684,42 @@ export async function simular(req, res, next) {
     }
 
     const parado = Boolean(maquina.paradaSeguranca);
+    const hmi = estadoHmiAtual(maquina);
+    const rodando = !parado && hmi.running !== false;
+    const fase = maquina.ciclos % 6;
     const dados = {
-      temperatura: parado
-        ? Math.max(30, maquina.temperatura - 2)
-        : 34 + Math.random() * 12,
-      vibracao: parado ? 0.2 : 0.8 + Math.random() * 1.8,
-      corrente: parado ? 0.1 : 0.6 + Math.random() * 1.2,
-      producao: parado
-        ? maquina.producao
-        : maquina.producao + Math.floor(Math.random() * 6),
-      ciclos: parado
-        ? maquina.ciclos
-        : maquina.ciclos + Math.floor(Math.random() * 3),
-      consumoEnergia: parado ? 12 : 45 + Math.random() * 22,
+      temperatura: rodando
+        ? 34 + Math.random() * 12
+        : Math.max(28, maquina.temperatura - 1.5),
+      vibracao: rodando ? 0.8 + Math.random() * 1.8 : 0.15 + Math.random() * 0.2,
+      corrente: rodando ? 0.6 + Math.random() * 1.2 : 0.05 + Math.random() * 0.08,
+      producao: rodando
+        ? maquina.producao + Math.floor(Math.random() * 4)
+        : maquina.producao,
+      ciclos: rodando
+        ? maquina.ciclos + 1
+        : maquina.ciclos,
+      consumoEnergia: rodando ? 45 + Math.random() * 22 : 8 + Math.random() * 5,
       qualidadeSinal: 100,
-      latenciaMs: 0
+      latenciaMs: 0,
+      dadosExtras: {
+        hmi: {
+          running: rodando,
+          mode: hmi.mode || "AUTO",
+          alarm: parado,
+          interlocks: {
+            startPermitted: !parado,
+            estopOk: !parado,
+            safetyDoorClosed: true,
+            guardOk: true
+          },
+          sensors: {
+            entry: rodando && fase === 0,
+            middle: rodando && [2, 3].includes(fase),
+            exit: rodando && fase === 5
+          }
+        }
+      }
     };
 
     await processarTelemetria({
@@ -821,6 +881,14 @@ export async function diagnostico(req, res, next) {
       paradaSeguranca: maquina.paradaSeguranca,
       motivoParada: maquina.motivoParada,
       comandosPendentes: maquina.comandos.length,
+      comandosIhm: maquina.comandos
+        .filter(item => String(item.comando || "").startsWith("IHM_"))
+        .map(item => ({ id: item.id, comando: item.comando, status: item.status, criadoEm: item.criadoEm })),
+      hmi: {
+        ...estadoHmiAtual(maquina, ultimaLeitura?.dadosExtras),
+        remoteControlEnabled: controleRemotoIhmHabilitado(maquina),
+        startPolicy: avaliarPermissaoStartIhm({ maquina, estadoConexao, dadosExtras: ultimaLeitura?.dadosExtras })
+      },
       limites: {
         tempAtencao: maquina.tempAtencao,
         tempCritica: maquina.tempCritica,
@@ -831,6 +899,159 @@ export async function diagnostico(req, res, next) {
         ciclosManutencao: maquina.ciclosManutencao,
         ciclosUltimaManutencao: maquina.ciclosUltimaManutencao
       }
+    });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+export async function criarComandoIhm(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const comando = normalizarComandoIhm(req.body?.comando);
+    if (!comando) {
+      return res.status(400).json({ mensagem: "Comando da IHM não permitido." });
+    }
+
+    const maquina = await prisma.maquina.findFirst({
+      where: whereEmpresa(req, id),
+      include: { telemetria: { orderBy: { criadoEm: "desc" }, take: 1 } }
+    });
+    if (!maquina) return res.status(404).json({ mensagem: "Máquina não encontrada." });
+
+    const controlador = String(maquina.controlador || "").toUpperCase();
+    if (!controlador) {
+      return res.status(409).json({ mensagem: "Configure um controlador antes de usar a IHM." });
+    }
+    if (controlador === "DOBOT_MAGICIAN") {
+      return res.status(409).json({ mensagem: "O Dobot possui painel dedicado e comandos próprios." });
+    }
+
+    if (!cargoPodeComandoIhm(req.auth?.cargo, comando)) {
+      return res.status(403).json({ mensagem: "Seu cargo não possui permissão para este comando da IHM." });
+    }
+
+    if (!controleRemotoIhmHabilitado(maquina)) {
+      return res.status(409).json({
+        mensagem: "Controle remoto real está desativado. Habilite-o explicitamente no cadastro da máquina."
+      });
+    }
+
+    const ultimaLeitura = maquina.telemetria?.[0] || null;
+    const dadosExtras = ultimaLeitura?.dadosExtras || null;
+    const estadoConexao = calcularEstadoConexao(maquina);
+    const politica = politicaComandoIhm(comando);
+
+    if (comando === "IHM_START") {
+      const start = avaliarPermissaoStartIhm({ maquina, estadoConexao, dadosExtras });
+      if (!start.permitido) {
+        return res.status(409).json({ mensagem: `START bloqueado: ${start.motivo}` });
+      }
+    }
+
+    if (
+      maquina.modoSimulacao === false &&
+      politica?.exigeConexao &&
+      String(estadoConexao.codigo || "").toUpperCase() !== "CONECTADA"
+    ) {
+      return res.status(409).json({ mensagem: "Comando bloqueado: o equipamento não possui conexão estável e recente." });
+    }
+
+    if (maquina.modoSimulacao !== false) {
+      const estado = estadoHmiAtual(maquina, dadosExtras);
+      const patch = {
+        running: estado.running,
+        mode: estado.mode,
+        ultimaAcao: comando,
+        ultimaAcaoEm: new Date().toISOString()
+      };
+      const data = {};
+
+      if (comando === "IHM_START") {
+        patch.running = true;
+        data.status = "Ligada";
+      } else if (comando === "IHM_STOP") {
+        patch.running = false;
+        data.status = "Desligada";
+      } else if (comando === "IHM_MODE_AUTO") {
+        patch.mode = "AUTO";
+      } else if (comando === "IHM_MODE_MANUAL") {
+        patch.mode = "MANUAL";
+      } else if (comando === "IHM_RESET" && maquina.paradaSeguranca) {
+        return res.status(409).json({
+          mensagem: "RESET da IHM não libera uma parada de segurança. Normalize a condição e use a liberação de segurança autorizada."
+        });
+      }
+
+      data.integracaoMeta = metaIhmComPatch(maquina, patch);
+      data.logs = { create: { mensagem: `IHM simulada: ${comando} solicitado por ${req.auth.nome || req.auth.email}.` } };
+      await prisma.maquina.update({ where: { id }, data });
+      await registrarAuditoria({
+        req,
+        acao: "COMANDO_IHM_SIMULACAO",
+        entidade: "MAQUINA",
+        entidadeId: id,
+        detalhes: { comando }
+      });
+
+      const atualizada = await carregarCompleta(req, id);
+      const resposta = formatarMaquinaResposta(atualizada);
+      publicarEventoMaquina(id, "telemetria", resposta);
+      return res.json({ mensagem: "Comando aplicado na IHM de simulação.", maquina: resposta, comando });
+    }
+
+    const existente = await prisma.comandoMaquina.findFirst({
+      where: { maquinaId: id, comando, status: { in: ["PENDENTE", "ENTREGUE"] } },
+      orderBy: { criadoEm: "desc" }
+    });
+    if (existente) {
+      return res.status(202).json({
+        mensagem: "Este comando já está aguardando o equipamento.",
+        comando: { id: existente.id, comando: existente.comando, status: existente.status, criadoEm: existente.criadoEm }
+      });
+    }
+
+    const payload = {
+      origem: "IHM_STEELCONTROL",
+      solicitadoPor: req.auth.nome || req.auth.email,
+      usuarioId: req.auth.usuarioId,
+      expiresAt: expiraEmComandoIhm(comando)
+    };
+
+    const operacoes = [];
+    if (comando === "IHM_STOP") {
+      operacoes.push(
+        prisma.comandoMaquina.updateMany({
+          where: {
+            maquinaId: id,
+            comando: { in: ["IHM_START", "IHM_RESET", "IHM_MODE_AUTO", "IHM_MODE_MANUAL"] },
+            status: { in: ["PENDENTE", "ENTREGUE"] }
+          },
+          data: { status: "CANCELADO", concluidoEm: new Date() }
+        })
+      );
+    }
+
+    operacoes.push(
+      prisma.comandoMaquina.create({ data: { maquinaId: id, comando, payload } }),
+      prisma.log.create({ data: { maquinaId: id, mensagem: `IHM: ${comando} solicitado por ${req.auth.nome || req.auth.email}.` } })
+    );
+
+    const resultados = await prisma.$transaction(operacoes);
+    const criado = resultados.find(item => item && item.comando === comando && item.maquinaId === id);
+
+    await registrarAuditoria({
+      req,
+      acao: "COMANDO_IHM",
+      entidade: "MAQUINA",
+      entidadeId: id,
+      detalhes: { comando, expiraEm: payload.expiresAt }
+    });
+    publicarEventoMaquina(id, "comando", { id: criado?.id, comando, status: criado?.status || "PENDENTE" });
+
+    return res.status(202).json({
+      mensagem: "Comando enviado para a fila autenticada do equipamento.",
+      comando: { id: criado?.id, comando, status: criado?.status || "PENDENTE", expiraEm: payload.expiresAt }
     });
   } catch (erro) {
     next(erro);

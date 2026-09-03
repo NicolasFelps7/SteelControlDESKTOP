@@ -1,0 +1,11 @@
+STEELCONTROL - PATCH DESCOBERTA AUTOMATICA
+
+1. Extraia este ZIP na RAIZ do SteelControl Desktop.
+2. Escolha substituir os arquivos existentes.
+3. Nao apague o seu backend/.env atual.
+4. Inicie normalmente com INICIAR_STEELCONTROL.ps1.
+5. O script executa prisma migrate deploy e aplicara a migration discoveryId.
+6. Entre como ADMINISTRADOR > Maquinas > Descoberta automatica.
+
+Para ESP32, use device-examples/ESP32_HTTP_STEELCONTROL.ino.
+A descoberta NAO habilita START remoto. HMI_REMOTE_START_ARMED continua false.

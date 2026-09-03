@@ -3,6 +3,7 @@ import { processarTelemetria } from "../../lib/telemetryService.js";
 import { publicarEventoMaquina } from "../../lib/realtime.js";
 import { calcularEstadoConexao } from "../../lib/machinePolicy.js";
 import { dataLimiteReentrega, comandoJaFinalizado } from "../../lib/industrialPolicy.js";
+import { comandoPayloadExpirado } from "../../lib/hmiPolicy.js";
 
 const COMMAND_LEASE_MS = Math.max(
   5_000,
@@ -107,7 +108,7 @@ export async function proximoComando(req, res, next) {
 
     // Claim otimista: evita duas requisições concorrentes entregarem o mesmo
     // comando ao mesmo tempo. Se outro poller ganhar a corrida, tentamos de novo.
-    for (let tentativa = 0; tentativa < 3 && !entregue; tentativa++) {
+    for (let tentativa = 0; tentativa < 8 && !entregue; tentativa++) {
       const comando = await prisma.comandoMaquina.findFirst({
         where: {
           maquinaId: maquina.id,
@@ -127,6 +128,16 @@ export async function proximoComando(req, res, next) {
 
       if (!comando) {
         return res.status(204).end();
+      }
+
+      // Comandos operacionais da IHM possuem TTL curto. Se o equipamento
+      // ficou offline, eles não podem "acordar" e executar minutos depois.
+      if (comandoPayloadExpirado(comando.payload)) {
+        await prisma.comandoMaquina.updateMany({
+          where: { id: comando.id, maquinaId: maquina.id, status: { in: ["PENDENTE", "ENTREGUE"] } },
+          data: { status: "CANCELADO", concluidoEm: new Date() }
+        });
+        continue;
       }
 
       const claim = await prisma.comandoMaquina.updateMany({

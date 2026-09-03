@@ -1,0 +1,24 @@
+STEELCONTROL DESKTOP — PATCH DESCOBERTA RESILIENTE
+Data: 03/09/2026
+
+INSTALAÇÃO
+1. Feche o SteelControl.
+2. Extraia este ZIP na RAIZ do projeto Desktop.
+3. Confirme a substituição dos arquivos existentes.
+4. Inicie novamente pelo INICIAR_STEELCONTROL.ps1.
+5. No navegador, use Ctrl+F5 uma vez.
+
+O QUE FOI ADICIONADO
+- "Procurar novamente" com broadcast para todas as interfaces IPv4 privadas detectadas.
+- Fallback "Detectar pelo IP" em /steelcontrol/discovery.
+- Diagnóstico de rede na tela de Descoberta automática.
+- Firmware ESP32 2.1 com endpoint de identificação por IP.
+- Validações para aceitar apenas IPv4 local/privado e portas válidas.
+
+SEGURANÇA
+A descoberta ou detecção por IP NÃO libera START e NÃO ativa controle remoto.
+A aprovação do equipamento continua administrativa e o controle real continua opt-in,
+com telemetria/intertravamentos/ACK/TTL preservados.
+
+Para usar o fallback por IP com ESP32, grave o exemplo atualizado:
+device-examples/ESP32_HTTP_STEELCONTROL.ino

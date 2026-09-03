@@ -9,6 +9,8 @@ const machines = read("frontend/assets/js/maquinas.js");
 const runtime = read("frontend/assets/js/controller-runtime.js");
 const dashboard = read("frontend/assets/js/dashboard.js");
 const app = read("backend/src/app.js");
+const machineController = read("backend/src/modules/machines/machine.controller.js");
+const hmiPolicy = read("backend/src/lib/hmiPolicy.js");
 
 const requiredControllers = [
   "ESP32",
@@ -22,6 +24,20 @@ const requiredControllers = [
 
 if (!html.includes('id="controllerTela"')) {
   throw new Error("Painel adaptativo ausente.");
+}
+
+for (const hmiId of ["hmiConsole", "hmiProcessDiagram", "hmiCommandState"]) {
+  if (!html.includes(`id="${hmiId}"`)) {
+    throw new Error(`IHM industrial incompleta: ${hmiId} ausente.`);
+  }
+}
+
+if (!machineController.includes("criarComandoIhm") || !machineController.includes("IHM_START")) {
+  throw new Error("Backend da IHM industrial ausente.");
+}
+
+if (!hmiPolicy.includes("startPermitted") || !hmiPolicy.includes("comandoPayloadExpirado")) {
+  throw new Error("Hardening da IHM (intertravamentos/TTL) ausente.");
 }
 
 if (html.includes('id="dobotMenuButton"')) {
@@ -67,5 +83,5 @@ for (const controller of requiredControllers) {
 }
 
 console.log(
-  `[CONTROLLERS] OK: ${requiredControllers.length} perfis, rota /app/dashboard e painéis adaptativos validados.`
+  `[CONTROLLERS] OK: ${requiredControllers.length} perfis, IHM supervisionada, rota /app/dashboard e painéis adaptativos validados.`
 );

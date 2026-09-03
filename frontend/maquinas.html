@@ -18,7 +18,7 @@
 
   <link
     rel="stylesheet"
-    href="assets/css/maquinas.css?v=20260903_APP_STYLE_FORM"
+    href="assets/css/maquinas.css?v=20260903_DISCOVERY_UI_PRO"
   >
 
   <link rel="stylesheet" href="assets/vendor/steel-icons/steel-icons.css?v=1">
@@ -621,6 +621,19 @@
             </div>
           </div>
 
+          <div class="form-group full-width hmi-config-panel" id="hmiConfigPanel" hidden>
+            <div class="hmi-config-icon"><i class="fa-solid fa-display"></i></div>
+            <div class="hmi-config-copy">
+              <span>IHM STEELCONTROL</span>
+              <strong>Controle industrial supervisionado</strong>
+              <p>O painel IHM será criado para este controlador. Na simulação, os comandos funcionam imediatamente. Em equipamento real, o controle remoto fica bloqueado por padrão.</p>
+              <label class="hmi-remote-check">
+                <input type="checkbox" id="hmiRemoteEnabledInput">
+                <span><b>Habilitar comandos remotos no equipamento real</b><small>START real exige telemetria recente e confirmação positiva dos intertravamentos pelo controlador. STOP possui prazo curto e não substitui emergência física.</small></span>
+              </label>
+            </div>
+          </div>
+
           <div class="form-group full-width dobot-config-panel" id="dobotConfigPanel" hidden>
             <div class="dobot-config-head">
               <i class="fa-solid fa-robot"></i>
@@ -869,6 +882,65 @@
 
 
     <!-- =====================================================
+         DESCOBERTA AUTOMÁTICA
+    ====================================================== -->
+
+    <section class="device-discovery-box" id="deviceDiscoveryBox" hidden>
+      <div class="device-discovery-header">
+        <div>
+          <span class="section-label">DESCOBERTA AUTOMÁTICA</span>
+          <h2>Equipamentos encontrados na rede</h2>
+          <p>Identifique equipamentos compatíveis na rede local, revise os dados encontrados e aprove o cadastro com segurança.</p>
+        </div>
+        <button type="button" class="discovery-scan-btn" id="discoveryScanBtn" onclick="varrerDispositivos()">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Procurar novamente</span>
+        </button>
+      </div>
+      <div class="discovery-security-note">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Provisionamento seguro: identificação → aprovação do administrador → credencial exclusiva → monitoramento. START remoto não é habilitado automaticamente.</span>
+      </div>
+
+      <div class="discovery-ip-fallback">
+        <div class="discovery-ip-copy">
+          <strong>Conexão alternativa por IP</strong>
+          <span>Use o IPv4 local quando a descoberta automática estiver bloqueada pela rede. O equipamento seguirá pela mesma etapa de aprovação segura.</span>
+        </div>
+        <div class="discovery-ip-controls">
+          <label class="discovery-ip-field">
+            <span>IP do equipamento</span>
+            <input id="discoveryIpInput" type="text" inputmode="decimal" maxlength="15" autocomplete="off" placeholder="192.168.0.87">
+          </label>
+          <label class="discovery-port-field">
+            <span>Porta</span>
+            <input id="discoveryPortInput" type="number" min="1" max="65535" value="80">
+          </label>
+          <button type="button" class="discovery-ip-btn" id="discoveryIpBtn" onclick="descobrirDispositivoPorIp()">
+            <i class="fa-solid fa-link"></i>
+            Detectar pelo IP
+          </button>
+        </div>
+      </div>
+
+      <details class="discovery-diagnostics" id="discoveryDiagnostics">
+        <summary>
+          <span><i class="fa-solid fa-stethoscope"></i> Diagnóstico da descoberta</span>
+          <small>Mostra UDP, interfaces e possíveis motivos de falha</small>
+        </summary>
+        <div class="discovery-diagnostics-content" id="discoveryDiagnosticsContent">
+          <div class="discovery-diagnostic-loading">Carregando diagnóstico da rede...</div>
+        </div>
+      </details>
+
+      <div class="discovered-devices-grid" id="discoveredDevicesGrid">
+        <div class="discovery-empty">Nenhum equipamento respondeu ainda. Use <strong>Procurar novamente</strong>, consulte o diagnóstico ou conecte pelo IP.</div>
+      </div>
+      <p class="discovery-message" id="discoveryMessage"></p>
+    </section>
+
+
+    <!-- =====================================================
          LISTA
     ====================================================== -->
 
@@ -989,9 +1061,9 @@
 
 
 
-  <script src="assets/js/config.js?v=20260903_I18N_OBSERVER_FIX"></script>
+  <script src="assets/js/config.js?v=20260903_IHM_I18N"></script>
 
-  <script src="assets/js/maquinas.js?v=20260903_STATUS_I18N_POLISH"></script>
+  <script src="assets/js/maquinas.js?v=20260903_AUTO_DISCOVERY"></script>
 
 </body>
 

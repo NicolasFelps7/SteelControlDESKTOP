@@ -13,6 +13,7 @@ import { maintenanceRoutes } from "./modules/maintenance/maintenance.routes.js";
 import { companyRoutes } from "./modules/company/company.routes.js";
 import { auditRoutes } from "./modules/audit/audit.routes.js";
 import { deviceRoutes } from "./modules/device/device.routes.js";
+import { discoveryRoutes } from "./modules/discovery/discovery.routes.js";
 
 const __filename =
   fileURLToPath(
@@ -241,6 +242,11 @@ app.use(
 app.use(
   "/device",
   deviceRoutes
+);
+
+app.use(
+  "/descoberta",
+  discoveryRoutes
 );
 
 app.use(

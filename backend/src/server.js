@@ -1,6 +1,7 @@
 import { app } from "./app.js";
 import { prisma } from "./lib/prisma.js";
 import { env } from "./config/env.js";
+import { startDeviceDiscovery, stopDeviceDiscovery } from "./lib/deviceDiscovery.js";
 
 let server;
 let encerrando = false;
@@ -20,6 +21,8 @@ async function encerrar(
 
   const finalizar =
     async () => {
+      stopDeviceDiscovery();
+
       await prisma
         .$disconnect()
         .catch(() => {});
@@ -65,6 +68,8 @@ async function iniciar() {
           console.log(
             "Schema gerenciado exclusivamente por Prisma Migrations."
           );
+
+          startDeviceDiscovery();
         }
       );
   } catch (erro) {

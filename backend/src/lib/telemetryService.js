@@ -162,6 +162,7 @@ export function avaliarTelemetria(maquina, leitura = {}) {
   let paradaSeguranca = Boolean(maquina.paradaSeguranca);
   let motivoParada = maquina.motivoParada || null;
   let requerParada = false;
+  const hmiRunning = dadosExtras?.hmi?.running;
 
   if (criticos.length) {
     status = "Parada de segurança";
@@ -173,6 +174,11 @@ export function avaliarTelemetria(maquina, leitura = {}) {
   } else if (paradaSeguranca) {
     status = "Parada de segurança";
     manutencao = "Aguardando liberação do operador";
+  } else if (hmiRunning === false) {
+    // Estado operacional vindo do controlador. Isto não ignora os limites:
+    // condições críticas continuam tendo prioridade e acionam a segurança.
+    status = "Desligada";
+    manutencao = "Normal";
   } else if (avisos.length) {
     status = "Alerta";
     manutencao = "Acompanhar condição operacional";
