@@ -1,0 +1,53 @@
+/* Tipografia final do cadastro de equipamentos.
+   Carregado após presentation.css para substituir a escala antiga de 7–11px. */
+
+.cadastro-header p {
+  font-size: 14px !important;
+}
+
+.toggle-form-btn {
+  font-size: 13px !important;
+}
+
+.form-info strong,
+.robot-preset strong,
+.disclosure-copy strong {
+  font-size: 13px !important;
+}
+
+.form-info span,
+.robot-preset span,
+.connection-help p,
+.operation-mode-help,
+.connection-credential-note {
+  font-size: 11px !important;
+}
+
+.robot-preset button,
+.form-group label {
+  font-size: 12px !important;
+}
+
+.form-section-title {
+  font-size: 15px !important;
+}
+
+.form-section-title span,
+.disclosure-copy small {
+  font-size: 10px !important;
+}
+
+.form-control input,
+.form-control select,
+.form-group textarea {
+  font-size: 14px !important;
+}
+
+.cancel-machine-btn,
+.save-machine-btn {
+  font-size: 13px !important;
+}
+
+.mensagem-maquina {
+  font-size: 12px !important;
+}

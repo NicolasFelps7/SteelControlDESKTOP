@@ -93,6 +93,10 @@ const PT = {
   usuario: "Usuário",
   cargo: "Cargo",
   sair: "Sair",
+  confirmarSaidaTitulo: "Sair da conta?",
+  confirmarSaidaMensagem: "Tem certeza de que deseja encerrar sua sessão? Você precisará entrar novamente para acessar sua empresa.",
+  confirmarSaidaCancelar: "Continuar no sistema",
+  confirmarSaidaAcao: "Sair da conta",
   voltar: "Voltar",
   salvar: "Salvar",
   cancelar: "Cancelar",
@@ -1172,6 +1176,10 @@ const EN = {
   usuario: "User",
   cargo: "Role",
   sair: "Logout",
+  confirmarSaidaTitulo: "Sign out?",
+  confirmarSaidaMensagem: "Are you sure you want to end your session? You will need to sign in again to access your company.",
+  confirmarSaidaCancelar: "Stay signed in",
+  confirmarSaidaAcao: "Sign out",
   voltar: "Back",
   salvar: "Save",
   cancelar: "Cancel",
@@ -2198,6 +2206,10 @@ const ES = {
   usuario: "Usuario",
   cargo: "Cargo",
   sair: "Salir",
+  confirmarSaidaTitulo: "¿Cerrar sesión?",
+  confirmarSaidaMensagem: "¿Está seguro de que desea finalizar su sesión? Deberá iniciar sesión nuevamente para acceder a su empresa.",
+  confirmarSaidaCancelar: "Permanecer conectado",
+  confirmarSaidaAcao: "Cerrar sesión",
   voltar: "Volver",
   salvar: "Guardar",
   cancelar: "Cancelar",
@@ -3185,6 +3197,10 @@ const FR = {
   usuario: "Utilisateur",
   cargo: "Rôle",
   sair: "Déconnexion",
+  confirmarSaidaTitulo: "Se déconnecter ?",
+  confirmarSaidaMensagem: "Voulez-vous vraiment fermer votre session ? Vous devrez vous reconnecter pour accéder à votre entreprise.",
+  confirmarSaidaCancelar: "Rester connecté",
+  confirmarSaidaAcao: "Se déconnecter",
   voltar: "Retour",
   salvar: "Enregistrer",
   cancelar: "Annuler",
@@ -3908,6 +3924,10 @@ const DE = {
   usuario: "Benutzer",
   cargo: "Rolle",
   sair: "Abmelden",
+  confirmarSaidaTitulo: "Abmelden?",
+  confirmarSaidaMensagem: "Möchten Sie Ihre Sitzung wirklich beenden? Sie müssen sich erneut anmelden, um auf Ihr Unternehmen zuzugreifen.",
+  confirmarSaidaCancelar: "Angemeldet bleiben",
+  confirmarSaidaAcao: "Abmelden",
   voltar: "Zurück",
   salvar: "Speichern",
   cancelar: "Abbrechen",
@@ -4631,6 +4651,10 @@ const IT = {
   usuario: "Utente",
   cargo: "Ruolo",
   sair: "Esci",
+  confirmarSaidaTitulo: "Uscire dall’account?",
+  confirmarSaidaMensagem: "Vuoi davvero terminare la sessione? Dovrai accedere nuovamente per entrare nella tua azienda.",
+  confirmarSaidaCancelar: "Rimani connesso",
+  confirmarSaidaAcao: "Esci dall’account",
   voltar: "Indietro",
   salvar: "Salva",
   cancelar: "Annulla",
@@ -5547,10 +5571,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Data",
     maintenanceAt: "às",
     maintenanceDelete: "Excluir registro de manutenção",
+    maintenanceDeleteTitle: "Excluir registro de manutenção?",
+    maintenanceDeleteAction: "Excluir registro",
     maintenanceOnlyAdminDelete: "Somente administradores podem excluir registros de manutenção.",
     maintenanceNoMachine: "Selecione uma máquina antes de excluir o registro.",
-    maintenanceDeleteConfirm: "Deseja excluir este registro de manutenção? Esta ação não pode ser desfeita.",
+    maintenanceDeleteConfirm: "Este registro será removido permanentemente do histórico técnico. Esta ação não pode ser desfeita.",
     maintenanceDeleteError: "Não foi possível excluir o registro de manutenção.",
+    maintenanceDeleteSuccessTitle: "Registro excluído",
     maintenanceDeleteSuccess: "Registro de manutenção excluído com sucesso."
   },
   en: {
@@ -5563,10 +5590,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Date",
     maintenanceAt: "at",
     maintenanceDelete: "Delete maintenance record",
+    maintenanceDeleteTitle: "Delete maintenance record?",
+    maintenanceDeleteAction: "Delete record",
     maintenanceOnlyAdminDelete: "Only administrators can delete maintenance records.",
     maintenanceNoMachine: "Select a machine before deleting the record.",
-    maintenanceDeleteConfirm: "Delete this maintenance record? This action cannot be undone.",
+    maintenanceDeleteConfirm: "This record will be permanently removed from the technical history. This action cannot be undone.",
     maintenanceDeleteError: "The maintenance record could not be deleted.",
+    maintenanceDeleteSuccessTitle: "Record deleted",
     maintenanceDeleteSuccess: "Maintenance record deleted successfully."
   },
   es: {
@@ -5579,10 +5609,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Fecha",
     maintenanceAt: "a las",
     maintenanceDelete: "Eliminar registro de mantenimiento",
+    maintenanceDeleteTitle: "¿Eliminar registro de mantenimiento?",
+    maintenanceDeleteAction: "Eliminar registro",
     maintenanceOnlyAdminDelete: "Solo los administradores pueden eliminar registros de mantenimiento.",
     maintenanceNoMachine: "Seleccione una máquina antes de eliminar el registro.",
-    maintenanceDeleteConfirm: "¿Desea eliminar este registro de mantenimiento? Esta acción no se puede deshacer.",
+    maintenanceDeleteConfirm: "Este registro se eliminará permanentemente del historial técnico. Esta acción no se puede deshacer.",
     maintenanceDeleteError: "No se pudo eliminar el registro de mantenimiento.",
+    maintenanceDeleteSuccessTitle: "Registro eliminado",
     maintenanceDeleteSuccess: "Registro de mantenimiento eliminado correctamente."
   },
   fr: {
@@ -5595,10 +5628,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Date",
     maintenanceAt: "à",
     maintenanceDelete: "Supprimer l'enregistrement de maintenance",
+    maintenanceDeleteTitle: "Supprimer l'enregistrement de maintenance ?",
+    maintenanceDeleteAction: "Supprimer l'enregistrement",
     maintenanceOnlyAdminDelete: "Seuls les administrateurs peuvent supprimer les enregistrements de maintenance.",
     maintenanceNoMachine: "Sélectionnez une machine avant de supprimer l'enregistrement.",
-    maintenanceDeleteConfirm: "Supprimer cet enregistrement de maintenance ? Cette action est irréversible.",
+    maintenanceDeleteConfirm: "Cet enregistrement sera définitivement supprimé de l'historique technique. Cette action est irréversible.",
     maintenanceDeleteError: "Impossible de supprimer l'enregistrement de maintenance.",
+    maintenanceDeleteSuccessTitle: "Enregistrement supprimé",
     maintenanceDeleteSuccess: "Enregistrement de maintenance supprimé."
   },
   de: {
@@ -5611,10 +5647,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Datum",
     maintenanceAt: "um",
     maintenanceDelete: "Wartungseintrag löschen",
+    maintenanceDeleteTitle: "Wartungseintrag löschen?",
+    maintenanceDeleteAction: "Eintrag löschen",
     maintenanceOnlyAdminDelete: "Nur Administratoren können Wartungseinträge löschen.",
     maintenanceNoMachine: "Wählen Sie eine Maschine aus, bevor Sie den Eintrag löschen.",
-    maintenanceDeleteConfirm: "Diesen Wartungseintrag löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    maintenanceDeleteConfirm: "Dieser Eintrag wird dauerhaft aus dem technischen Verlauf entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
     maintenanceDeleteError: "Der Wartungseintrag konnte nicht gelöscht werden.",
+    maintenanceDeleteSuccessTitle: "Eintrag gelöscht",
     maintenanceDeleteSuccess: "Wartungseintrag erfolgreich gelöscht."
   },
   it: {
@@ -5627,10 +5666,13 @@ const TRADUCOES_REFINAMENTO = {
     maintenanceDate: "Data",
     maintenanceAt: "alle",
     maintenanceDelete: "Elimina registro di manutenzione",
+    maintenanceDeleteTitle: "Eliminare il registro di manutenzione?",
+    maintenanceDeleteAction: "Elimina registro",
     maintenanceOnlyAdminDelete: "Solo gli amministratori possono eliminare i registri di manutenzione.",
     maintenanceNoMachine: "Seleziona una macchina prima di eliminare il registro.",
-    maintenanceDeleteConfirm: "Eliminare questo registro di manutenzione? L'azione non può essere annullata.",
+    maintenanceDeleteConfirm: "Questo registro verrà rimosso definitivamente dallo storico tecnico. L'azione non può essere annullata.",
     maintenanceDeleteError: "Impossibile eliminare il registro di manutenzione.",
+    maintenanceDeleteSuccessTitle: "Registro eliminato",
     maintenanceDeleteSuccess: "Registro di manutenzione eliminato."
   }
 };
@@ -8318,7 +8360,7 @@ window.SteelUI = {
     return new Promise(resolve => {
       const fundo = scElemento("div", { classe: "sc-confirm-backdrop" });
       const card = scElemento("div", {
-        classe: "sc-confirm-card",
+        classe: `sc-confirm-card ${perigoso ? "is-danger" : "is-info"}`,
         atributos: { role: "dialog", "aria-modal": "true", "aria-labelledby": "sc-confirm-title" }
       });
 
@@ -8367,4 +8409,18 @@ window.SteelUI = {
       setTimeout(() => confirmarBtn.focus(), 0);
     });
   }
+};
+
+// Confirmação global de encerramento de sessão. Mantém o mesmo diálogo
+// profissional em todas as telas e respeita idioma e tema ativos.
+window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
+  if (!window.SteelUI?.confirm) return false;
+
+  return window.SteelUI.confirm({
+    titulo: t("confirmarSaidaTitulo"),
+    mensagem: t("confirmarSaidaMensagem"),
+    confirmar: t("confirmarSaidaAcao"),
+    cancelar: t("confirmarSaidaCancelar"),
+    perigoso: true
+  });
 };

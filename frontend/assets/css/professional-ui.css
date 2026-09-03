@@ -1,0 +1,156 @@
+/* SteelControl — acabamento tipográfico corporativo e legibilidade desktop. */
+
+:root {
+  --sc-font: "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--sc-font);
+  font-synthesis: none;
+  letter-spacing: 0;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--sc-font);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+strong,
+b {
+  font-weight: 650;
+}
+
+.section-label,
+.header-machine-label,
+.controller-hero-copy > span,
+.dobot-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+
+.cadastro-header h2,
+.machines-section-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.cadastro-header p,
+.machines-section-header p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.toggle-form-btn,
+.save-machine-btn,
+.cancel-machine-btn,
+.machine-edit-btn,
+.machine-delete-btn,
+.machine-key-btn,
+.machine-card-btn {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.maquina-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.machine-category,
+.dobot-dashboard-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.machine-sector,
+.machine-description {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.machine-identification span,
+.machine-metrics span,
+.machine-connection span,
+.machine-maintenance span {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.machine-identification strong,
+.machine-connection strong,
+.machine-maintenance strong {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.machine-metrics strong {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-card span,
+.summary-card p {
+  font-size: 11px;
+}
+
+.summary-card strong {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.header h1,
+.topbar h1 {
+  font-weight: 700;
+  letter-spacing: -.035em;
+}
+
+.header-actions button,
+.user-box,
+.status-box,
+.simulation-mode-badge {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.controller-runtime h2,
+.controller-runtime h3,
+.dobot-runtime h2,
+.dobot-runtime h3,
+.dobot-config-panel strong {
+  font-weight: 700;
+}
+
+.dobot-config-panel p,
+.dobot-config-panel small,
+.dobot-config-grid label {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  body {
+    font-size: 13px;
+  }
+}

@@ -257,57 +257,91 @@ b {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(2, 6, 23, .54);
-  backdrop-filter: blur(4px);
+  background: rgba(2, 6, 23, .68);
+  backdrop-filter: blur(7px);
+  animation: sc-confirm-backdrop-in .18s ease both;
 }
 
 .sc-confirm-card {
+  position: relative;
+  overflow: hidden;
   width: min(460px, 100%);
-  padding: 22px;
+  padding: 28px;
   border: 1px solid var(--sc-border);
-  border-radius: 18px;
+  border-radius: 24px;
   background: var(--sc-surface);
   color: var(--sc-text);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, .24);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .34);
+  animation: sc-confirm-card-in .22s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.sc-confirm-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--sc-primary);
+}
+
+.sc-confirm-card.is-danger::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
 .sc-confirm-icon {
-  width: 48px;
-  height: 48px;
+  width: 58px;
+  height: 58px;
   display: grid;
   place-items: center;
   margin-bottom: 14px;
-  border-radius: 14px;
+  border-radius: 18px;
   background: rgba(245, 158, 11, .13);
   color: #d97706;
 }
 
+.sc-confirm-card.is-danger .sc-confirm-icon {
+  background: rgba(220, 38, 38, .11);
+  color: #dc2626;
+}
+
 .sc-confirm-card h3 {
-  margin: 0 0 7px;
-  font-size: 17px;
+  margin: 0 0 9px;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -.25px;
 }
 
 .sc-confirm-card p {
   margin: 0;
   color: var(--sc-text-muted);
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .sc-confirm-actions {
   display: flex;
   justify-content: flex-end;
   gap: 9px;
-  margin-top: 22px;
+  margin-top: 26px;
 }
 
 .sc-confirm-actions button {
-  min-height: 40px;
-  padding: 0 15px;
-  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
   border: 1px solid var(--sc-border);
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 750;
+  transition: transform .18s ease, filter .18s ease, background-color .18s ease;
+}
+
+.sc-confirm-actions button:hover {
+  transform: translateY(-1px);
+  filter: brightness(.97);
+}
+
+.sc-confirm-actions button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .22);
+  outline-offset: 2px;
 }
 
 .sc-confirm-cancel {
@@ -319,6 +353,16 @@ b {
   border-color: #dc2626 !important;
   background: #dc2626;
   color: #fff;
+}
+
+@keyframes sc-confirm-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sc-confirm-card-in {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes sc-toast-in {

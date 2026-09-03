@@ -348,8 +348,11 @@ function configurarBotaoVoltarEmpresa() {
 
   if (texto) {
     texto.textContent =
-      origem === "dashboard" ||
-      Boolean(destinoDashboard)
+      origem === "dashboard" &&
+      (
+        Boolean(destinoDashboard) ||
+        Boolean(localStorage.getItem("maquinaId"))
+      )
         ? "Painel da máquina"
         : "Máquinas";
   }
@@ -434,6 +437,7 @@ function voltarOrigemEmpresa() {
     destinoSeguroDashboardEmpresa();
 
   if (
+    origem === "dashboard" &&
     maquinaId &&
     destinoSalvo
   ) {
@@ -859,7 +863,7 @@ async function api(
     resposta.status === 401
   ) {
 
-    sair();
+    sair(false);
 
 
     throw new Error(
@@ -5349,7 +5353,17 @@ function voltarDashboard() {
 // SAIR
 // =====================================================
 
-function sair() {
+async function sair(confirmar = true) {
+
+  if (confirmar) {
+
+    const confirmado =
+      await window.confirmarSaidaDaConta?.();
+
+
+    if (!confirmado) return;
+
+  }
 
   pararCamera();
 

@@ -249,7 +249,7 @@ async function fetchAutenticado(
     resposta.status === 401
   ) {
 
-    sair();
+    sair(false);
 
 
     throw new Error(
@@ -542,6 +542,14 @@ function fecharFormularioMaquina() {
 
   formMaquina?.reset();
 
+  formMaquina
+    ?.querySelectorAll(
+      ".form-disclosure"
+    )
+    .forEach(
+      detalhes => detalhes.open = false
+    );
+
   atualizarAjudaModoOperacao();
   atualizarPainelDobot();
   atualizarPerfilControlador();
@@ -715,6 +723,15 @@ function preencherBracoRobotico() {
     descricao.value =
       "Braço robótico utilizado para testes, movimentação e automação de processos industriais.";
 
+  }
+
+  const detalhesIdentificacao =
+    document.getElementById(
+      "identificationDetails"
+    );
+
+  if (detalhesIdentificacao) {
+    detalhesIdentificacao.open = true;
   }
 
   const modoOperacao =
@@ -2285,14 +2302,11 @@ formMaquina
         !nome ||
         !setor ||
         !modelo ||
-        !fabricante ||
-        !codigo ||
-        !tipo ||
-        !descricao
+        !codigo
       ) {
 
         mensagemMaquina.textContent =
-          "Preencha todos os dados do equipamento.";
+          "Preencha nome, setor, modelo e código do equipamento.";
 
 
         mensagemMaquina.className =
@@ -2575,7 +2589,17 @@ function abrirDashboard(
 // SAIR
 // =========================================================
 
-function sair() {
+async function sair(confirmar = true) {
+
+  if (confirmar) {
+
+    const confirmado =
+      await window.confirmarSaidaDaConta?.();
+
+
+    if (!confirmado) return;
+
+  }
 
   localStorage.removeItem(
     "autenticado"

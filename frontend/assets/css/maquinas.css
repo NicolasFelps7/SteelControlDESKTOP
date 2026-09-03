@@ -2767,3 +2767,348 @@ html[data-theme="escuro"] .device-key-modal {
   color: #f8fafc;
   border-color: #334155;
 }
+
+/* =========================================================
+   CADASTRO DE EQUIPAMENTO — PADRÃO VISUAL DO APP
+   Formulário compacto, legível e com opções avançadas recolhíveis.
+========================================================= */
+
+.cadastro-maquina-box {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 28px;
+  padding: 30px;
+  border-radius: 24px;
+}
+
+.cadastro-maquina-box,
+.cadastro-maquina-box button,
+.cadastro-maquina-box input,
+.cadastro-maquina-box select,
+.cadastro-maquina-box textarea {
+  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.cadastro-header h2 {
+  font-size: 25px;
+  line-height: 1.2;
+  letter-spacing: -.45px;
+  font-weight: 750;
+}
+
+.cadastro-header p {
+  max-width: 720px;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.cadastro-maquina-box .section-label {
+  margin-bottom: 7px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  font-weight: 800;
+}
+
+.toggle-form-btn {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 13px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.form-maquina {
+  max-width: 940px;
+  margin: 28px auto 0;
+  padding-top: 26px;
+}
+
+.form-info,
+.robot-preset {
+  padding: 15px 16px;
+  border-radius: 15px;
+}
+
+.form-info {
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.form-info strong,
+.robot-preset strong {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.form-info span,
+.robot-preset span {
+  margin-top: 3px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.robot-preset {
+  margin-bottom: 26px;
+  background: var(--card-soft);
+}
+
+.robot-preset button {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 11px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.form-section-title {
+  margin: 26px 0 16px;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 750;
+}
+
+.form-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.form-section-title span {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.form-grid,
+.essential-grid,
+.connection-grid,
+.threshold-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form-group label,
+.dobot-config-grid label {
+  margin-bottom: 7px;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.form-control {
+  height: 52px;
+  padding: 0 14px;
+  border-radius: 13px;
+}
+
+.form-control i {
+  width: 20px;
+  font-size: 14px;
+}
+
+.form-control input,
+.form-control select,
+.form-group textarea {
+  font-size: 14px;
+}
+
+.form-group textarea {
+  min-height: 98px;
+  padding: 15px;
+  border-radius: 13px;
+  line-height: 1.5;
+}
+
+.description-field {
+  margin-top: 14px;
+}
+
+.connection-help {
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+
+.connection-help strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.connection-help p,
+.operation-mode-help,
+.connection-credential-note {
+  font-size: 11px;
+}
+
+.form-disclosure {
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: var(--card-soft);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.form-disclosure[open] {
+  border-color: rgba(37, 99, 235, .45);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, .07);
+}
+
+.form-disclosure > summary {
+  min-height: 66px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.form-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, .09);
+  color: var(--azul);
+  font-size: 15px;
+}
+
+.disclosure-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.disclosure-copy strong,
+.disclosure-copy small {
+  display: block;
+}
+
+.disclosure-copy strong {
+  color: var(--texto);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.disclosure-copy small {
+  margin-top: 2px;
+  color: var(--texto-suave);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.disclosure-arrow {
+  color: var(--texto-suave);
+  font-size: 12px;
+  transition: transform .18s ease;
+}
+
+.form-disclosure[open] .disclosure-arrow {
+  transform: rotate(180deg);
+}
+
+.form-disclosure-content {
+  padding: 4px 16px 17px;
+}
+
+.advanced-network-details {
+  margin-top: 0;
+}
+
+.advanced-network-details .form-disclosure-content.form-grid {
+  display: grid;
+}
+
+.limits-details {
+  margin-top: 0;
+}
+
+.limits-details .connection-help {
+  margin-top: 2px;
+}
+
+.controller-profile-copy > span,
+.controller-profile-features span,
+.dobot-config-panel small {
+  font-size: 10px;
+}
+
+.controller-profile-copy > strong,
+.dobot-config-head strong {
+  font-size: 14px;
+}
+
+.controller-profile-copy > p,
+.dobot-config-head p {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.cancel-machine-btn,
+.save-machine-btn {
+  min-height: 46px;
+  padding: 0 19px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.form-actions {
+  margin-top: 24px;
+}
+
+.mensagem-maquina {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+html[data-theme="escuro"] .robot-preset,
+html[data-theme="escuro"] .form-disclosure {
+  background: #111c31;
+  border-color: #2b3b55;
+}
+
+html[data-theme="escuro"] .form-disclosure[open] {
+  border-color: rgba(96, 165, 250, .48);
+}
+
+@media (max-width: 760px) {
+  .cadastro-maquina-box {
+    padding: 20px;
+  }
+
+  .cadastro-header,
+  .robot-preset {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-grid,
+  .essential-grid,
+  .connection-grid,
+  .threshold-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .connection-grid .full-width {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-machine-btn,
+  .save-machine-btn {
+    width: 100%;
+  }
+}

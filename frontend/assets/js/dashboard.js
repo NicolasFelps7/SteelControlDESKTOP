@@ -2373,6 +2373,11 @@ async function carregarManutencoes() {
               ? pegarTexto("maintenanceDelete")
               : "Excluir registro de manutenção";
 
+          const deleteAction =
+            typeof pegarTexto === "function"
+              ? pegarTexto("maintenanceDeleteAction")
+              : "Excluir";
+
           li.innerHTML = `
             <div class="maintenance-history-content">
               <div class="maintenance-history-topline">
@@ -2406,7 +2411,8 @@ async function carregarManutencoes() {
                     aria-label="${escaparHtml(deleteTitle)}"
                     data-maintenance-id="${escaparHtml(item.id)}"
                   >
-                    <i class="fa-solid fa-trash-can"></i>
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    <span>${escaparHtml(deleteAction)}</span>
                   </button>
                 `
                 : ""
@@ -2485,12 +2491,39 @@ async function excluirManutencao(
     return;
   }
 
+  const nomeMaquina =
+    localStorage.getItem("maquinaSelecionada") ||
+    document.getElementById("dashboardNomeMaquina")?.textContent?.trim() ||
+    "Máquina selecionada";
+
+  const mensagemConfirmacao =
+    typeof pegarTexto === "function"
+      ? pegarTexto("maintenanceDeleteConfirm")
+      : "Este registro será removido permanentemente do histórico técnico. Esta ação não pode ser desfeita.";
+
+  if (!window.SteelUI?.confirm) {
+    console.error("SteelUI.confirm não está disponível. Exclusão bloqueada por segurança.");
+    return;
+  }
+
   const confirmar =
-    window.confirm(
-      typeof pegarTexto === "function"
-        ? pegarTexto("maintenanceDeleteConfirm")
-        : "Deseja excluir este registro de manutenção? Esta ação não pode ser desfeita."
-    );
+    await window.SteelUI.confirm({
+      titulo:
+        typeof pegarTexto === "function"
+          ? pegarTexto("maintenanceDeleteTitle")
+          : "Excluir registro de manutenção?",
+      mensagem:
+        `${mensagemConfirmacao}\n\nRegistro #${manutencaoId} • ${nomeMaquina}`,
+      confirmar:
+        typeof pegarTexto === "function"
+          ? pegarTexto("maintenanceDeleteAction")
+          : "Excluir registro",
+      cancelar:
+        typeof pegarTexto === "function"
+          ? pegarTexto("cancelar")
+          : "Cancelar",
+      perigoso: true
+    });
 
   if (!confirmar) return;
 
@@ -2542,6 +2575,21 @@ async function excluirManutencao(
         "mensagem-manutencao sucesso";
     }
 
+    window.SteelUI?.toast?.({
+      titulo:
+        typeof pegarTexto === "function"
+          ? pegarTexto("maintenanceDeleteSuccessTitle")
+          : "Registro excluído",
+      mensagem:
+        dados.mensagem ||
+        (
+          typeof pegarTexto === "function"
+            ? pegarTexto("maintenanceDeleteSuccess")
+            : "O histórico de manutenção foi atualizado com sucesso."
+        ),
+      tipo: "success"
+    });
+
     await carregarManutencoes();
     await buscarDados();
 
@@ -2570,7 +2618,7 @@ async function excluirManutencao(
       botao.disabled = false;
       botao.innerHTML =
         htmlAnterior ||
-        '<i class="fa-solid fa-trash-can"></i>';
+        '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
     }
   }
 }
@@ -3857,7 +3905,13 @@ function abrirMinhaConta() {
 // SAIR
 // ======================================================
 
-function sairSistema() {
+async function sairSistema() {
+
+  const confirmado =
+    await window.confirmarSaidaDaConta?.();
+
+
+  if (!confirmado) return;
 
   limparSessao();
 

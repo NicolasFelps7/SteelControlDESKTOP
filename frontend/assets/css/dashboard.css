@@ -3613,21 +3613,34 @@ html[data-theme="escuro"]
 }
 
 .maintenance-delete-btn {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  display: grid;
-  place-items: center;
+  min-width: 88px;
+  min-height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 1px solid rgba(220, 38, 38, 0.20);
   border-radius: 10px;
   background: rgba(220, 38, 38, 0.07);
   color: #dc2626;
   cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
 }
 
 .maintenance-delete-btn:hover {
   background: #dc2626;
+  border-color: #dc2626;
   color: #fff;
+  transform: translateY(-1px);
+}
+
+.maintenance-delete-btn:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, .22);
+  outline-offset: 2px;
 }
 
 html[data-theme="escuro"] .maintenance-delete-btn {
@@ -3639,6 +3652,18 @@ html[data-theme="escuro"] .maintenance-delete-btn {
 @media (max-width: 900px) {
   .header-machine-label {
     margin-top: 2px;
+  }
+}
+
+@media (max-width: 520px) {
+  .maintenance-delete-btn {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+
+  .maintenance-delete-btn span {
+    display: none;
   }
 }
 

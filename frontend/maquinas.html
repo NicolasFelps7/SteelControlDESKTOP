@@ -18,13 +18,14 @@
 
   <link
     rel="stylesheet"
-    href="assets/css/maquinas.css?v=20260901_CONTROLLER_ADAPTIVE"
+    href="assets/css/maquinas.css?v=20260903_APP_STYLE_FORM"
   >
 
   <link rel="stylesheet" href="assets/vendor/steel-icons/steel-icons.css?v=1">
 
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
   <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DARK_COMPLETE">
+  <link rel="stylesheet" href="assets/css/machine-form-polish.css?v=20260903_APP_STYLE_FORM">
 
 </head>
 
@@ -81,7 +82,7 @@
           href="/app/empresa"
           class="company-btn"
           title="Gerenciar empresa e funcionários"
-          onclick="localStorage.setItem('empresaOrigem','maquinas');"
+          onclick="localStorage.setItem('empresaOrigem','maquinas'); localStorage.removeItem('empresaRetornoDashboard');"
         >
           <i class="fa-solid fa-building"></i>
           Minha Empresa
@@ -454,222 +455,88 @@
 
 
 
-        <div class="form-grid">
-
-
+        <div class="form-grid essential-grid">
           <div class="form-group">
-
-            <label for="nomeMaquinaInput">
-              Nome do equipamento
-            </label>
-
+            <label for="nomeMaquinaInput">Nome do equipamento</label>
             <div class="form-control">
-
               <i class="fa-solid fa-industry"></i>
-
-              <input
-                type="text"
-                id="nomeMaquinaInput"
-                placeholder="Ex: Braço robótico 01"
-                required
-              >
-
+              <input type="text" id="nomeMaquinaInput" placeholder="Ex: Braço robótico 01" required>
             </div>
-
           </div>
 
-
-
           <div class="form-group">
-
-            <label for="setorMaquinaInput">
-              Setor
-            </label>
-
+            <label for="setorMaquinaInput">Setor</label>
             <div class="form-control">
-
               <i class="fa-solid fa-location-dot"></i>
-
-              <input
-                type="text"
-                id="setorMaquinaInput"
-                placeholder="Ex: Automação"
-                required
-              >
-
+              <input type="text" id="setorMaquinaInput" placeholder="Ex: Automação" required>
             </div>
-
           </div>
 
-
-
           <div class="form-group">
-
-            <label for="tipoInput">
-              Tipo de equipamento
-            </label>
-
+            <label for="modeloMaquinaInput">Modelo</label>
             <div class="form-control">
-
-              <i class="fa-solid fa-gears"></i>
-
-              <select
-                id="tipoInput"
-                required
-              >
-
-                <option value="">
-                  Selecione o tipo
-                </option>
-
-                <option value="Braço robótico">
-                  Braço robótico
-                </option>
-
-                <option value="Robô industrial">
-                  Robô industrial
-                </option>
-
-                <option value="Esteira industrial">
-                  Esteira industrial
-                </option>
-
-                <option value="Prensa">
-                  Prensa
-                </option>
-
-                <option value="Torno">
-                  Torno
-                </option>
-
-                <option value="Solda">
-                  Solda
-                </option>
-
-                <option value="Corte">
-                  Corte
-                </option>
-
-                <option value="Embalagem">
-                  Embalagem
-                </option>
-
-                <option value="CNC">
-                  CNC
-                </option>
-
-                <option value="Impressora 3D">
-                  Impressora 3D
-                </option>
-
-                <option value="Outro">
-                  Outro
-                </option>
-
-              </select>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="form-group">
-
-            <label for="modeloMaquinaInput">
-              Modelo
-            </label>
-
-            <div class="form-control">
-
               <i class="fa-solid fa-barcode"></i>
-
-              <input
-                type="text"
-                id="modeloMaquinaInput"
-                placeholder="Ex: RB-500"
-                required
-              >
-
+              <input type="text" id="modeloMaquinaInput" placeholder="Ex: RB-500" required>
             </div>
-
           </div>
 
-
-
           <div class="form-group">
-
-            <label for="fabricanteInput">
-              Fabricante
-            </label>
-
+            <label for="codigoInput">Código / Patrimônio</label>
             <div class="form-control">
-
-              <i class="fa-solid fa-building"></i>
-
-              <input
-                type="text"
-                id="fabricanteInput"
-                placeholder="Ex: ABB, KUKA, FANUC..."
-                required
-              >
-
-            </div>
-
-          </div>
-
-
-
-          <div class="form-group">
-
-            <label for="codigoInput">
-              Código / Patrimônio
-            </label>
-
-            <div class="form-control">
-
               <i class="fa-solid fa-qrcode"></i>
+              <input type="text" id="codigoInput" placeholder="Ex: ROB-001" required>
+            </div>
+          </div>
+        </div>
 
-              <input
-                type="text"
-                id="codigoInput"
-                placeholder="Ex: ROB-001"
-                required
-              >
+        <details class="form-disclosure" id="identificationDetails">
+          <summary>
+            <span class="disclosure-icon"><i class="fa-solid fa-sliders"></i></span>
+            <span class="disclosure-copy">
+              <strong>Detalhes adicionais</strong>
+              <small>Tipo, fabricante e descrição operacional</small>
+            </span>
+            <i class="fa-solid fa-chevron-down disclosure-arrow"></i>
+          </summary>
 
+          <div class="form-disclosure-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="tipoInput">Tipo de equipamento</label>
+                <div class="form-control">
+                  <i class="fa-solid fa-gears"></i>
+                  <select id="tipoInput">
+                    <option value="">Configurar depois</option>
+                    <option value="Braço robótico">Braço robótico</option>
+                    <option value="Robô industrial">Robô industrial</option>
+                    <option value="Esteira industrial">Esteira industrial</option>
+                    <option value="Prensa">Prensa</option>
+                    <option value="Torno">Torno</option>
+                    <option value="Solda">Solda</option>
+                    <option value="Corte">Corte</option>
+                    <option value="Embalagem">Embalagem</option>
+                    <option value="CNC">CNC</option>
+                    <option value="Impressora 3D">Impressora 3D</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="fabricanteInput">Fabricante</label>
+                <div class="form-control">
+                  <i class="fa-solid fa-building"></i>
+                  <input type="text" id="fabricanteInput" placeholder="Ex: ABB, KUKA, FANUC...">
+                </div>
+              </div>
             </div>
 
+            <div class="form-group description-field">
+              <label for="descricaoInput">Descrição operacional</label>
+              <textarea id="descricaoInput" placeholder="Ex: Responsável pela movimentação e pelo posicionamento de peças na linha de automação."></textarea>
+            </div>
           </div>
-
-        </div>
-
-
-
-        <div class="form-section-title description-title">
-
-          <span>
-            02
-          </span>
-
-          Função no processo industrial
-
-        </div>
-
-
-
-        <div class="form-group">
-
-          <label for="descricaoInput">
-            Descrição
-          </label>
-
-          <textarea
-            id="descricaoInput"
-            placeholder="Ex: Braço robótico responsável pela movimentação e posicionamento de peças na linha de automação."
-            required
-          ></textarea>
-
-        </div>
+        </details>
 
 
 
@@ -677,9 +544,7 @@
 
         <div class="form-section-title connection-title">
 
-          <span>
-            03
-          </span>
+          <span>02</span>
 
           Comunicação industrial
         </div>
@@ -775,6 +640,17 @@
             <small><i class="fa-solid fa-shield-halved"></i> Segurança: no gateway, DOBOT_ALLOW_MOTION=false continua bloqueando movimento mesmo que a interface esteja preparada.</small>
           </div>
 
+          <details class="form-disclosure full-width advanced-network-details">
+            <summary>
+              <span class="disclosure-icon"><i class="fa-solid fa-network-wired"></i></span>
+              <span class="disclosure-copy">
+                <strong>Configuração avançada de rede</strong>
+                <small>Host, porta, endpoint e intervalo de leitura</small>
+              </span>
+              <i class="fa-solid fa-chevron-down disclosure-arrow"></i>
+            </summary>
+
+            <div class="form-disclosure-content form-grid">
           <div class="form-group">
             <label for="hostInput">IP / Host</label>
             <div class="form-control">
@@ -863,13 +739,27 @@
             </div>
           </div>
 
+            </div>
+          </details>
+
         </div>
 
         <div class="form-section-title connection-title">
-          <span>04</span>
+          <span>03</span>
           Limites operacionais e segurança
         </div>
 
+        <details class="form-disclosure limits-details">
+          <summary>
+            <span class="disclosure-icon"><i class="fa-solid fa-shield-halved"></i></span>
+            <span class="disclosure-copy">
+              <strong>Personalizar limites</strong>
+              <small>O sistema já utiliza valores seguros recomendados</small>
+            </span>
+            <i class="fa-solid fa-chevron-down disclosure-arrow"></i>
+          </summary>
+
+          <div class="form-disclosure-content">
         <div class="connection-help">
           <i class="fa-solid fa-shield-halved"></i>
           <div>
@@ -935,6 +825,8 @@
             </div>
           </div>
         </div>
+          </div>
+        </details>
 
         <div class="form-actions">
 
@@ -1092,9 +984,9 @@
 
 
 
-  <script src="assets/js/config.js?v=20260901_I18N_WELCOME"></script>
+  <script src="assets/js/config.js?v=20260903_LOGOUT_CONFIRM"></script>
 
-  <script src="assets/js/maquinas.js?v=20260902_MACHINE_RETURN_FIX"></script>
+  <script src="assets/js/maquinas.js?v=20260903_APP_STYLE_FORM"></script>
 
 </body>
 
