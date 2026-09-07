@@ -7,6 +7,7 @@ import {
   requestCompanyRegistrationCode,
   resendCompanyRegistrationCode,
   confirmCompanyRegistrationCode,
+  completeCompanyRegistrationWithFace,
   registerFace,
   analisarFaceImage,
   registerFaceImage,
@@ -131,6 +132,22 @@ authRoutes.post(
   "/register-company/confirm-code",
   limiteEmail,
   confirmCompanyRegistrationCode
+);
+
+authRoutes.post(
+  "/register-company/complete-face",
+  limiteFacial,
+  uploadFace.fields([
+    {
+      name: "imagem",
+      maxCount: 1
+    },
+    {
+      name: "liveness",
+      maxCount: 1
+    }
+  ]),
+  completeCompanyRegistrationWithFace
 );
 
 authRoutes.post(

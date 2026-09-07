@@ -5826,7 +5826,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "Bem-vindo ao SteelControl, {nome}!",
     registerWelcomeText: "Sua empresa foi criada e sua biometria foi protegida com sucesso. Tudo pronto para começar.",
     redirectingWorkspace: "Abrindo seu ambiente industrial...",
-    emailConfirmedFaceNext: "E-mail confirmado e empresa criada. Agora vamos proteger sua conta com a biometria facial.",
+    emailConfirmedFaceNext: "E-mail confirmado. A conta ainda não foi criada; conclua a biometria facial para finalizar o cadastro.",
+    registrationFaceRequired: "A conta só será criada depois que a biometria facial for concluída com sucesso.",
+    registrationFaceRetry: "A conta ainda não foi criada. Posicione o rosto e tente novamente.",
     faceRegisteredTitle: "Cadastro concluído!",
     faceRegisteredText: "Biometria vinculada com segurança à sua conta.",
     resendCodeIn: "Reenviar código em {segundos}s",
@@ -5857,7 +5859,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "Welcome to SteelControl, {nome}!",
     registerWelcomeText: "Your company has been created and your biometric data was secured successfully. Everything is ready.",
     redirectingWorkspace: "Opening your industrial workspace...",
-    emailConfirmedFaceNext: "Email confirmed and company created. Now let's protect your account with facial biometrics.",
+    emailConfirmedFaceNext: "Email confirmed. The account has not been created yet; complete facial biometrics to finish registration.",
+    registrationFaceRequired: "The account will only be created after facial biometrics are completed successfully.",
+    registrationFaceRetry: "The account has not been created yet. Position your face and try again.",
     faceRegisteredTitle: "Registration complete!",
     faceRegisteredText: "Biometric data securely linked to your account.",
     resendCodeIn: "Resend code in {segundos}s",
@@ -5888,7 +5892,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "¡Bienvenido a SteelControl, {nome}!",
     registerWelcomeText: "Su empresa fue creada y sus datos biométricos se protegieron correctamente. Todo está listo.",
     redirectingWorkspace: "Abriendo su entorno industrial...",
-    emailConfirmedFaceNext: "Correo confirmado y empresa creada. Ahora protegeremos su cuenta con biometría facial.",
+    emailConfirmedFaceNext: "Correo confirmado. La cuenta aún no fue creada; complete la biometría facial para finalizar el registro.",
+    registrationFaceRequired: "La cuenta solo se creará después de completar correctamente la biometría facial.",
+    registrationFaceRetry: "La cuenta aún no fue creada. Coloque el rostro e inténtelo de nuevo.",
     faceRegisteredTitle: "¡Registro completado!",
     faceRegisteredText: "Biometría vinculada de forma segura a su cuenta.",
     resendCodeIn: "Reenviar código en {segundos}s",
@@ -5919,7 +5925,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "Bienvenue sur SteelControl, {nome} !",
     registerWelcomeText: "Votre entreprise a été créée et vos données biométriques ont été sécurisées. Tout est prêt.",
     redirectingWorkspace: "Ouverture de votre environnement industriel...",
-    emailConfirmedFaceNext: "E-mail confirmé et entreprise créée. Protégeons maintenant votre compte avec la biométrie faciale.",
+    emailConfirmedFaceNext: "E-mail confirmé. Le compte n'a pas encore été créé ; terminez la biométrie faciale pour finaliser l'inscription.",
+    registrationFaceRequired: "Le compte ne sera créé qu'après la validation réussie de la biométrie faciale.",
+    registrationFaceRetry: "Le compte n'a pas encore été créé. Positionnez votre visage et réessayez.",
     faceRegisteredTitle: "Inscription terminée !",
     faceRegisteredText: "Données biométriques associées à votre compte en toute sécurité.",
     resendCodeIn: "Renvoyer le code dans {segundos}s",
@@ -5950,7 +5958,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "Willkommen bei SteelControl, {nome}!",
     registerWelcomeText: "Ihr Unternehmen wurde erstellt und Ihre biometrischen Daten wurden sicher geschützt. Alles ist bereit.",
     redirectingWorkspace: "Ihr industrieller Arbeitsbereich wird geöffnet...",
-    emailConfirmedFaceNext: "E-Mail bestätigt und Unternehmen erstellt. Jetzt schützen wir Ihr Konto mit Gesichtsbiometrie.",
+    emailConfirmedFaceNext: "E-Mail bestätigt. Das Konto wurde noch nicht erstellt; schließen Sie die Gesichtsbiometrie ab, um die Registrierung zu beenden.",
+    registrationFaceRequired: "Das Konto wird erst nach erfolgreicher Gesichtsbiometrie erstellt.",
+    registrationFaceRetry: "Das Konto wurde noch nicht erstellt. Positionieren Sie Ihr Gesicht und versuchen Sie es erneut.",
     faceRegisteredTitle: "Registrierung abgeschlossen!",
     faceRegisteredText: "Biometrische Daten wurden sicher mit Ihrem Konto verknüpft.",
     resendCodeIn: "Code in {segundos}s erneut senden",
@@ -5981,7 +5991,9 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     registerWelcomeTitle: "Benvenuto su SteelControl, {nome}!",
     registerWelcomeText: "La tua azienda è stata creata e i dati biometrici sono stati protetti. È tutto pronto.",
     redirectingWorkspace: "Apertura del tuo ambiente industriale...",
-    emailConfirmedFaceNext: "E-mail confermata e azienda creata. Ora proteggiamo il tuo account con la biometria facciale.",
+    emailConfirmedFaceNext: "E-mail confermata. L'account non è ancora stato creato; completa la biometria facciale per terminare la registrazione.",
+    registrationFaceRequired: "L'account verrà creato solo dopo il completamento corretto della biometria facciale.",
+    registrationFaceRetry: "L'account non è ancora stato creato. Posiziona il volto e riprova.",
     faceRegisteredTitle: "Registrazione completata!",
     faceRegisteredText: "Dati biometrici collegati in modo sicuro al tuo account.",
     resendCodeIn: "Invia nuovamente il codice tra {segundos}s",
@@ -8497,3 +8509,113 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
     perigoso: true
   });
 };
+
+// =========================================================
+// REALTIME DA EMPRESA — DESKTOP / MULTI-DISPOSITIVO
+// =========================================================
+// Usa o mesmo padrão SSE autenticado já utilizado pelas máquinas, mas em
+// escopo de empresa. Alterações feitas no tablet/PC chegam aos outros clientes
+// sem F5. O stream é apenas de eventos; os dados continuam vindo das rotas
+// autenticadas normais para manter a fonte de verdade no backend.
+(() => {
+  if (window.__steelCompanyRealtimeStarted) return;
+
+  const tokenRealtime = localStorage.getItem("token");
+  const apiRealtime = String(window.STEELCONTROL_API_URL || "").replace(/\/$/, "");
+
+  if (!tokenRealtime || !apiRealtime) return;
+
+  window.__steelCompanyRealtimeStarted = true;
+
+  let encerrando = false;
+  let controller = null;
+  let espera = 1000;
+
+  const pausa = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  function publicar(evento) {
+    if (!evento || !evento.tipo) return;
+
+    window.dispatchEvent(
+      new CustomEvent("steelcontrol:empresa-evento", {
+        detail: evento
+      })
+    );
+
+    window.dispatchEvent(
+      new CustomEvent(`steelcontrol:${evento.tipo}`, {
+        detail: evento
+      })
+    );
+  }
+
+  async function conectar() {
+    while (!encerrando) {
+      try {
+        controller = new AbortController();
+
+        const resposta = await fetch(`${apiRealtime}/empresa/stream`, {
+          method: "GET",
+          headers: {
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${tokenRealtime}`,
+            "Cache-Control": "no-cache"
+          },
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        if (resposta.status === 401) {
+          publicar({
+            tipo: "sessao.invalida",
+            dados: {},
+            em: new Date().toISOString()
+          });
+          return;
+        }
+
+        if (!resposta.ok || !resposta.body) {
+          throw new Error("Stream da empresa indisponível.");
+        }
+
+        espera = 1000;
+        const reader = resposta.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (!encerrando) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const blocos = buffer.split("\n\n");
+          buffer = blocos.pop() || "";
+
+          for (const bloco of blocos) {
+            const linhaData = bloco
+              .split("\n")
+              .find(linha => linha.startsWith("data:"));
+
+            if (!linhaData) continue;
+
+            try {
+              publicar(JSON.parse(linhaData.slice(5).trim()));
+            } catch (_) {}
+          }
+        }
+      } catch (erro) {
+        if (encerrando || erro?.name === "AbortError") return;
+      }
+
+      await pausa(espera);
+      espera = Math.min(10000, Math.round(espera * 1.7));
+    }
+  }
+
+  window.addEventListener("beforeunload", () => {
+    encerrando = true;
+    controller?.abort();
+  });
+
+  conectar();
+})();

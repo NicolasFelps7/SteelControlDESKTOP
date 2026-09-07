@@ -97,7 +97,7 @@ b {
 }
 
 .steel-language-switcher .steel-language-icon {
-  color: #93c5fd;
+  color: #e0b66f;
   font-size: 14px;
   line-height: 1;
 }
@@ -114,7 +114,7 @@ b {
 }
 
 .steel-language-switcher select option {
-  color: #0f172a;
+  color: #1d2124;
   background: #fff;
 }
 
@@ -340,7 +340,7 @@ b {
 }
 
 .sc-confirm-actions button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, .22);
+  outline: 3px solid rgba(196, 123, 18, .22);
   outline-offset: 2px;
 }
 
@@ -386,27 +386,27 @@ b {
 ========================================================= */
 :root {
   --sc-surface: #ffffff;
-  --sc-text: #0f172a;
+  --sc-text: #1d2124;
   --sc-text-muted: #64748b;
   --sc-border: #dbe2ea;
-  --sc-primary: #2563eb;
-  --sc-primary-soft: #eaf1ff;
+  --sc-primary: #c47b12;
+  --sc-primary-soft: #f7efe1;
 }
 
 html[data-theme="escuro"] {
-  --sc-surface: #111827;
+  --sc-surface: #202529;
   --sc-text: #f8fafc;
   --sc-text-muted: #cbd5e1;
-  --sc-border: #334155;
-  --sc-primary: #60a5fa;
-  --sc-primary-soft: #172554;
+  --sc-border: #41494f;
+  --sc-primary: #d79b3c;
+  --sc-primary-soft: #2c2923;
 }
 
 .sc-toast,
 .sc-confirm-card {
   opacity: 1;
   background-color: var(--sc-surface, #ffffff) !important;
-  color: var(--sc-text, #0f172a) !important;
+  color: var(--sc-text, #1d2124) !important;
   border-color: var(--sc-border, #dbe2ea) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -419,7 +419,7 @@ html[data-theme="escuro"] {
 
 .sc-confirm-card h3,
 .sc-toast strong {
-  color: var(--sc-text, #0f172a) !important;
+  color: var(--sc-text, #1d2124) !important;
 }
 
 .sc-confirm-card p,
@@ -430,7 +430,7 @@ html[data-theme="escuro"] {
 
 .sc-confirm-cancel {
   background-color: var(--sc-surface, #ffffff) !important;
-  color: var(--sc-text, #0f172a) !important;
+  color: var(--sc-text, #1d2124) !important;
   border-color: var(--sc-border, #dbe2ea) !important;
 }
 

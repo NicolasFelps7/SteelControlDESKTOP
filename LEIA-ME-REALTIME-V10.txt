@@ -1,0 +1,7 @@
+STEELCONTROL REALTIME V10
+
+Objetivo: sincronizar desktop/tablet sem F5.
+
+Substitua os arquivos mantendo as mesmas pastas e reinicie o backend.
+Depois da atualização, faça apenas UM Ctrl+F5/feche e abra o desktop para carregar os novos JS.
+A partir daí, demissão, cadastro/edição de funcionário, facial, dados/logo da empresa e criação/edição/desativação de máquinas disparam eventos em tempo real entre dispositivos.

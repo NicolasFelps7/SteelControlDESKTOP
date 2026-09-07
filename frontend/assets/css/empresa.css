@@ -10,13 +10,13 @@
   --bg: #eef2f6;
   --card: #ffffff;
 
-  --text: #111827;
+  --text: #202529;
   --muted: #64748b;
 
   --border: #dbe2ea;
 
-  --blue: #2563eb;
-  --blue-dark: #1d4ed8;
+  --blue: #c47b12;
+  --blue-dark: #9e600a;
 
   --green: #16a34a;
   --green-light: #dcfce7;
@@ -28,15 +28,15 @@
 
   --yellow: #f59e0b;
 
-  --purple: #7c3aed;
+  --purple: #b66f0e;
 
   /* Componentes compartilhados SteelUI (toast/confirm). */
   --sc-surface: #ffffff;
-  --sc-text: #111827;
+  --sc-text: #202529;
   --sc-text-muted: #64748b;
   --sc-border: #dbe2ea;
-  --sc-primary: #2563eb;
-  --sc-primary-soft: #eff6ff;
+  --sc-primary: #c47b12;
+  --sc-primary-soft: #fff4df;
 }
 
 
@@ -165,8 +165,8 @@ button {
   background:
     linear-gradient(
       135deg,
-      #0f172a,
-      #1e3a8a
+      #1d2124,
+      #69430f
     );
 
   border-radius: 25px;
@@ -293,7 +293,7 @@ button {
 
 
 .company-main-info > p {
-  color: #dbeafe;
+  color: #f6e3c2;
 
   margin-bottom: 7px;
 }
@@ -359,7 +359,7 @@ button {
 
   border-radius: 15px;
 
-  background: #dbeafe;
+  background: #f6e3c2;
 
   color: var(--blue);
 
@@ -382,7 +382,7 @@ button {
 
 
 .summary-icon.purple {
-  background: #ede9fe;
+  background: #f5efe3;
 
   color: var(--purple);
 }
@@ -507,8 +507,8 @@ button {
   background:
     linear-gradient(
       135deg,
-      #2563eb,
-      #60a5fa
+      #c47b12,
+      #d79b3c
     );
 
   color: white;
@@ -645,7 +645,7 @@ button {
 
   border-radius: 50%;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 
@@ -687,7 +687,7 @@ button {
 
   border-radius: 999px;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 
@@ -924,7 +924,7 @@ button {
 
   background: #f1f5f9;
 
-  color: #334155;
+  color: #41494f;
 
   z-index: 20;
 }
@@ -955,7 +955,7 @@ button {
 
   border-radius: 15px;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 
@@ -1022,7 +1022,7 @@ button {
 
   box-shadow:
     0 0 0 3px
-    rgba(37, 99, 235, 0.1);
+    rgba(196, 123, 18, 0.1);
 }
 
 
@@ -1107,12 +1107,12 @@ button {
 
   overflow: hidden;
 
-  background: #020617;
+  background: #111416;
 
   border-radius: 20px;
 
   border:
-    2px solid #dbeafe;
+    2px solid #f6e3c2;
 }
 
 
@@ -1158,7 +1158,7 @@ button {
 
   gap: 12px;
 
-  background: #020617;
+  background: #111416;
 
   color: white;
 
@@ -1169,7 +1169,7 @@ button {
 .camera-loading i {
   font-size: 30px;
 
-  color: #60a5fa;
+  color: #d79b3c;
 }
 
 
@@ -1369,7 +1369,7 @@ button {
   background:
     linear-gradient(
       90deg,
-      #2563eb,
+      #c47b12,
       #22c55e
     );
 
@@ -1542,9 +1542,9 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 ===================================================== */
 
 .edit-company-btn {
-  border: 1px solid #bfdbfe;
+  border: 1px solid #e8c890;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 
@@ -1569,7 +1569,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
 
 .edit-company-btn:hover {
-  background: #dbeafe;
+  background: #f6e3c2;
 
   transform: translateY(-1px);
 }
@@ -1673,7 +1673,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
   border-radius: 11px;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 }
@@ -1792,7 +1792,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
   border-radius: 14px;
 
-  background: #eff6ff;
+  background: #fff4df;
 
   color: var(--blue);
 
@@ -1875,7 +1875,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
   border-radius: 18px;
 
-  background: #dbeafe;
+  background: #f6e3c2;
 
   color: var(--blue);
 
@@ -1992,7 +1992,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
   gap: 8px;
 
-  background: #111827;
+  background: #202529;
 
   color: white;
 
@@ -2007,7 +2007,7 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 
 
 .open-map-btn:hover:not(:disabled) {
-  background: #1f2937;
+  background: #30363a;
 
   transform: translateY(-1px);
 }
@@ -2086,18 +2086,18 @@ html:not([data-theme="escuro"]) .topbar .brand img {
 ===================================================== */
 
 html[data-theme="escuro"] {
-  --background: #020617;
-  --card: #111827;
+  --background: #111416;
+  --card: #202529;
   --text: #f8fafc;
   --muted: #cbd5e1;
-  --border: #334155;
+  --border: #41494f;
 
-  --sc-surface: #111827;
+  --sc-surface: #202529;
   --sc-text: #f8fafc;
   --sc-text-muted: #cbd5e1;
-  --sc-border: #334155;
-  --sc-primary: #60a5fa;
-  --sc-primary-soft: rgba(37, 99, 235, 0.18);
+  --sc-border: #41494f;
+  --sc-primary: #d79b3c;
+  --sc-primary-soft: rgba(196, 123, 18, 0.18);
 }
 
 html[data-theme="escuro"] body {
@@ -2133,13 +2133,13 @@ html[data-theme="escuro"] small {
 html[data-theme="escuro"] input,
 html[data-theme="escuro"] select,
 html[data-theme="escuro"] textarea {
-  background: #0f172a;
+  background: #1d2124;
   color: var(--text);
   border-color: var(--border);
 }
 
 html[data-theme="escuro"] .company-form input:disabled {
-  background: #1e293b;
+  background: #2b3135;
   color: #cbd5e1;
 }
 
@@ -2147,7 +2147,7 @@ html[data-theme="escuro"] .company-address-card,
 html[data-theme="escuro"] .operation-status,
 html[data-theme="escuro"] .logged-user,
 html[data-theme="escuro"] .employee-face-status {
-  background: #1e293b;
+  background: #2b3135;
   border-color: var(--border);
 }
 
@@ -2205,8 +2205,8 @@ html[data-theme="escuro"] .employee-face-status {
 
 html[data-theme="escuro"] .modal-card,
 html[data-theme="escuro"] .face-modal-card {
-  background: #101b2e;
-  border: 1px solid #2b3b55;
+  background: #1d2124;
+  border: 1px solid #3a4146;
   color: #f8fafc;
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
 }
@@ -2220,19 +2220,19 @@ html[data-theme="escuro"] .camera-status strong {
 }
 
 html[data-theme="escuro"] .modal-icon {
-  background: #17243a;
-  color: #60a5fa;
+  background: #282e32;
+  color: #d79b3c;
 }
 
 html[data-theme="escuro"] .close-modal {
-  background: #17243a;
+  background: #282e32;
   color: #e2e8f0;
-  border: 1px solid #334155;
+  border: 1px solid #41494f;
 }
 
 html[data-theme="escuro"] .consent-box {
-  background: #17243a;
-  border-color: #334155;
+  background: #282e32;
+  border-color: #41494f;
 }
 
 html[data-theme="escuro"] .consent-box span {
@@ -2240,8 +2240,8 @@ html[data-theme="escuro"] .consent-box span {
 }
 
 html[data-theme="escuro"] .camera-status {
-  background: #17243a;
-  border-color: #334155;
+  background: #282e32;
+  border-color: #41494f;
 }
 
 html[data-theme="escuro"] .camera-status span {
@@ -2337,9 +2337,9 @@ html[data-theme="escuro"] .remove-employee-btn {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #2563eb;
+  color: #c47b12;
   background:
-    linear-gradient(145deg, #f8fbff, #e9f2ff);
+    linear-gradient(145deg, #f7f8f9, #f7f2e8);
   font-size: 42px;
 }
 
@@ -2349,9 +2349,9 @@ html[data-theme="escuro"] .remove-employee-btn {
 }
 
 html[data-theme="escuro"] .company-logo-placeholder {
-  color: #60a5fa;
+  color: #d79b3c;
   background:
-    linear-gradient(145deg, #18243a, #10192b);
+    linear-gradient(145deg, #252a2e, #1c2023);
 }
 
 
@@ -2366,8 +2366,8 @@ html[data-theme="escuro"] .company-logo-placeholder {
 }
 
 html[data-theme="escuro"] .company-logo-box {
-  background: #172033;
-  border: 1px solid #334155;
+  background: #24292d;
+  border: 1px solid #41494f;
 }
 
 html[data-theme="escuro"] img.logo-monocromatica-escura {
@@ -2383,7 +2383,7 @@ html[data-theme="escuro"] .company-logo-box img {
 }
 
 html[data-theme="escuro"] .company-logo-box {
-  background: #111827 !important;
+  background: #202529 !important;
 }
 
 
@@ -2412,15 +2412,15 @@ html[data-theme="escuro"] .company-form textarea,
 html[data-theme="escuro"] .form-group input,
 html[data-theme="escuro"] .form-group select,
 html[data-theme="escuro"] .form-group textarea {
-  background: #0f172a !important;
+  background: #1d2124 !important;
   color: #f8fafc !important;
-  border-color: #334155 !important;
+  border-color: #41494f !important;
   -webkit-text-fill-color: #f8fafc !important;
   opacity: 1 !important;
 }
 
 html[data-theme="escuro"] .company-form input:disabled {
-  background: #162033 !important;
+  background: #23282c !important;
   color: #e2e8f0 !important;
   -webkit-text-fill-color: #e2e8f0 !important;
 }
@@ -2441,13 +2441,13 @@ html[data-theme="escuro"] .company-form-divider span {
 /* Cargo do funcionário: fundo e texto próprios no dark,
    sem herdar a cor genérica dos spans. */
 html[data-theme="escuro"] .role-badge {
-  background: rgba(37, 99, 235, 0.18) !important;
-  border: 1px solid rgba(96, 165, 250, 0.34) !important;
-  color: #93c5fd !important;
+  background: rgba(196, 123, 18, 0.18) !important;
+  border: 1px solid rgba(215, 155, 60, 0.34) !important;
+  color: #e0b66f !important;
 }
 
 html[data-theme="escuro"] .employee-info .role-badge {
-  color: #93c5fd !important;
+  color: #e0b66f !important;
 }
 
 html[data-theme="escuro"] .employee-face-status.active {
@@ -2484,16 +2484,16 @@ html[data-theme="escuro"] .employee-face-status p {
   gap: 8px;
   min-height: 40px;
   padding: 0 13px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #e8c890;
   border-radius: 11px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #fff4df;
+  color: #9e600a;
   cursor: pointer;
   font-weight: 600;
 }
 
 .edit-employee-btn:hover {
-  background: #dbeafe;
+  background: #f6e3c2;
 }
 
 .employee-edit-modal {
@@ -2511,9 +2511,9 @@ html[data-theme="escuro"] .employee-face-status p {
 .email-verification-box {
   margin: 16px 0;
   padding: 15px;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #e8c890;
   border-radius: 14px;
-  background: #eff6ff;
+  background: #fff4df;
 }
 
 .email-verification-box[hidden] {
@@ -2529,7 +2529,7 @@ html[data-theme="escuro"] .employee-face-status p {
 
 .verification-heading > i {
   margin-top: 2px;
-  color: #2563eb;
+  color: #c47b12;
   font-size: 18px;
 }
 
@@ -2552,7 +2552,7 @@ html[data-theme="escuro"] .employee-face-status p {
 
 #emailVerificationCode {
   min-height: 44px;
-  border: 1px solid #93c5fd;
+  border: 1px solid #e0b66f;
   border-radius: 11px;
   text-align: center;
   font-size: 20px;
@@ -2565,20 +2565,20 @@ html[data-theme="escuro"] .employee-face-status p {
   padding: 0 16px;
   border: 0;
   border-radius: 11px;
-  background: #2563eb;
+  background: #c47b12;
   color: #fff;
   cursor: pointer;
   font-weight: 600;
 }
 
 html[data-theme="escuro"] .edit-employee-btn {
-  border-color: #1e3a8a;
-  background: rgba(37, 99, 235, 0.14);
-  color: #93c5fd;
+  border-color: #69430f;
+  background: rgba(196, 123, 18, 0.14);
+  color: #e0b66f;
 }
 
 html[data-theme="escuro"] .email-verification-box {
-  border-color: #1e3a8a;
+  border-color: #69430f;
   background: rgba(30, 64, 175, 0.12);
 }
 
@@ -2588,8 +2588,8 @@ html[data-theme="escuro"] .field-help {
 }
 
 html[data-theme="escuro"] #emailVerificationCode {
-  border-color: #334155;
-  background: #0f172a;
+  border-color: #41494f;
+  background: #1d2124;
   color: #f8fafc;
 }
 
@@ -2672,7 +2672,7 @@ html[data-theme="escuro"] .remove-logo-btn {
   align-items: center;
   gap: 7px;
   margin-bottom: 7px;
-  color: #0f172a;
+  color: #1d2124;
   font-size: 12px;
   font-weight: 800;
 }
@@ -2689,14 +2689,14 @@ html[data-theme="escuro"] .remove-logo-btn {
   border-radius: 10px;
   outline: none;
   background: white;
-  color: #0f172a;
+  color: #1d2124;
   font: inherit;
   font-size: 13px;
 }
 
 .face-sample-name-field input:focus {
   border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+  box-shadow: 0 0 0 3px rgba(196, 123, 18, 0.10);
 }
 
 .face-sample-name-field small {
@@ -2714,10 +2714,10 @@ html[data-theme="escuro"] .remove-logo-btn {
 .faces-manager-help {
   margin: -2px 0 14px;
   padding: 11px 13px;
-  border: 1px solid #dbeafe;
+  border: 1px solid #f6e3c2;
   border-radius: 11px;
-  background: #eff6ff;
-  color: #334155;
+  background: #fff4df;
+  color: #41494f;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -2755,7 +2755,7 @@ html[data-theme="escuro"] .remove-logo-btn {
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background: #eff6ff;
+  background: #fff4df;
   color: var(--blue);
   font-size: 18px;
 }
@@ -2767,7 +2767,7 @@ html[data-theme="escuro"] .remove-logo-btn {
 .face-sample-info strong {
   display: block;
   overflow: hidden;
-  color: #0f172a;
+  color: #1d2124;
   font-size: 13px;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -2797,8 +2797,8 @@ html[data-theme="escuro"] .remove-logo-btn {
 
 html[data-theme="escuro"] .face-sample-name-field,
 html[data-theme="escuro"] .faces-manager-help {
-  background: #0f1b31;
-  border-color: #243552;
+  background: #1b1f22;
+  border-color: #343b40;
   color: #cbd5e1;
 }
 
@@ -2809,8 +2809,8 @@ html[data-theme="escuro"] .face-sample-info strong {
 
 html[data-theme="escuro"] .face-sample-name-field input,
 html[data-theme="escuro"] .face-sample-item {
-  background: #111c30;
-  border-color: #293851;
+  background: #202529;
+  border-color: #3a4247;
   color: #f8fafc;
 }
 

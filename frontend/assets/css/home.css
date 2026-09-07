@@ -67,7 +67,7 @@ button {
     #f8fafc;
 
   --text:
-    #0f172a;
+    #1d2124;
 
   --muted:
     #64748b;
@@ -76,13 +76,13 @@ button {
     #e2e8f0;
 
   --blue:
-    #2563eb;
+    #c47b12;
 
   --blue-dark:
-    #1d4ed8;
+    #9e600a;
 
   --blue-soft:
-    #eff6ff;
+    #fff4df;
 
   --green:
     #16a34a;
@@ -119,16 +119,16 @@ button {
 html[data-theme="escuro"] {
 
   --background:
-    #020617;
+    #111416;
 
   --background-soft:
-    #0b1120;
+    #171a1c;
 
   --card:
-    #111827;
+    #202529;
 
   --card-secondary:
-    #1e293b;
+    #2b3135;
 
   --text:
     #f8fafc;
@@ -137,7 +137,7 @@ html[data-theme="escuro"] {
     #94a3b8;
 
   --border:
-    #273449;
+    #343b40;
 
   --blue-soft:
     rgba(
@@ -1566,8 +1566,8 @@ html[data-theme="escuro"]
   background:
     linear-gradient(
       180deg,
-      #2563eb,
-      #1d4ed8
+      #c47b12,
+      #9e600a
     );
 }
 
@@ -1682,10 +1682,10 @@ html[data-theme="escuro"]
 .alert-preview-item i.blue {
 
   color:
-    #2563eb;
+    #c47b12;
 
   background:
-    #dbeafe;
+    #f6e3c2;
 }
 
 
@@ -2512,9 +2512,9 @@ html[data-theme="escuro"]
   background:
     linear-gradient(
       135deg,
-      #0f172a,
-      #172554,
-      #1e3a8a
+      #1d2124,
+      #2c2923,
+      #69430f
     );
 }
 
@@ -2543,7 +2543,7 @@ html[data-theme="escuro"]
 .light-label {
 
   color:
-    #93c5fd;
+    #e0b66f;
 }
 
 
@@ -2652,9 +2652,9 @@ html[data-theme="escuro"]
   background:
     linear-gradient(
       110deg,
-      #2563eb,
-      #172554,
-      #020617
+      #c47b12,
+      #2c2923,
+      #111416
     );
 
   color:
@@ -2770,7 +2770,7 @@ html[data-theme="escuro"]
     white;
 
   color:
-    #0f172a;
+    #1d2124;
 }
 
 
@@ -2797,7 +2797,7 @@ html[data-theme="escuro"]
 .footer {
 
   background:
-    #020617;
+    #111416;
 
   color:
     #94a3b8;
@@ -2989,7 +2989,7 @@ html[data-theme="escuro"]
 
   border-top:
     1px solid
-    #1e293b;
+    #2b3135;
 
   color:
     #64748b;
@@ -3597,8 +3597,8 @@ html[data-theme="escuro"]
       rgba(248, 250, 252, 0.84) 42%,
       rgba(248, 250, 252, 0.72) 100%
     ),
-    radial-gradient(circle at 82% 28%, rgba(37,99,235,.20), transparent 32%),
-    linear-gradient(135deg, #f8fafc, #dbeafe);
+    radial-gradient(circle at 82% 28%, rgba(196,123,18,.20), transparent 32%),
+    linear-gradient(135deg, #f8fafc, #f6e3c2);
 
   background-size: cover;
   background-position: center;
@@ -3613,7 +3613,7 @@ html[data-theme="escuro"]
   background:
     radial-gradient(
       circle at 82% 28%,
-      rgba(37, 99, 235, 0.14),
+      rgba(196, 123, 18, 0.14),
       transparent 34%
     ),
     linear-gradient(
@@ -3641,7 +3641,7 @@ html[data-theme="escuro"]
 }
 
 html[data-theme="escuro"] .hero {
-  background-color: #08111f;
+  background-color: #171a1d;
 }
 
 html[data-theme="escuro"] .hero-background {
@@ -3652,8 +3652,8 @@ html[data-theme="escuro"] .hero-background {
       rgba(8, 17, 31, 0.83) 48%,
       rgba(8, 17, 31, 0.72) 100%
     ),
-    radial-gradient(circle at 82% 28%, rgba(37,99,235,.20), transparent 32%),
-    linear-gradient(135deg, #f8fafc, #dbeafe);
+    radial-gradient(circle at 82% 28%, rgba(196,123,18,.20), transparent 32%),
+    linear-gradient(135deg, #f8fafc, #f6e3c2);
 
   background-size: cover;
   background-position: center;
@@ -3683,5 +3683,5 @@ html[data-theme="escuro"]
 
 /* Offline industrial background: no external image dependency. */
 html[data-theme="escuro"] .hero-background {
-  background: radial-gradient(circle at 82% 28%, rgba(37,99,235,.22), transparent 32%), linear-gradient(135deg,#08111f,#111827) !important;
+  background: radial-gradient(circle at 82% 28%, rgba(196,123,18,.22), transparent 32%), linear-gradient(135deg,#171a1d,#202529) !important;
 }

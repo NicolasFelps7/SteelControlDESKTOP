@@ -16,7 +16,7 @@
 }
 
 .runtime-diagnostics-head span {
-  color: #2563eb;
+  color: #c47b12;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: .09em;
@@ -69,8 +69,8 @@
 }
 
 .runtime-connection-badge.simulation {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #fff4df;
+  color: #9e600a;
 }
 
 .runtime-diagnostics-grid {
@@ -88,7 +88,7 @@
 }
 
 .runtime-diag-item i {
-  color: #2563eb;
+  color: #c47b12;
   margin-bottom: 9px;
 }
 
@@ -192,8 +192,8 @@
   margin-top: 14px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px dashed #93c5fd;
-  background: #eff6ff;
+  border: 1px dashed #e0b66f;
+  background: #fff4df;
 }
 
 .runtime-demo > div:first-child strong,
@@ -202,7 +202,7 @@
 }
 
 .runtime-demo > div:first-child strong {
-  color: #1d4ed8;
+  color: #9e600a;
   font-size: 12px;
 }
 
@@ -220,28 +220,28 @@
 }
 
 .runtime-demo-actions button {
-  border: 1px solid #bfdbfe;
+  border: 1px solid #e8c890;
   border-radius: 9px;
   padding: 8px 10px;
   background: white;
-  color: #1e40af;
+  color: #80500d;
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
 }
 
 .runtime-demo-actions button:hover {
-  background: #dbeafe;
+  background: #f6e3c2;
 }
 
 html[data-theme="escuro"] .runtime-diagnostics {
-  background: #111827;
-  border-color: #263348;
+  background: #202529;
+  border-color: #343b40;
 }
 
 html[data-theme="escuro"] .runtime-diag-item {
   background: rgba(15, 23, 42, .45);
-  border-color: #263348;
+  border-color: #343b40;
 }
 
 html[data-theme="escuro"] .runtime-safety {
@@ -259,14 +259,14 @@ html[data-theme="escuro"] .runtime-safety.danger {
 }
 
 html[data-theme="escuro"] .runtime-demo {
-  background: rgba(37, 99, 235, .08);
-  border-color: rgba(96, 165, 250, .35);
+  background: rgba(196, 123, 18, .08);
+  border-color: rgba(215, 155, 60, .35);
 }
 
 html[data-theme="escuro"] .runtime-demo-actions button {
-  background: #172033;
-  border-color: #334155;
-  color: #bfdbfe;
+  background: #24292d;
+  border-color: #41494f;
+  color: #e8c890;
 }
 
 @media (max-width: 1200px) {

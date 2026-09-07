@@ -1,0 +1,821 @@
+/* ==========================================================================
+   STEELCONTROL — INDUSTRIAL PROFESSIONAL THEME
+   Camada visual final. Não altera regras, rotas, JS ou comportamento.
+   Identidade: aço/grafite + âmbar técnico + estados semânticos.
+   ========================================================================== */
+
+:root {
+  --sc-accent: #c47b12;
+  --sc-accent-hover: #9e600a;
+  --sc-accent-soft: #fff4df;
+  --sc-accent-border: #e3c28e;
+  --sc-steel-950: #15181a;
+  --sc-steel-900: #1d2124;
+  --sc-steel-850: #252a2e;
+  --sc-steel-800: #2d3338;
+  --sc-steel-700: #434b52;
+  --sc-steel-600: #606a72;
+  --sc-steel-500: #7d878e;
+  --sc-steel-300: #c8cfd3;
+  --sc-steel-200: #dce1e4;
+  --sc-steel-100: #edf0f2;
+  --sc-surface: #ffffff;
+  --sc-canvas: #f1f3f4;
+  --sc-text: #202529;
+  --sc-text-muted: #69737b;
+  --sc-border: #cfd5d9;
+  --sc-primary: var(--sc-accent);
+  --primary-color: var(--sc-accent);
+  --primary: var(--sc-accent);
+  --sc-primary-soft: var(--sc-accent-soft);
+  --sc-success: #2f7d4a;
+  --sc-warning: #c47b12;
+  --sc-danger: #b43b35;
+  --sc-radius-sm: 8px;
+  --sc-radius-md: 12px;
+  --sc-radius-lg: 16px;
+  --sc-shadow-card: 0 8px 22px rgba(24, 28, 31, .055);
+  --sc-shadow-raised: 0 15px 38px rgba(19, 22, 25, .10);
+
+  /* aliases usados pelas telas legadas */
+  --fundo: var(--sc-canvas);
+  --card: var(--sc-surface);
+  --card-soft: #f7f8f9;
+  --texto: var(--sc-text);
+  --texto-suave: var(--sc-text-muted);
+  --borda: var(--sc-border);
+  --azul: var(--sc-accent);
+  --azul-escuro: var(--sc-accent-hover);
+  --azul-soft: var(--sc-accent-soft);
+  --grafite: var(--sc-steel-700);
+
+  --background: var(--sc-canvas);
+  --background-soft: #e9edef;
+  --text: var(--sc-text);
+  --muted: var(--sc-text-muted);
+  --border: var(--sc-border);
+  --blue: var(--sc-accent);
+  --blue-dark: var(--sc-accent-hover);
+  --blue-soft: var(--sc-accent-soft);
+}
+
+html[data-theme="escuro"],
+html[data-theme="dark"] {
+  --sc-surface: #1c2023;
+  --sc-canvas: #111416;
+  --sc-text: #f0f2f3;
+  --sc-text-muted: #a3abb0;
+  --sc-border: #353b3f;
+  --sc-accent: #d9972f;
+  --sc-accent-hover: #efad46;
+  --sc-accent-soft: rgba(217, 151, 47, .12);
+  --sc-accent-border: rgba(217, 151, 47, .34);
+  --sc-shadow-card: 0 10px 28px rgba(0, 0, 0, .20);
+  --sc-shadow-raised: 0 18px 42px rgba(0, 0, 0, .30);
+
+  --fundo: var(--sc-canvas);
+  --sidebar: #141719;
+  --card: var(--sc-surface);
+  --card-soft: #23282c;
+  --texto: var(--sc-text);
+  --texto-suave: var(--sc-text-muted);
+  --borda: var(--sc-border);
+  --azul: var(--sc-accent);
+  --azul-escuro: var(--sc-accent-hover);
+  --azul-soft: var(--sc-accent-soft);
+  --grafite: #d4d9dc;
+
+  --background: var(--sc-canvas);
+  --background-soft: #171b1e;
+  --text: var(--sc-text);
+  --muted: var(--sc-text-muted);
+  --border: var(--sc-border);
+  --blue: var(--sc-accent);
+  --blue-dark: var(--sc-accent-hover);
+  --blue-soft: var(--sc-accent-soft);
+  --header: rgba(17, 20, 22, .95);
+}
+
+body {
+  background-color: var(--sc-canvas);
+  color: var(--sc-text);
+}
+
+/* Tipografia corporativa mais sóbria */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -.02em !important;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* Inputs e botões: menos aparência de template */
+input,
+select,
+textarea {
+  border-radius: var(--sc-radius-sm) !important;
+}
+
+button,
+.primary-btn,
+.secondary-btn,
+.login-btn,
+.access-btn,
+.face-btn,
+.create-account-btn,
+.toggle-form-btn,
+.save-machine-btn,
+.cancel-machine-btn,
+.machine-card-btn,
+.company-btn,
+.back-btn,
+.logout-btn,
+.account-btn {
+  border-radius: var(--sc-radius-sm) !important;
+}
+
+/* ==========================================================================
+   HOME / APRESENTAÇÃO
+   ========================================================================== */
+.page-home .site-header {
+  background: rgba(247, 248, 249, .94) !important;
+  border-bottom: 1px solid var(--sc-border) !important;
+  box-shadow: 0 5px 18px rgba(24, 28, 31, .035);
+}
+
+html[data-theme="escuro"] .page-home .site-header {
+  background: rgba(17, 20, 22, .94) !important;
+}
+
+.page-home .brand-icon,
+.page-home .footer-symbol {
+  border-radius: 10px !important;
+}
+
+.page-home .nav a:hover,
+.page-home .nav a.active,
+.page-home .section-label,
+.page-home .hero-badge,
+.page-home .feature-icon,
+.page-home .technology-grid i,
+.page-home .about-list i {
+  color: var(--sc-accent) !important;
+}
+
+.page-home .nav a::after {
+  background: var(--sc-accent) !important;
+}
+
+.page-home .login-btn,
+.page-home .primary-btn,
+.page-home .cta-primary {
+  background: var(--sc-accent) !important;
+  color: #fff !important;
+  border-color: var(--sc-accent) !important;
+  box-shadow: 0 7px 18px rgba(158, 96, 10, .16) !important;
+}
+
+.page-home .login-btn:hover,
+.page-home .primary-btn:hover,
+.page-home .cta-primary:hover {
+  background: var(--sc-accent-hover) !important;
+  border-color: var(--sc-accent-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+.page-home .theme-btn,
+.page-home .secondary-btn,
+.page-home .cta-secondary {
+  background: var(--sc-surface) !important;
+  color: var(--sc-steel-700) !important;
+  border: 1px solid var(--sc-border) !important;
+}
+
+html[data-theme="escuro"] .page-home .theme-btn,
+html[data-theme="escuro"] .page-home .secondary-btn,
+html[data-theme="escuro"] .page-home .cta-secondary {
+  color: var(--sc-text) !important;
+}
+
+.page-home .hero {
+  background-color: #252a2e !important;
+}
+
+.page-home .hero-background,
+html[data-theme="escuro"] .page-home .hero-background {
+  background:
+    linear-gradient(90deg, rgba(24, 28, 31, .94) 0%, rgba(32, 37, 41, .86) 48%, rgba(38, 43, 47, .74) 100%),
+    radial-gradient(circle at 82% 30%, rgba(217, 151, 47, .25), transparent 31%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(255,255,255,.035) 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(255,255,255,.035) 40px),
+    linear-gradient(135deg, #202428, #343a3f) !important;
+}
+
+.page-home .hero-background::after {
+  background:
+    linear-gradient(90deg, transparent 0 68%, rgba(217,151,47,.08) 68% 68.15%, transparent 68.15%),
+    linear-gradient(to bottom, rgba(255,255,255,.015), rgba(0,0,0,.14)) !important;
+}
+
+.page-home .hero-container.hero-no-preview .hero-content,
+html[data-theme="escuro"] .page-home .hero-container.hero-no-preview .hero-content {
+  background: rgba(23, 27, 30, .76) !important;
+  border: 1px solid rgba(255, 255, 255, .12) !important;
+  border-left: 4px solid var(--sc-accent) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.22) !important;
+  backdrop-filter: blur(5px);
+}
+
+.page-home .hero h1,
+.page-home .hero-description,
+.page-home .hero-trust strong {
+  color: #f4f5f5 !important;
+}
+
+.page-home .hero h1 span {
+  color: #e5ae58 !important;
+}
+
+.page-home .hero-description,
+.page-home .hero-trust span {
+  color: #c8ced2 !important;
+}
+
+.page-home .hero-badge {
+  background: rgba(217, 151, 47, .10) !important;
+  border-color: rgba(217, 151, 47, .35) !important;
+}
+
+.page-home .feature-card,
+.page-home .about-card,
+.page-home .technology-card,
+.page-home .security-card {
+  border-color: var(--sc-border) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-home .feature-card:hover {
+  border-color: var(--sc-accent-border) !important;
+  box-shadow: var(--sc-shadow-raised) !important;
+}
+
+.page-home .number-icon,
+.page-home .feature-icon {
+  background: var(--sc-accent-soft) !important;
+  color: var(--sc-accent) !important;
+}
+
+.page-home .cta-section,
+.page-home .footer {
+  background: #202427 !important;
+}
+
+/* ==========================================================================
+   LOGIN
+   ========================================================================== */
+.page-login .login-panel {
+  background: var(--sc-surface) !important;
+  border-right-color: var(--sc-border) !important;
+  border-radius: 0 !important;
+  box-shadow: 16px 0 45px rgba(18, 21, 23, .09) !important;
+}
+
+.page-login .home-link:hover,
+.page-login .language-btn:hover,
+.page-login .login-label,
+.page-login .input-box > i,
+.page-login .form-section-title,
+.page-login .signup-info > i,
+.page-login .industrial-message h2 span {
+  color: var(--sc-accent) !important;
+}
+
+.page-login .login-label-dot {
+  background: var(--sc-accent) !important;
+  box-shadow: 0 0 0 5px rgba(196, 123, 18, .12) !important;
+}
+
+.page-login .input-box:focus-within {
+  border-color: var(--sc-accent) !important;
+  box-shadow: 0 0 0 3px rgba(196, 123, 18, .10) !important;
+}
+
+.page-login .access-btn,
+.page-login .create-account-btn,
+.page-login .create-company-main {
+  background: var(--sc-accent) !important;
+  border-color: var(--sc-accent) !important;
+  box-shadow: 0 8px 20px rgba(158, 96, 10, .15) !important;
+}
+
+.page-login .access-btn:hover,
+.page-login .create-account-btn:hover,
+.page-login .create-company-main:hover {
+  background: var(--sc-accent-hover) !important;
+}
+
+.page-login .face-btn,
+.page-login .trust-box,
+.page-login .company-register-box,
+.page-login .signup-info,
+.page-login .email-verification-panel,
+.page-login .registration-face-next {
+  border-radius: 10px !important;
+  border-color: var(--sc-border) !important;
+}
+
+.page-login .face-btn {
+  background: #f7f8f9 !important;
+  color: var(--sc-text) !important;
+}
+
+html[data-theme="escuro"] .page-login .face-btn {
+  background: #23282c !important;
+}
+
+.page-login .face-button-icon,
+.page-login .trust-box-icon,
+.page-login .register-icon,
+.page-login .verification-icon,
+.page-login .registration-face-next-icon {
+  background: var(--sc-accent-soft) !important;
+  color: var(--sc-accent) !important;
+}
+
+.page-login .image-area,
+html[data-theme="escuro"] .page-login .image-area {
+  background:
+    linear-gradient(110deg, rgba(19,22,24,.35), rgba(19,22,24,.88)),
+    radial-gradient(circle at 25% 72%, rgba(217,151,47,.28), transparent 34%),
+    repeating-linear-gradient(0deg, transparent 0 43px, rgba(255,255,255,.035) 44px),
+    repeating-linear-gradient(90deg, transparent 0 43px, rgba(255,255,255,.035) 44px),
+    linear-gradient(135deg, #1d2124, #3c4247) !important;
+}
+
+.page-login .image-area::before {
+  background:
+    linear-gradient(90deg, transparent 0 72%, rgba(217,151,47,.16) 72% 72.2%, transparent 72.2%),
+    linear-gradient(to top, rgba(12,14,15,.74), transparent 58%) !important;
+}
+
+.page-login .industrial-badge {
+  background: rgba(217,151,47,.11) !important;
+  border-color: rgba(217,151,47,.36) !important;
+  color: #f0d19f !important;
+}
+
+.page-login .industrial-badge span {
+  background: #d9972f !important;
+}
+
+/* ==========================================================================
+   DASHBOARD PRINCIPAL
+   ========================================================================== */
+.page-dashboard .sidebar {
+  background: #181b1e !important;
+  border-right: 1px solid #30363a !important;
+  box-shadow: 6px 0 22px rgba(0,0,0,.10) !important;
+}
+
+.page-dashboard .logo {
+  min-height: 105px !important;
+  padding: 14px !important;
+  border: 1px solid #30363a !important;
+  border-radius: 10px !important;
+  background: #1f2326 !important;
+}
+
+.page-dashboard .sidebar-brand-copy strong {
+  color: #f3f4f4 !important;
+}
+
+.page-dashboard .sidebar-brand-copy span {
+  color: #929ba1 !important;
+}
+
+.page-dashboard .menu-btn {
+  color: #c4cbd0 !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 7px !important;
+}
+
+.page-dashboard .menu-btn > i {
+  color: #899299 !important;
+}
+
+.page-dashboard .menu-btn:hover {
+  background: #23282c !important;
+  color: #fff !important;
+  border-left-color: #6d7479 !important;
+  transform: none !important;
+}
+
+.page-dashboard .menu-btn.active {
+  background: #2a2a25 !important;
+  color: #fff !important;
+  border-left-color: var(--sc-accent) !important;
+  box-shadow: none !important;
+}
+
+.page-dashboard .menu-btn.active > i,
+.page-dashboard .menu-btn:hover > i {
+  color: #dda24a !important;
+}
+
+.page-dashboard .header {
+  border-radius: 12px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-dashboard .header-machine-label,
+.page-dashboard .operation-overview-eyebrow,
+.page-dashboard .panel-eyebrow,
+.page-dashboard .config-eyebrow,
+.page-dashboard .audit-eyebrow,
+.page-dashboard .runtime-diagnostics-head span,
+.page-dashboard .controller-hero-copy > span,
+.page-dashboard .dobot-eyebrow {
+  color: var(--sc-accent) !important;
+}
+
+.page-dashboard .back-btn,
+.page-dashboard .account-btn {
+  background: var(--sc-surface) !important;
+  color: var(--sc-steel-700) !important;
+  border: 1px solid var(--sc-border) !important;
+}
+
+html[data-theme="escuro"] .page-dashboard .back-btn,
+html[data-theme="escuro"] .page-dashboard .account-btn {
+  color: var(--sc-text) !important;
+}
+
+.page-dashboard .back-btn:hover,
+.page-dashboard .account-btn:hover {
+  border-color: var(--sc-accent-border) !important;
+  color: var(--sc-accent-hover) !important;
+  background: var(--sc-accent-soft) !important;
+}
+
+.page-dashboard .industrial-overview {
+  border-radius: 12px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-dashboard .industrial-machine-icon,
+.page-dashboard .factory-kpi-icon.blue,
+.page-dashboard .maintenance-toolbar-icon,
+.page-dashboard .maintenance-panel-icon {
+  background: #e6eaec !important;
+  color: #3f484f !important;
+}
+
+html[data-theme="escuro"] .page-dashboard .industrial-machine-icon,
+html[data-theme="escuro"] .page-dashboard .factory-kpi-icon.blue,
+html[data-theme="escuro"] .page-dashboard .maintenance-toolbar-icon,
+html[data-theme="escuro"] .page-dashboard .maintenance-panel-icon {
+  background: #2b3135 !important;
+  color: #cfd5d9 !important;
+}
+
+.page-dashboard .factory-kpi-card,
+.page-dashboard .factory-health-card,
+.page-dashboard .factory-performance-card,
+.page-dashboard .industrial-panel,
+.page-dashboard .config-modern-card,
+.page-dashboard .maintenance-panel,
+.page-dashboard .maintenance-kpi-card,
+.page-dashboard .runtime-diagnostics,
+.page-dashboard .controller-panel,
+.page-dashboard .dobot-panel {
+  border-radius: 11px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-dashboard .factory-kpi-card:hover,
+.page-dashboard .factory-health-card:hover,
+.page-dashboard .factory-performance-card:hover,
+.page-dashboard .config-modern-card:hover {
+  border-color: var(--sc-accent-border) !important;
+  box-shadow: var(--sc-shadow-raised) !important;
+  transform: translateY(-1px) !important;
+}
+
+.page-dashboard .factory-kpi-card::after {
+  background: var(--sc-accent) !important;
+}
+
+.page-dashboard .factory-kpi-card:hover {
+  border-color: var(--sc-accent-border) !important;
+}
+
+.page-dashboard .runtime-diag-item i,
+.page-dashboard .controller-panel-head > i,
+.page-dashboard .dobot-panel-head > i {
+  color: var(--sc-accent) !important;
+}
+
+.page-dashboard .runtime-demo,
+.page-dashboard .controller-honesty,
+.page-dashboard .dobot-note,
+.page-dashboard .dobot-safety-copy,
+.page-dashboard .production-controller-insight {
+  background: var(--sc-accent-soft) !important;
+  border-color: var(--sc-accent-border) !important;
+}
+
+.page-dashboard .runtime-demo > div:first-child strong,
+.page-dashboard .controller-honesty strong {
+  color: var(--sc-accent-hover) !important;
+}
+
+/* IHM: aspecto de console industrial, mantendo os estados verde/vermelho */
+.page-dashboard .hmi-console {
+  border-color: #555e64 !important;
+  border-radius: 10px !important;
+  background: linear-gradient(180deg, #24292d, #1a1e21) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 12px 28px rgba(0,0,0,.15) !important;
+}
+
+.page-dashboard .hmi-console-head {
+  border-bottom-color: #454d52 !important;
+}
+
+.page-dashboard .hmi-pill,
+.page-dashboard .hmi-command,
+.page-dashboard .hmi-mode-control button {
+  border-radius: 6px !important;
+}
+
+/* ==========================================================================
+   MÁQUINAS
+   ========================================================================== */
+.page-machines .topbar,
+.page-company .topbar {
+  border-bottom-color: var(--sc-border) !important;
+  box-shadow: 0 5px 18px rgba(24, 28, 31, .04) !important;
+}
+
+.page-machines .brand-symbol,
+.page-company .company-top-symbol {
+  border-radius: 9px !important;
+}
+
+.page-machines .company-btn:hover,
+.page-machines .section-label,
+.page-machines .form-section-title span,
+.page-machines .form-control i,
+.page-machines .disclosure-icon,
+.page-machines .machine-identification i {
+  color: var(--sc-accent) !important;
+}
+
+.page-machines .hero {
+  border-radius: 14px !important;
+  background:
+    linear-gradient(110deg, rgba(26,30,33,.94), rgba(41,46,50,.82)),
+    radial-gradient(circle at 82% 25%, rgba(217,151,47,.24), transparent 30%),
+    repeating-linear-gradient(0deg, transparent 0 35px, rgba(255,255,255,.03) 36px),
+    repeating-linear-gradient(90deg, transparent 0 35px, rgba(255,255,255,.03) 36px),
+    linear-gradient(135deg, #1d2124, #3b4247) !important;
+  box-shadow: 0 18px 40px rgba(17,20,22,.18) !important;
+}
+
+.page-machines .tag {
+  background: rgba(217,151,47,.12) !important;
+  border-color: rgba(217,151,47,.36) !important;
+  color: #efd2a4 !important;
+}
+
+.page-machines .hero-icon-circle {
+  border-radius: 16px !important;
+  border-color: rgba(255,255,255,.16) !important;
+  background: rgba(255,255,255,.045) !important;
+  color: #e0a64e !important;
+}
+
+.page-machines .summary-card,
+.page-machines .cadastro-maquina-box,
+.page-machines .machines-section,
+.page-machines .maquina-card,
+.page-machines .machine-card {
+  border-radius: 11px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-machines .summary-icon.blue {
+  background: #e6eaec !important;
+  color: #424b52 !important;
+}
+
+html[data-theme="escuro"] .page-machines .summary-icon.blue {
+  background: #2c3236 !important;
+  color: #d1d6d9 !important;
+}
+
+.page-machines .toggle-form-btn,
+.page-machines .save-machine-btn,
+.page-machines .machine-card-btn:not(.machine-delete-btn) {
+  background: var(--sc-accent) !important;
+  border-color: var(--sc-accent) !important;
+  color: #fff !important;
+}
+
+.page-machines .toggle-form-btn:hover,
+.page-machines .save-machine-btn:hover,
+.page-machines .machine-card-btn:not(.machine-delete-btn):hover {
+  background: var(--sc-accent-hover) !important;
+}
+
+.page-machines .form-info,
+.page-machines .robot-preset,
+.page-machines .connection-help,
+.page-machines .operation-mode-help:not(.real-selected),
+.page-machines .connection-credential-note {
+  background: var(--sc-accent-soft) !important;
+  border-color: var(--sc-accent-border) !important;
+}
+
+.page-machines .form-info-icon,
+.page-machines .robot-preset-icon {
+  background: rgba(255,255,255,.68) !important;
+  color: var(--sc-accent) !important;
+}
+
+html[data-theme="escuro"] .page-machines .form-info-icon,
+html[data-theme="escuro"] .page-machines .robot-preset-icon {
+  background: #292e32 !important;
+}
+
+.page-machines .robot-preset button,
+.page-machines .machine-edit-btn,
+.page-machines .machine-key-btn {
+  border-color: var(--sc-accent-border) !important;
+  color: var(--sc-accent-hover) !important;
+  background: var(--sc-surface) !important;
+}
+
+.page-machines .maquina-card::before {
+  background: var(--sc-accent) !important;
+}
+
+.page-machines .maquina-card:hover,
+.page-machines .machine-card:hover {
+  border-color: var(--sc-accent-border) !important;
+  box-shadow: var(--sc-shadow-raised) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ==========================================================================
+   EMPRESA
+   ========================================================================== */
+.page-company .hero {
+  border-radius: 14px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-company .tag,
+.page-company .section-tag,
+.page-company .divider-icon,
+.page-company .form-group label i {
+  color: var(--sc-accent) !important;
+}
+
+.page-company .summary-card,
+.page-company .section-card,
+.page-company .company-logo-box,
+.page-company .company-address-card,
+.page-company .employee-card {
+  border-radius: 11px !important;
+  border-color: var(--sc-border) !important;
+  box-shadow: var(--sc-shadow-card) !important;
+}
+
+.page-company .summary-icon:not(.green):not(.orange) {
+  background: #e6eaec !important;
+  color: #434b52 !important;
+}
+
+.page-company .edit-company-btn,
+.page-company .change-logo-btn,
+.page-company .save-company-btn,
+.page-company .add-employee-btn,
+.page-company .primary-btn {
+  background: var(--sc-accent) !important;
+  border-color: var(--sc-accent) !important;
+  color: #fff !important;
+}
+
+.page-company .edit-company-btn:hover,
+.page-company .change-logo-btn:hover,
+.page-company .save-company-btn:hover,
+.page-company .add-employee-btn:hover,
+.page-company .primary-btn:hover {
+  background: var(--sc-accent-hover) !important;
+}
+
+/* ==========================================================================
+   TEMA ESCURO — neutraliza resíduos azul-marinho
+   ========================================================================== */
+html[data-theme="escuro"] body,
+html[data-theme="dark"] body {
+  background: #111416 !important;
+}
+
+html[data-theme="escuro"] .page-dashboard .header,
+html[data-theme="escuro"] .page-dashboard .factory-kpi-card,
+html[data-theme="escuro"] .page-dashboard .factory-health-card,
+html[data-theme="escuro"] .page-dashboard .factory-performance-card,
+html[data-theme="escuro"] .page-dashboard .industrial-overview,
+html[data-theme="escuro"] .page-dashboard .industrial-panel,
+html[data-theme="escuro"] .page-dashboard .config-modern-card,
+html[data-theme="escuro"] .page-dashboard .maintenance-panel,
+html[data-theme="escuro"] .page-dashboard .maintenance-kpi-card,
+html[data-theme="escuro"] .page-machines .summary-card,
+html[data-theme="escuro"] .page-machines .cadastro-maquina-box,
+html[data-theme="escuro"] .page-machines .machines-section,
+html[data-theme="escuro"] .page-machines .maquina-card,
+html[data-theme="escuro"] .page-company .summary-card,
+html[data-theme="escuro"] .page-company .section-card,
+html[data-theme="escuro"] .page-company .hero {
+  background: #1c2023 !important;
+  border-color: #363c40 !important;
+  color: #f0f2f3 !important;
+}
+
+html[data-theme="escuro"] .page-dashboard .user-box,
+html[data-theme="escuro"] .page-dashboard .config-modern-item,
+html[data-theme="escuro"] .page-dashboard .operation-status,
+html[data-theme="escuro"] .page-machines .form-control input,
+html[data-theme="escuro"] .page-machines .form-control select,
+html[data-theme="escuro"] .page-machines .form-group textarea,
+html[data-theme="escuro"] .page-company input,
+html[data-theme="escuro"] .page-company select,
+html[data-theme="escuro"] .page-company textarea {
+  background: #23282c !important;
+  border-color: #3a4146 !important;
+  color: #eef1f2 !important;
+}
+
+/* Evita o azul vivo restante em componentes informativos */
+.page-dashboard .simulation-mode-badge,
+.page-dashboard .production-compatibility-list span,
+.page-dashboard .controller-capability,
+.page-dashboard .dobot-dashboard-badge,
+.page-machines .controller-profile-features span,
+.page-machines .dobot-dashboard-badge {
+  background: var(--sc-accent-soft) !important;
+  border-color: var(--sc-accent-border) !important;
+  color: var(--sc-accent-hover) !important;
+}
+
+/* Mantém semântica operacional */
+.status-box,
+.status-online,
+.online-status,
+.machine-scope-state.online,
+.runtime-connection-badge.connected {
+  --state-color: var(--sc-success);
+}
+
+.status-alerta,
+.status-offline,
+.offline-status,
+.runtime-connection-badge.offline {
+  --state-color: var(--sc-danger);
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 980px) {
+  .page-home .hero-container.hero-no-preview .hero-content {
+    border-left-width: 3px !important;
+  }
+
+  .page-machines .hero {
+    border-radius: 12px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-login .login-panel {
+    border-radius: 0 !important;
+  }
+
+  .page-home .hero-container.hero-no-preview .hero-content {
+    border-radius: 10px !important;
+  }
+}

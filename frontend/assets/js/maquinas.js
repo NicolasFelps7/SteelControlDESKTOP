@@ -238,12 +238,15 @@ async function fetchAutenticado(
   }
 
 
+  headers.set("Cache-Control", "no-cache");
+
   const resposta =
     await fetch(
       url,
       {
         ...options,
-        headers
+        headers,
+        cache: "no-store"
       }
     );
 
@@ -2821,21 +2824,12 @@ formMaquina
 
         await carregarMaquinas();
 
-
-        setTimeout(
-          () => {
-
-            formMaquina.classList.remove(
-              "ativo"
-            );
-
-
-            mensagemMaquina.textContent =
-              "";
-
-          },
-          1500
+        formMaquina.classList.remove(
+          "ativo"
         );
+
+        mensagemMaquina.textContent =
+          "";
 
 
       } catch (erro) {
@@ -3013,3 +3007,23 @@ function aplicarPermissoesDeGestao() {
 
 aplicarPermissoesDeGestao();
 iniciarDescobertaAutomatica();
+
+// =====================================================
+// SINCRONIZAÇÃO MULTI-DISPOSITIVO — LISTA DE MÁQUINAS
+// =====================================================
+let steelMaquinasRealtimeTimer = null;
+
+window.addEventListener(
+  "steelcontrol:empresa-evento",
+  event => {
+    const tipo = String(event.detail?.tipo || "");
+    if (!tipo || tipo === "conectado") return;
+
+    if (!tipo.startsWith("maquina.")) return;
+
+    clearTimeout(steelMaquinasRealtimeTimer);
+    steelMaquinasRealtimeTimer = setTimeout(() => {
+      carregarMaquinas();
+    }, 120);
+  }
+);

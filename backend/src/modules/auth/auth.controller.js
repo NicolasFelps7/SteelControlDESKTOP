@@ -22,7 +22,8 @@ import {
 
 import {
   validarMesmaPessoaLiveness,
-  classificarCorrespondenciaFacial
+  classificarCorrespondenciaFacial,
+  encontrarCorrespondenciaFacial
 } from "../../lib/faceSecurity.js";
 
 import {
@@ -176,6 +177,8 @@ const CADASTRO_CODIGO_MINUTOS = 10;
 const CADASTRO_MAX_TENTATIVAS = 5;
 const CADASTRO_MAX_ENVIOS = 5;
 const CADASTRO_REENVIO_SEGUNDOS = 60;
+const CADASTRO_FACIAL_MINUTOS = 15;
+const FACE_REGISTRATION_LOCK = 83472391;
 
 
 const CADASTROS_PENDENTES =
@@ -249,8 +252,13 @@ function limparCadastrosPendentesExpirados() {
     const [id, item]
     of CADASTROS_PENDENTES.entries()
   ) {
+    const limiteAtual =
+      item.emailConfirmado
+        ? item.facialExpiraEm
+        : item.expiraEm;
+
     const expirou =
-      item.expiraEm?.getTime?.() <=
+      limiteAtual?.getTime?.() <=
       agora;
 
     const muitoAntigo =
@@ -670,6 +678,9 @@ export async function requestCompanyRegistrationCode(
       envios: 1,
       ultimoEnvioEm: agora,
       usado: false,
+      emailConfirmado: false,
+      emailConfirmadoEm: null,
+      facialExpiraEm: null,
       criadaEm: agora
     };
 
@@ -744,6 +755,15 @@ export async function resendCompanyRegistrationCode(
         .json({
           mensagem:
             "Este cadastro não está mais disponível para verificação."
+        });
+    }
+
+    if (verificacao.emailConfirmado) {
+      return res
+        .status(409)
+        .json({
+          mensagem:
+            "O e-mail já foi confirmado. Conclua a biometria facial para criar a conta."
         });
     }
 
@@ -918,6 +938,36 @@ export async function confirmCompanyRegistrationCode(
         });
     }
 
+    // Se o e-mail já foi confirmado, não cria nada no banco ainda.
+    // O cadastro só é finalizado após uma biometria facial válida.
+    if (verificacao.emailConfirmado) {
+      if (
+        !verificacao.facialExpiraEm ||
+        verificacao.facialExpiraEm <= new Date()
+      ) {
+        CADASTROS_PENDENTES.delete(
+          verificacaoId
+        );
+
+        return res
+          .status(400)
+          .json({
+            mensagem:
+              "A etapa facial expirou. Inicie o cadastro novamente."
+          });
+      }
+
+      return res.json({
+        mensagem:
+          "E-mail já confirmado. Conclua obrigatoriamente a biometria facial para criar a conta.",
+        verificacaoId,
+        contaCriada: false,
+        proximaEtapa: "FACIAL",
+        facialExpiraEm:
+          verificacao.facialExpiraEm
+      });
+    }
+
     if (
       verificacao.expiraEm <=
       new Date()
@@ -974,9 +1024,311 @@ export async function confirmCompanyRegistrationCode(
         verificacao.empresaCnpj
     });
 
+    const agora = new Date();
+
+    verificacao.emailConfirmado =
+      true;
+
+    verificacao.emailConfirmadoEm =
+      agora;
+
+    verificacao.facialExpiraEm =
+      new Date(
+        agora.getTime() +
+        CADASTRO_FACIAL_MINUTOS *
+        60 *
+        1000
+      );
+
+    // O código não pode ser reutilizado. Mantemos apenas os dados
+    // temporários necessários para concluir a etapa biométrica.
+    verificacao.codigoHash = null;
+    verificacao.tentativas = 0;
+
+    return res.json({
+      mensagem:
+        "E-mail confirmado. Agora conclua a biometria facial. A empresa e a conta ainda não foram criadas.",
+      verificacaoId,
+      contaCriada: false,
+      proximaEtapa: "FACIAL",
+      facialExpiraEm:
+        verificacao.facialExpiraEm
+    });
+
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+
+// =========================================================
+// FINALIZAR CADASTRO DA EMPRESA COM BIOMETRIA OBRIGATÓRIA
+// Empresa, administrador e FaceEmbedding são criados na MESMA
+// transação. Se a facial falhar, nada é criado no PostgreSQL.
+// =========================================================
+
+export async function completeCompanyRegistrationWithFace(
+  req,
+  res,
+  next
+) {
+  try {
+    limparCadastrosPendentesExpirados();
+
+    const verificacaoId =
+      String(
+        req.body?.verificacaoId || ""
+      ).trim();
+
+    const imagemFinal =
+      req.files?.imagem?.[0];
+
+    const imagemLiveness =
+      req.files?.liveness?.[0];
+
+    if (!verificacaoId) {
+      return res
+        .status(400)
+        .json({
+          mensagem:
+            "Identificador do cadastro não informado."
+        });
+    }
+
+    const verificacao =
+      CADASTROS_PENDENTES.get(
+        verificacaoId
+      );
+
+    if (
+      !verificacao ||
+      verificacao.usado ||
+      !verificacao.emailConfirmado
+    ) {
+      return res
+        .status(400)
+        .json({
+          mensagem:
+            "O cadastro não está pronto para a etapa facial. Confirme o e-mail novamente."
+        });
+    }
+
+    if (
+      !verificacao.facialExpiraEm ||
+      verificacao.facialExpiraEm <= new Date()
+    ) {
+      CADASTROS_PENDENTES.delete(
+        verificacaoId
+      );
+
+      return res
+        .status(400)
+        .json({
+          mensagem:
+            "A etapa facial expirou. Inicie o cadastro novamente."
+        });
+    }
+
+    if (
+      !imagemFinal ||
+      !imagemLiveness
+    ) {
+      return res
+        .status(400)
+        .json({
+          codigo:
+            "REGISTRATION_LIVENESS_REQUIRED",
+          mensagem:
+            "A biometria e a prova de vida são obrigatórias para criar a conta.",
+          orientacao:
+            "Olhe para a câmera, vire levemente a cabeça e volte para a posição frontal."
+        });
+    }
+
+    const [
+      analiseFinal,
+      analiseLiveness
+    ] = await Promise.all([
+      analisarImagemFacial(
+        imagemFinal
+      ),
+      analisarImagemFacial(
+        imagemLiveness
+      )
+    ]);
+
+    if (
+      !analiseFinal?.detectado ||
+      analiseFinal?.quantidadeRostos !== 1 ||
+      analiseFinal?.pronto !== true
+    ) {
+      return res
+        .status(422)
+        .json({
+          codigo:
+            "REGISTRATION_FACE_NOT_READY",
+          mensagem:
+            analiseFinal?.orientacao ||
+            "A imagem frontal não atingiu a qualidade necessária. Tente novamente.",
+          repetirFacial: true
+        });
+    }
+
+    const yaw =
+      Number(
+        analiseLiveness?.pose?.yaw
+      );
+
+    if (
+      !analiseLiveness?.detectado ||
+      analiseLiveness?.quantidadeRostos !== 1 ||
+      !Number.isFinite(yaw) ||
+      Math.abs(yaw) < 10
+    ) {
+      return res
+        .status(422)
+        .json({
+          codigo:
+            "REGISTRATION_LIVENESS_FAILED",
+          mensagem:
+            "A prova de vida não foi confirmada. Vire levemente a cabeça e tente novamente.",
+          repetirFacial: true
+        });
+    }
+
+    const [
+      facialMovimento,
+      facialFinal
+    ] =
+      await Promise.all([
+        gerarEmbeddingPorImagem(
+          imagemLiveness
+        ),
+        gerarEmbeddingPorImagem(
+          imagemFinal
+        )
+      ]);
+
+    if (
+      !embeddingValido(
+        facialMovimento?.embedding
+      ) ||
+      !embeddingValido(
+        facialFinal?.embedding
+      )
+    ) {
+      return res
+        .status(422)
+        .json({
+          mensagem:
+            "Não foi possível gerar uma biometria facial válida. Tente novamente.",
+          repetirFacial: true
+        });
+    }
+
+    const identidadeLiveness =
+      validarMesmaPessoaLiveness({
+        embeddingMovimento:
+          facialMovimento.embedding,
+        embeddingFinal:
+          facialFinal.embedding,
+        threshold:
+          0.50
+      });
+
+    if (!identidadeLiveness.valida) {
+      return res
+        .status(422)
+        .json({
+          codigo:
+            "REGISTRATION_LIVENESS_IDENTITY_MISMATCH",
+          mensagem:
+            "A prova de vida e a imagem final não pertencem à mesma pessoa. Refaça a facial sem sair da frente da câmera.",
+          repetirFacial: true
+        });
+    }
+
     const resultado =
       await prisma.$transaction(
         async tx => {
+          // Serializa a verificação de duplicidade + gravação facial.
+          await tx.$queryRawUnsafe(
+            `SELECT pg_advisory_xact_lock(${FACE_REGISTRATION_LOCK})::text AS "lock"`
+          );
+
+          const [
+            usuarioExiste,
+            empresaExiste,
+            outrasFaces
+          ] = await Promise.all([
+            tx.usuario.findUnique({
+              where: {
+                email:
+                  verificacao.email
+              },
+              select: {
+                id: true
+              }
+            }),
+            verificacao.empresaCnpj
+              ? tx.empresa.findUnique({
+                  where: {
+                    cnpj:
+                      verificacao.empresaCnpj
+                  },
+                  select: {
+                    id: true
+                  }
+                })
+              : Promise.resolve(null),
+            tx.faceEmbedding.findMany({
+              select: {
+                id: true,
+                usuarioId: true,
+                embedding: true
+              }
+            })
+          ]);
+
+          if (usuarioExiste) {
+            const erro =
+              new Error(
+                "Este e-mail já está cadastrado."
+              );
+            erro.statusCode = 409;
+            throw erro;
+          }
+
+          if (empresaExiste) {
+            const erro =
+              new Error(
+                "Este CNPJ já está cadastrado."
+              );
+            erro.statusCode = 409;
+            throw erro;
+          }
+
+          const faceDuplicada =
+            encontrarCorrespondenciaFacial({
+              embedding:
+                facialFinal.embedding,
+              faces:
+                outrasFaces,
+              threshold:
+                FACE_THRESHOLD
+            });
+
+          if (faceDuplicada) {
+            const erro =
+              new Error(
+                "Este rosto já está vinculado a outro perfil. Use outra conta ou remova a biometria anterior."
+              );
+            erro.statusCode = 409;
+            erro.codigo =
+              "FACE_ALREADY_LINKED";
+            throw erro;
+          }
+
           const novaEmpresa =
             await tx.empresa.create({
               data: {
@@ -1003,16 +1355,33 @@ export async function confirmCompanyRegistrationCode(
               }
             });
 
+          const face =
+            await tx.faceEmbedding.create({
+              data: {
+                usuarioId:
+                  usuario.id,
+                nome:
+                  "Facial principal",
+                embedding:
+                  facialFinal.embedding,
+                modelo:
+                  "insightface-buffalo_l"
+              }
+            });
+
           return {
             novaEmpresa,
-            usuario
+            usuario,
+            face
           };
+        },
+        {
+          maxWait: 5000,
+          timeout: 15000
         }
       );
 
-    verificacao.usado =
-      true;
-
+    verificacao.usado = true;
     CADASTROS_PENDENTES.delete(
       verificacaoId
     );
@@ -1021,7 +1390,7 @@ export async function confirmCompanyRegistrationCode(
       .status(201)
       .json({
         mensagem:
-          "E-mail confirmado. Empresa e administrador criados com sucesso. Agora cadastre sua biometria facial.",
+          "Cadastro concluído com sucesso. E-mail e biometria facial confirmados.",
         token:
           criarToken(
             resultado.usuario
@@ -1040,8 +1409,12 @@ export async function confirmCompanyRegistrationCode(
           empresaParaResposta(
             resultado.novaEmpresa
           ),
-        proximaEtapa:
-          "FACIAL"
+        facial: {
+          cadastrada: true,
+          faceId:
+            resultado.face.id
+        },
+        cadastroConcluido: true
       });
 
   } catch (erro) {

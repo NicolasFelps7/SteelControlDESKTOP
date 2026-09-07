@@ -19,7 +19,9 @@ import {
   cadastrarFaceUsuarioImagem,
   listarFacesUsuario,
   removerFaceUsuario,
-  removerFacesUsuario
+  removerFacesUsuario,
+  streamEmpresa,
+  obterRevisaoEmpresa
 } from "./company.controller.js";
 
 export const companyRoutes = Router();
@@ -120,6 +122,18 @@ const uploadFace =
 companyRoutes.get(
   "/logo/:empresaId",
   obterLogoPublica
+);
+
+companyRoutes.get(
+  "/stream",
+  authRequired,
+  streamEmpresa
+);
+
+companyRoutes.get(
+  "/revision",
+  authRequired,
+  obterRevisaoEmpresa
 );
 
 companyRoutes.get(

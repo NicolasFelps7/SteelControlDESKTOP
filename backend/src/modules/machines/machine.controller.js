@@ -3,7 +3,7 @@ import { registrarAuditoria } from "../../lib/audit.js";
 import { podeAcionarSimulacao, calcularEstadoConexao } from "../../lib/machinePolicy.js";
 import { gerarDeviceKey, hashDeviceKey, deviceKeyHint } from "../../lib/deviceSecurity.js";
 import { processarTelemetria, validarLimitesMaquina } from "../../lib/telemetryService.js";
-import { publicarEventoMaquina, assinarEventosMaquina } from "../../lib/realtime.js";
+import { publicarEventoMaquina, assinarEventosMaquina, publicarEventoEmpresa } from "../../lib/realtime.js";
 import { normalizarComandoIhm, politicaComandoIhm, cargoPodeComandoIhm, expiraEmComandoIhm, avaliarPermissaoStartIhm, controleRemotoIhmHabilitado } from "../../lib/hmiPolicy.js";
 
 function ehAdministrador(req) {
@@ -377,6 +377,12 @@ export async function criar(req, res, next) {
       }
     });
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "maquina.criada",
+      { maquinaId: maquina.id }
+    );
+
     res.status(201).json({
       mensagem: "Máquina cadastrada com sucesso.",
       maquina: ocultarSegredos(maquina),
@@ -532,6 +538,11 @@ export async function atualizar(req, res, next) {
     });
 
     publicarEventoMaquina(id, "configuracao", ocultarSegredos(maquina));
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "maquina.atualizada",
+      { maquinaId: id }
+    );
 
     res.json({
       mensagem: "Máquina atualizada com sucesso.",
@@ -591,6 +602,12 @@ export async function excluir(req, res, next) {
       entidadeId: id,
       detalhes: { nome: atual.nome, codigo: atual.codigo }
     });
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "maquina.desativada",
+      { maquinaId: id }
+    );
 
     res.json({
       mensagem: "Máquina desativada com sucesso. O histórico foi preservado."

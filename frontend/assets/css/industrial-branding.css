@@ -1,0 +1,1764 @@
+/* ========================================================================
+   STEELCONTROL — INDUSTRIAL UI V2 / NEUTRAL STEEL
+   2026-09-06
+
+   Camada visual carregada por último. Não altera JS, autenticação, rotas,
+   APIs, banco de dados, regras de segurança ou lógica do sistema.
+   ======================================================================== */
+
+:root {
+  --sc-steel-950: #11161c;
+  --sc-steel-900: #18202a;
+  --sc-steel-800: #27313c;
+  --sc-steel-700: #3d4854;
+  --sc-steel-600: #5f6b78;
+  --sc-steel-500: #7b8794;
+  --sc-steel-300: #cbd2d9;
+  --sc-steel-200: #dde3e8;
+  --sc-steel-100: #eef1f4;
+  --sc-steel-50: #f7f8fa;
+  --sc-metal-accent: #9aa6b1;
+  --primary-color: #66727d;
+  --primary: #66727d;
+}
+
+/* ========================================================================
+   HOME — FOTO INDUSTRIAL MAIS COMPACTA, SEM CAIXA PRETA
+   ======================================================================== */
+.home-page .hero {
+  position: relative;
+  min-height: 610px !important;
+  height: auto !important;
+  overflow: hidden;
+  background: var(--sc-steel-950) !important;
+}
+
+.home-page .hero-background,
+html[data-theme="escuro"] .home-page .hero-background {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg,
+      rgba(12, 17, 23, .86) 0%,
+      rgba(12, 17, 23, .70) 34%,
+      rgba(12, 17, 23, .35) 62%,
+      rgba(12, 17, 23, .12) 100%),
+    linear-gradient(180deg,
+      rgba(12, 17, 23, .08) 0%,
+      rgba(12, 17, 23, .10) 62%,
+      rgba(12, 17, 23, .32) 100%),
+    url('../img/industrial-home.jpg') !important;
+  background-size: cover !important;
+  background-position: center 48% !important;
+  background-repeat: no-repeat !important;
+  filter: saturate(.82) contrast(1.03);
+}
+
+.home-page .hero-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,.02), transparent 22%);
+  pointer-events: none;
+}
+
+.home-page .hero-container.hero-no-preview {
+  position: relative;
+  z-index: 2;
+  width: min(1180px, calc(100% - 56px)) !important;
+  min-height: 610px !important;
+  margin: 0 auto !important;
+  padding: 108px 0 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.home-page .hero-container.hero-no-preview .hero-content,
+html[data-theme="escuro"] .home-page .hero-container.hero-no-preview .hero-content {
+  width: min(650px, 62vw) !important;
+  max-width: 650px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.home-page .hero-container.hero-no-preview .hero-badge,
+.home-page .hero-container.hero-no-preview .hero-description {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.home-page .hero-container.hero-no-preview .hero-actions,
+.home-page .hero-container.hero-no-preview .hero-trust {
+  justify-content: flex-start !important;
+}
+
+.home-page .hero-badge {
+  width: fit-content;
+  color: #e7ebef !important;
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+.home-page .hero-badge span {
+  background: #5fa86f !important;
+}
+
+.home-page .hero h1 {
+  max-width: 650px !important;
+  margin-top: 22px !important;
+  color: #f8fafc !important;
+  font-size: clamp(46px, 4.4vw, 66px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.04em !important;
+  text-shadow: 0 6px 26px rgba(0,0,0,.38);
+}
+
+.home-page .hero h1 span {
+  color: #b7c0c8 !important;
+}
+
+.home-page .hero-description {
+  max-width: 590px !important;
+  margin-top: 22px !important;
+  color: rgba(238,242,246,.90) !important;
+  font-size: 15px !important;
+  line-height: 1.62 !important;
+  text-shadow: 0 3px 12px rgba(0,0,0,.38);
+}
+
+.home-page .hero-actions {
+  margin-top: 28px !important;
+  gap: 10px !important;
+}
+
+.home-page .primary-btn,
+.home-page .login-btn {
+  color: #fff !important;
+  background: #39444f !important;
+  border: 1px solid #56616d !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.16) !important;
+}
+
+.home-page .primary-btn:hover,
+.home-page .login-btn:hover {
+  background: #2d3741 !important;
+  border-color: #66727e !important;
+}
+
+.home-page .secondary-btn {
+  color: #f3f5f7 !important;
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+}
+
+.home-page .secondary-btn:hover {
+  background: rgba(255,255,255,.13) !important;
+}
+
+.home-page .hero-trust {
+  margin-top: 28px !important;
+  gap: 18px !important;
+}
+
+.home-page .hero-trust > div {
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.home-page .hero-trust strong {
+  color: rgba(245,247,249,.92) !important;
+}
+
+.home-page .trust-icon {
+  color: #d6dde3 !important;
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+}
+
+.home-page .site-header {
+  border-bottom-color: rgba(15,23,42,.10) !important;
+  box-shadow: 0 6px 20px rgba(15,23,42,.05) !important;
+}
+
+.home-page .nav a.active,
+.home-page .nav a:hover {
+  color: #4f5b67 !important;
+}
+
+/* ========================================================================
+   LOGIN — FOTO CONTINUA, TEXTO SEM PAINEL PRETO
+   ======================================================================== */
+.login-shell .login-page {
+  position: relative;
+  isolation: isolate;
+  background-image:
+    linear-gradient(90deg,
+      rgba(10,15,20,.12) 0%,
+      rgba(10,15,20,.24) 48%,
+      rgba(10,15,20,.50) 100%),
+    url('../img/industrial-login.jpg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+.login-shell .login-panel {
+  background: rgba(248,250,252,.97) !important;
+  border-right: 1px solid rgba(203,210,217,.75) !important;
+  border-radius: 0 22px 22px 0 !important;
+  box-shadow: 18px 0 52px rgba(0,0,0,.14) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.login-shell .top-login {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(148,163,184,.18);
+}
+
+.login-shell .login-content {
+  width: 100%;
+  max-width: 545px;
+}
+
+.login-shell .login-label {
+  color: #46515d !important;
+  background: #f0f3f5 !important;
+  border: 1px solid #d8dee4 !important;
+}
+
+.login-shell .login-label-dot {
+  background: #5fa86f !important;
+}
+
+.login-shell .access-btn,
+.login-shell .create-account-btn {
+  color: #fff !important;
+  background: #39444f !important;
+  border: 1px solid #4c5864 !important;
+  box-shadow: 0 8px 18px rgba(31,41,55,.14) !important;
+}
+
+.login-shell .access-btn:hover,
+.login-shell .create-account-btn:hover {
+  background: #2f3943 !important;
+}
+
+.login-shell .image-area {
+  background: transparent !important;
+}
+
+.login-shell .image-area::before {
+  background:
+    linear-gradient(90deg, rgba(8,12,17,.04), rgba(8,12,17,.32)),
+    linear-gradient(180deg, rgba(8,12,17,.03), rgba(8,12,17,.28)) !important;
+}
+
+.login-shell .industrial-message {
+  top: 16% !important;
+  left: auto !important;
+  right: 7% !important;
+  width: min(540px, 48%) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.login-shell .industrial-badge {
+  color: #edf1f4 !important;
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+}
+
+.login-shell .industrial-badge span {
+  background: #5fa86f !important;
+}
+
+.login-shell .industrial-message h2 {
+  color: #f8fafc !important;
+  text-shadow: 0 7px 28px rgba(0,0,0,.46);
+}
+
+.login-shell .industrial-message h2 span {
+  color: #b7c0c8 !important;
+}
+
+.login-shell .industrial-message p,
+.login-shell .image-bottom {
+  color: rgba(238,242,246,.92) !important;
+  text-shadow: 0 3px 12px rgba(0,0,0,.42);
+}
+
+.login-shell .image-bottom {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  backdrop-filter: none !important;
+}
+
+.login-shell .home-link:hover,
+.login-shell .language-btn:hover {
+  color: #39444f !important;
+  border-color: #cbd2d9 !important;
+  background: #eef1f4 !important;
+}
+
+/* ========================================================================
+   DASHBOARD — MARCA E NAVEGAÇÃO EM AÇO/CINZA, SEM BLOCOS PRETO/LARANJA
+   ======================================================================== */
+.dashboard-shell {
+  --azul: #5f6b78;
+  --azul-escuro: #46515d;
+  --amarelo: #c39a45;
+}
+
+.dashboard-shell .sidebar .logo {
+  min-height: 86px !important;
+  margin-bottom: 20px !important;
+  padding: 14px 14px !important;
+  gap: 11px !important;
+  border: 1px solid #e0e5e9 !important;
+  border-radius: 14px !important;
+  background: #f6f8f9 !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .sidebar .logo img[src*="steel-icon"] {
+  width: 38px !important;
+  height: 42px !important;
+  filter: none !important;
+  opacity: .92 !important;
+}
+
+.dashboard-shell .sidebar-brand-copy strong {
+  color: #202831 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.25px !important;
+}
+
+.dashboard-shell .sidebar-brand-copy span {
+  color: #697481 !important;
+  letter-spacing: 1px !important;
+}
+
+.dashboard-shell .menu-btn {
+  border-left-color: transparent !important;
+  color: #3f4851 !important;
+}
+
+.dashboard-shell .menu-btn:hover {
+  color: #202831 !important;
+  background: #f0f3f5 !important;
+  border-left-color: #aeb7bf !important;
+}
+
+.dashboard-shell .menu-btn.active {
+  color: #202831 !important;
+  background: #e9edf0 !important;
+  border-left-color: #7f8a95 !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .menu-btn.active i,
+.dashboard-shell .menu-btn:hover i {
+  color: #56616d !important;
+}
+
+/* Minha Empresa e Máquinas: mesma linguagem visual neutra. */
+.dashboard-shell .header-actions .account-btn,
+.dashboard-shell .header-actions .back-btn {
+  min-height: 44px !important;
+  color: #34404b !important;
+  background: #f3f5f7 !important;
+  border: 1px solid #d7dde2 !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .header-actions .account-btn i,
+.dashboard-shell .header-actions .back-btn i {
+  color: #67727d !important;
+}
+
+.dashboard-shell .header-actions .account-btn:hover,
+.dashboard-shell .header-actions .back-btn:hover {
+  color: #1f2933 !important;
+  background: #e9edf0 !important;
+  border-color: #c5cdd4 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(31,41,51,.08) !important;
+}
+
+/* Dark mode mantém tons neutros e contraste sem placa preta pesada. */
+html[data-theme="escuro"] .dashboard-shell .sidebar .logo {
+  background: #20272f !important;
+  border-color: #333d47 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar .logo img[src*="steel-icon"] {
+  filter: brightness(0) invert(1) !important;
+  opacity: .92 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar-brand-copy strong {
+  color: #f1f4f6 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar-brand-copy span {
+  color: #aeb8c2 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn {
+  color: #c7ced5 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn:hover,
+html[data-theme="escuro"] .dashboard-shell .menu-btn.active {
+  color: #eef1f4 !important;
+  background: #27313a !important;
+  border-left-color: #8f9aa5 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn {
+  color: #e7ebef !important;
+  background: #27313a !important;
+  border-color: #3d4854 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn i,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn i {
+  color: #b8c1ca !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn:hover,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn:hover {
+  background: #313c46 !important;
+  border-color: #505c67 !important;
+}
+
+/* ========================================================================
+   RESPONSIVO
+   ======================================================================== */
+@media (max-width: 1120px) {
+  .login-shell .login-page {
+    grid-template-columns: minmax(520px, 55%) 1fr !important;
+  }
+
+  .login-shell .industrial-message {
+    right: 5% !important;
+    width: min(470px, 74%) !important;
+  }
+}
+
+@media (max-width: 920px) {
+  .home-page .hero {
+    min-height: 560px !important;
+  }
+
+  .home-page .hero-container.hero-no-preview {
+    width: min(100% - 36px, 720px) !important;
+    min-height: 560px !important;
+    padding: 104px 0 40px !important;
+  }
+
+  .home-page .hero-container.hero-no-preview .hero-content {
+    width: 100% !important;
+  }
+
+  .home-page .hero-background,
+  html[data-theme="escuro"] .home-page .hero-background {
+    background-position: 62% center !important;
+  }
+
+  .login-shell .login-page {
+    display: block !important;
+  }
+
+  .login-shell .login-panel {
+    min-height: 100vh;
+    width: min(680px, 100%);
+    border-radius: 0 20px 20px 0 !important;
+  }
+
+  .login-shell .image-area {
+    display: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .home-page .hero {
+    min-height: 520px !important;
+  }
+
+  .home-page .hero-container.hero-no-preview {
+    width: min(100% - 28px, 680px) !important;
+    min-height: 520px !important;
+    padding: 96px 0 34px !important;
+  }
+
+  .home-page .hero h1 {
+    font-size: clamp(38px, 11vw, 50px) !important;
+  }
+
+  .home-page .hero-trust {
+    display: none !important;
+  }
+
+  .login-shell .login-panel {
+    width: 100%;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* ========================================================================
+   STEELCONTROL — V3 REFINAMENTO INDUSTRIAL NEUTRO
+   2026-09-07
+   - remove placa cinza da marca lateral
+   - reposiciona texto do login
+   - gráfico usa aço neutro em vez de azul
+   - destaques decorativos passam de dourado/laranja para titânio
+   ======================================================================== */
+
+:root {
+  --sc-accent-titanium: #9aa6b1;
+  --sc-accent-titanium-light: #bcc5cd;
+  --sc-accent-titanium-dark: #65717c;
+  --primary-color: #66727d;
+  --primary: #66727d;
+}
+
+html[data-theme="escuro"] {
+  --primary-color: #a7b1ba;
+  --primary: #a7b1ba;
+}
+
+/* ------------------------------
+   SIDEBAR: marca sem quadrado
+   ------------------------------ */
+.dashboard-shell .sidebar .logo {
+  min-height: 78px !important;
+  margin: 0 0 18px 0 !important;
+  padding: 8px 6px 16px !important;
+  gap: 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e4e8eb !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .sidebar .logo img[src*="steel-icon"] {
+  width: 38px !important;
+  height: 42px !important;
+  flex: 0 0 38px !important;
+  opacity: .94 !important;
+}
+
+.dashboard-shell .sidebar-brand-copy strong {
+  color: #26303a !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+.dashboard-shell .sidebar-brand-copy span {
+  color: #75808b !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar .logo {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid #343e48 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ------------------------------
+   LOGIN: frase com posição e escala corretas
+   ------------------------------ */
+.login-shell .industrial-message {
+  top: 50% !important;
+  left: clamp(34px, 5vw, 78px) !important;
+  right: auto !important;
+  width: min(88%, 520px) !important;
+  transform: translateY(-50%) !important;
+  padding: 0 !important;
+}
+
+.login-shell .industrial-message h2 {
+  max-width: 520px !important;
+  margin-top: 18px !important;
+  font-size: clamp(34px, 3vw, 50px) !important;
+  line-height: 1.06 !important;
+  letter-spacing: -.04em !important;
+}
+
+.login-shell .industrial-message h2 span {
+  color: var(--sc-accent-titanium-light) !important;
+}
+
+.login-shell .industrial-message > p {
+  max-width: 460px !important;
+  margin-top: 18px !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.login-shell .industrial-badge {
+  color: #eef2f5 !important;
+  background: rgba(77, 88, 99, .30) !important;
+  border-color: rgba(188, 197, 205, .34) !important;
+}
+
+/* ------------------------------
+   HOME: destaque titânio, sem dourado
+   ------------------------------ */
+.home-page .hero h1 span {
+  color: var(--sc-accent-titanium-light) !important;
+}
+
+.home-page .hero-badge {
+  color: #eef2f5 !important;
+  background: rgba(80, 91, 102, .26) !important;
+  border-color: rgba(188, 197, 205, .30) !important;
+}
+
+/* ------------------------------
+   GRÁFICOS: cor neutra de aço
+   SteelCharts lê --primary-color do :root.
+   ------------------------------ */
+.dashboard-shell {
+  --primary-color: #66727d;
+  --primary: #66727d;
+}
+
+html[data-theme="escuro"] .dashboard-shell {
+  --primary-color: #a7b1ba;
+  --primary: #a7b1ba;
+}
+
+/* Pequenos elementos decorativos que ainda herdavam azul/laranja. */
+.dashboard-shell .panel-eyebrow,
+.dashboard-shell .industrial-label,
+.dashboard-shell .config-eyebrow {
+  color: #66727d !important;
+}
+
+.dashboard-shell .production-controller-insight {
+  background: rgba(102, 114, 125, .07) !important;
+  border-color: #d9dfe4 !important;
+}
+
+.dashboard-shell .production-compatibility-list span {
+  background: #eef1f3 !important;
+  color: #56616b !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .production-controller-insight {
+  background: rgba(167, 177, 186, .08) !important;
+  border-color: #3b4650 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .production-compatibility-list span {
+  background: #2b353e !important;
+  color: #c5cdd4 !important;
+}
+
+@media (max-width: 1120px) and (min-width: 921px) {
+  .login-shell .industrial-message {
+    left: 30px !important;
+    width: calc(100% - 58px) !important;
+  }
+
+  .login-shell .industrial-message h2 {
+    font-size: clamp(31px, 3.1vw, 40px) !important;
+  }
+
+  .login-shell .industrial-message > p {
+    font-size: 13px !important;
+  }
+}
+
+/* ========================================================================
+   STEELCONTROL — V4 DARK INDUSTRIAL / GUNMETAL
+   2026-09-07
+
+   Objetivos desta camada:
+   - remover azul-marinho do modo escuro;
+   - corrigir contraste de textos no login/home;
+   - remover placas/quadrados decorativos sem função;
+   - eliminar botões laranja chapados de navegação;
+   - padronizar desktop em grafite, aço e cinzas técnicos.
+   ======================================================================== */
+
+:root {
+  --sc-v4-bg: #f2f4f6;
+  --sc-v4-surface: #ffffff;
+  --sc-v4-surface-soft: #f6f7f8;
+  --sc-v4-text: #20272e;
+  --sc-v4-muted: #66717b;
+  --sc-v4-border: #d8dde2;
+  --sc-v4-steel: #68747f;
+  --sc-v4-steel-dark: #4e5963;
+  --sc-v4-steel-light: #aab3bb;
+  --sc-v4-dark-bg: #101418;
+  --sc-v4-dark-surface: #171c21;
+  --sc-v4-dark-surface-2: #1d2329;
+  --sc-v4-dark-surface-3: #242b31;
+  --sc-v4-dark-border: #303941;
+  --sc-v4-dark-text: #f1f4f6;
+  --sc-v4-dark-muted: #b0bac3;
+  --sc-v4-dark-steel: #929da7;
+}
+
+/* ------------------------------------------------------------------------
+   HOME — HEADER ESCURO NEUTRO E TEXTO LEGÍVEL
+   ------------------------------------------------------------------------ */
+html[data-theme="escuro"] .home-page {
+  --background: var(--sc-v4-dark-bg) !important;
+  --background-soft: #14191e !important;
+  --card: var(--sc-v4-dark-surface) !important;
+  --card-secondary: var(--sc-v4-dark-surface-2) !important;
+  --text: var(--sc-v4-dark-text) !important;
+  --muted: var(--sc-v4-dark-muted) !important;
+  --border: var(--sc-v4-dark-border) !important;
+  --blue: var(--sc-v4-dark-steel) !important;
+  --blue-dark: #77838d !important;
+  --blue-soft: rgba(146, 157, 167, .12) !important;
+  --header: rgba(17, 22, 27, .96) !important;
+  background: var(--sc-v4-dark-bg) !important;
+  color: var(--sc-v4-dark-text) !important;
+}
+
+html[data-theme="escuro"] .home-page .site-header {
+  background: rgba(17, 22, 27, .96) !important;
+  border-bottom: 1px solid #2d353c !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+html[data-theme="escuro"] .home-page .brand-text strong {
+  color: #f4f6f8 !important;
+}
+
+html[data-theme="escuro"] .home-page .brand-text span,
+html[data-theme="escuro"] .home-page .nav a {
+  color: #c1c9d0 !important;
+}
+
+html[data-theme="escuro"] .home-page .nav a:hover,
+html[data-theme="escuro"] .home-page .nav a.active {
+  color: #ffffff !important;
+}
+
+html[data-theme="escuro"] .home-page .nav a.active::after {
+  background: #8d98a2 !important;
+}
+
+html[data-theme="escuro"] .home-page .theme-btn,
+html[data-theme="escuro"] .home-page .login-btn {
+  color: #edf1f4 !important;
+  background: #252c32 !important;
+  border-color: #3b454e !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .home-page .theme-btn:hover,
+html[data-theme="escuro"] .home-page .login-btn:hover {
+  background: #303840 !important;
+  border-color: #515d67 !important;
+}
+
+/* O destaque do hero passa a ser aço claro, sem laranja/dourado. */
+.home-page .hero h1 span,
+html[data-theme="escuro"] .home-page .hero h1 span {
+  color: #c0c8cf !important;
+}
+
+/* ------------------------------------------------------------------------
+   LOGIN — DARK MODE COMPLETO (corrige branco sobre branco da captura)
+   ------------------------------------------------------------------------ */
+html[data-theme="escuro"] .login-shell,
+html[data-theme="escuro"] .login-shell body {
+  color: var(--sc-v4-dark-text) !important;
+  background: var(--sc-v4-dark-bg) !important;
+}
+
+html[data-theme="escuro"] .login-shell .login-page {
+  background-image:
+    linear-gradient(90deg, rgba(11, 15, 19, .42), rgba(11, 15, 19, .58)),
+    url('../img/industrial-login.jpg') !important;
+  background-color: var(--sc-v4-dark-bg) !important;
+}
+
+html[data-theme="escuro"] .login-shell .login-panel {
+  background: rgba(22, 27, 32, .97) !important;
+  border-right-color: #303941 !important;
+  box-shadow: 20px 0 55px rgba(0, 0, 0, .28) !important;
+}
+
+html[data-theme="escuro"] .login-shell .top-login {
+  border-bottom-color: #303941 !important;
+}
+
+html[data-theme="escuro"] .login-shell .logo-img {
+  filter: brightness(0) invert(1) !important;
+  opacity: .96 !important;
+}
+
+html[data-theme="escuro"] .login-shell .login-content h1,
+html[data-theme="escuro"] .login-shell .login-content h2,
+html[data-theme="escuro"] .login-shell .login-content strong,
+html[data-theme="escuro"] .login-shell .input-group label {
+  color: #f4f6f8 !important;
+}
+
+html[data-theme="escuro"] .login-shell .login-description,
+html[data-theme="escuro"] .login-shell .trust-box p,
+html[data-theme="escuro"] .login-shell .face-button-content small,
+html[data-theme="escuro"] .login-shell .company-register-box > p,
+html[data-theme="escuro"] .login-shell .secure,
+html[data-theme="escuro"] .login-shell .signup-info span,
+html[data-theme="escuro"] .login-shell .form-section-title span {
+  color: #aeb8c1 !important;
+}
+
+html[data-theme="escuro"] .login-shell .home-link,
+html[data-theme="escuro"] .login-shell .language-btn {
+  color: #d5dbe0 !important;
+  background: #22292f !important;
+  border-color: #364049 !important;
+}
+
+html[data-theme="escuro"] .login-shell .home-link:hover,
+html[data-theme="escuro"] .login-shell .language-btn:hover {
+  color: #ffffff !important;
+  background: #2d353c !important;
+  border-color: #505b65 !important;
+}
+
+html[data-theme="escuro"] .login-shell .login-label {
+  color: #d9dfe4 !important;
+  background: #20262c !important;
+  border-color: #3a444d !important;
+}
+
+html[data-theme="escuro"] .login-shell .trust-box,
+html[data-theme="escuro"] .login-shell .company-register-box,
+html[data-theme="escuro"] .login-shell .signup-info,
+html[data-theme="escuro"] .login-shell .registration-face-next,
+html[data-theme="escuro"] .login-shell .email-verification-panel {
+  color: #e8ecef !important;
+  background: #1d2329 !important;
+  border-color: #323c45 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .login-shell .input-box {
+  background: #20272d !important;
+  border-color: #39444d !important;
+}
+
+html[data-theme="escuro"] .login-shell .input-box:focus-within {
+  background: #242c33 !important;
+  border-color: #77838d !important;
+  box-shadow: 0 0 0 3px rgba(146, 157, 167, .10) !important;
+}
+
+html[data-theme="escuro"] .login-shell .input-box input,
+html[data-theme="escuro"] .login-shell .verification-code-wrap input {
+  color: #f3f5f7 !important;
+  background: transparent !important;
+}
+
+html[data-theme="escuro"] .login-shell .input-box input::placeholder,
+html[data-theme="escuro"] .login-shell .verification-code-wrap input::placeholder {
+  color: #7f8a94 !important;
+}
+
+html[data-theme="escuro"] .login-shell .input-box i,
+html[data-theme="escuro"] .login-shell .show-password,
+html[data-theme="escuro"] .login-shell .button-arrow {
+  color: #aeb8c1 !important;
+}
+
+html[data-theme="escuro"] .login-shell .access-btn,
+html[data-theme="escuro"] .login-shell .create-account-btn {
+  color: #ffffff !important;
+  background: #4d5964 !important;
+  border-color: #626f7a !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .login-shell .access-btn:hover,
+html[data-theme="escuro"] .login-shell .create-account-btn:hover {
+  background: #5b6772 !important;
+}
+
+html[data-theme="escuro"] .login-shell .face-btn,
+html[data-theme="escuro"] .login-shell .back-login-btn,
+html[data-theme="escuro"] .login-shell .verification-secondary-btn {
+  color: #eef1f4 !important;
+  background: #1b2126 !important;
+  border-color: #343e47 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .login-shell .face-button-icon,
+html[data-theme="escuro"] .login-shell .register-icon,
+html[data-theme="escuro"] .login-shell .registration-face-next-icon {
+  color: #c4ccd3 !important;
+  background: #293138 !important;
+  border-color: #3d4750 !important;
+}
+
+/* ------------------------------------------------------------------------
+   DASHBOARD — DARK GUNMETAL, SEM AZUL-MARINHO
+   ------------------------------------------------------------------------ */
+html[data-theme="escuro"] .dashboard-shell {
+  --fundo: #101418 !important;
+  --sidebar: #151a1f !important;
+  --card: #181e23 !important;
+  --texto: #f0f3f5 !important;
+  --texto-suave: #aeb7bf !important;
+  --borda: #303941 !important;
+  --azul: #89949e !important;
+  --azul-escuro: #727e88 !important;
+  --primary-color: #929da7 !important;
+  --primary: #929da7 !important;
+  background: #101418 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar {
+  background: #151a1f !important;
+  border-right-color: #2b333a !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar .logo {
+  padding: 8px 6px 16px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid #2e373e !important;
+  border-radius: 0 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn {
+  color: #c7cfd5 !important;
+  background: transparent !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn:hover {
+  color: #ffffff !important;
+  background: #20262c !important;
+  border-left-color: #69757f !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn.active {
+  color: #ffffff !important;
+  background: #242b31 !important;
+  border-left-color: #9aa4ad !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header,
+html[data-theme="escuro"] .dashboard-shell .industrial-overview,
+html[data-theme="escuro"] .dashboard-shell .industrial-kpi-card,
+html[data-theme="escuro"] .dashboard-shell .industrial-panel,
+html[data-theme="escuro"] .dashboard-shell .config-modern-card,
+html[data-theme="escuro"] .dashboard-shell .operation-overview-section,
+html[data-theme="escuro"] .dashboard-shell .factory-kpi-card,
+html[data-theme="escuro"] .dashboard-shell .factory-health-card,
+html[data-theme="escuro"] .dashboard-shell .factory-performance-card,
+html[data-theme="escuro"] .dashboard-shell .logs-summary-grid article,
+html[data-theme="escuro"] .dashboard-shell .machine-log-list > li,
+html[data-theme="escuro"] .dashboard-shell .machine-scope-banner {
+  background: #181e23 !important;
+  border-color: #303941 !important;
+  color: #edf1f4 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header h1,
+html[data-theme="escuro"] .dashboard-shell .industrial-machine-info h2,
+html[data-theme="escuro"] .dashboard-shell .industrial-panel-header h3,
+html[data-theme="escuro"] .dashboard-shell .operation-overview-header h3,
+html[data-theme="escuro"] .dashboard-shell .factory-kpi-info strong,
+html[data-theme="escuro"] .dashboard-shell .config-card-header h3,
+html[data-theme="escuro"] .dashboard-shell .config-company-info h4 {
+  color: #f3f5f7 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header p,
+html[data-theme="escuro"] .dashboard-shell .industrial-machine-info p,
+html[data-theme="escuro"] .dashboard-shell .industrial-panel-header p,
+html[data-theme="escuro"] .dashboard-shell .operation-overview-header p,
+html[data-theme="escuro"] .dashboard-shell .factory-kpi-info span,
+html[data-theme="escuro"] .dashboard-shell .factory-kpi-info small,
+html[data-theme="escuro"] .dashboard-shell .config-card-header p {
+  color: #aeb8c1 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .industrial-label,
+html[data-theme="escuro"] .dashboard-shell .panel-eyebrow,
+html[data-theme="escuro"] .dashboard-shell .config-eyebrow,
+html[data-theme="escuro"] .dashboard-shell .operation-overview-eyebrow,
+html[data-theme="escuro"] .dashboard-shell [data-machine-scope-controller] {
+  color: #9da8b1 !important;
+}
+
+/* Ícone de visão geral sem quadrado decorativo. */
+.dashboard-shell .industrial-machine-icon,
+html[data-theme="escuro"] .dashboard-shell .industrial-machine-icon {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #7d8993 !important;
+  font-size: 18px !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .industrial-live,
+html[data-theme="escuro"] .dashboard-shell .user-box,
+html[data-theme="escuro"] .dashboard-shell .status-box,
+html[data-theme="escuro"] .dashboard-shell .config-modern-item,
+html[data-theme="escuro"] .dashboard-shell .config-company-profile {
+  background: #20262c !important;
+  border-color: #343e47 !important;
+  color: #e8ecef !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn {
+  color: #e9edf0 !important;
+  background: #242b31 !important;
+  border: 1px solid #3a444d !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn:hover,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn:hover {
+  background: #303840 !important;
+  border-color: #535e67 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .header-actions .account-btn i,
+html[data-theme="escuro"] .dashboard-shell .header-actions .back-btn i {
+  color: #b9c1c8 !important;
+}
+
+/* Blue hardcodes do escopo/logs/runtime viram aço neutro. */
+.dashboard-shell .machine-scope-icon,
+html[data-theme="escuro"] .dashboard-shell .machine-scope-icon {
+  color: #eaf0f4 !important;
+  background: #4f5a64 !important;
+}
+
+.dashboard-shell .logs-summary-grid i,
+.dashboard-shell .machine-log-icon,
+html[data-theme="escuro"] .dashboard-shell .logs-summary-grid i,
+html[data-theme="escuro"] .dashboard-shell .machine-log-icon {
+  color: #7d8993 !important;
+}
+
+.dashboard-shell .machine-log-icon,
+html[data-theme="escuro"] .dashboard-shell .machine-log-icon {
+  background: rgba(125, 137, 147, .12) !important;
+}
+
+.dashboard-shell .machine-log-list > li:not(.log-warning):not(.log-error):not(.log-success) {
+  border-left-color: #7d8993 !important;
+}
+
+/* DOBOT/IHM — remover fundos azul-marinho no tema escuro. */
+html[data-theme="escuro"] .dashboard-shell .dobot-hero,
+html[data-theme="escuro"] .dashboard-shell .controller-hero {
+  background: linear-gradient(135deg, #171d22, #242b31) !important;
+  border: 1px solid #364049 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .dobot-panel,
+html[data-theme="escuro"] .dashboard-shell .dobot-diagnostics article,
+html[data-theme="escuro"] .dashboard-shell .controller-panel,
+html[data-theme="escuro"] .dashboard-shell .controller-diagnostics article,
+html[data-theme="escuro"] .dashboard-shell .hmi-console,
+html[data-theme="escuro"] .dashboard-shell .hmi-process-card,
+html[data-theme="escuro"] .dashboard-shell .hmi-status-panel,
+html[data-theme="escuro"] .dashboard-shell .hmi-command-panel {
+  background: #181e23 !important;
+  border-color: #303941 !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .dobot-note,
+html[data-theme="escuro"] .dashboard-shell .dobot-safety-copy,
+html[data-theme="escuro"] .dashboard-shell .dobot-control-actions button,
+html[data-theme="escuro"] .dashboard-shell .hmi-command,
+html[data-theme="escuro"] .dashboard-shell .hmi-mode-control button,
+html[data-theme="escuro"] .dashboard-shell .hmi-pill {
+  color: #d7dde2 !important;
+  background: #242b31 !important;
+  border-color: #3a444d !important;
+}
+
+/* ------------------------------------------------------------------------
+   MÁQUINAS — TEMA ESCURO NEUTRO / SEM AZUL
+   ------------------------------------------------------------------------ */
+.page-machines {
+  --azul: #68747f !important;
+  --azul-escuro: #4f5a64 !important;
+  --azul-soft: #eef1f3 !important;
+}
+
+html[data-theme="escuro"] .page-machines {
+  --fundo: #101418 !important;
+  --card: #181e23 !important;
+  --card-soft: #20262c !important;
+  --texto: #f1f4f6 !important;
+  --texto-suave: #aeb8c1 !important;
+  --borda: #303941 !important;
+  --azul: #929da7 !important;
+  --azul-escuro: #78848e !important;
+  --azul-soft: rgba(146,157,167,.12) !important;
+  background: #101418 !important;
+  color: #f1f4f6 !important;
+}
+
+html[data-theme="escuro"] .page-machines .topbar,
+html[data-theme="escuro"] .page-machines .cadastro-section,
+html[data-theme="escuro"] .page-machines .maquina-card,
+html[data-theme="escuro"] .page-machines .summary-card,
+html[data-theme="escuro"] .page-machines .discovery-panel,
+html[data-theme="escuro"] .page-machines .controller-profile-preview {
+  background: #181e23 !important;
+  border-color: #303941 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .page-machines .brand-text strong,
+html[data-theme="escuro"] .page-machines .topbar h1,
+html[data-theme="escuro"] .page-machines .maquina-card h3,
+html[data-theme="escuro"] .page-machines .cadastro-header h2 {
+  color: #f2f4f6 !important;
+}
+
+html[data-theme="escuro"] .page-machines .brand-text span,
+html[data-theme="escuro"] .page-machines .machine-description,
+html[data-theme="escuro"] .page-machines .cadastro-header p,
+html[data-theme="escuro"] .page-machines .machine-sector {
+  color: #aeb8c1 !important;
+}
+
+.page-machines .company-btn,
+html[data-theme="escuro"] .page-machines .company-btn {
+  color: inherit !important;
+  background: transparent !important;
+  border: 1px solid #cfd5da !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .page-machines .company-btn {
+  color: #e9edf0 !important;
+  border-color: #3a444d !important;
+}
+
+html[data-theme="escuro"] .page-machines .company-btn:hover {
+  background: #242b31 !important;
+  border-color: #535e67 !important;
+}
+
+html[data-theme="escuro"] .page-machines .controller-profile-preview,
+html[data-theme="escuro"] .page-machines .operation-mode-help,
+html[data-theme="escuro"] .page-machines .machine-connection,
+html[data-theme="escuro"] .page-machines .connection-credential-note {
+  background: #20262c !important;
+  border-color: #343e47 !important;
+  color: #c8d0d6 !important;
+}
+
+/* ------------------------------------------------------------------------
+   MINHA EMPRESA — REMOVE HERO/LOGO EM QUADRADOS E BOTÃO LARANJA
+   ------------------------------------------------------------------------ */
+.page-company {
+  --blue: #68747f !important;
+  --blue-dark: #4f5a64 !important;
+  --sc-primary: #68747f !important;
+}
+
+.page-company .back-btn {
+  color: #34404a !important;
+  background: #f3f5f6 !important;
+  border: 1px solid #d7dde2 !important;
+  box-shadow: none !important;
+}
+
+.page-company .back-btn:hover {
+  color: #20272e !important;
+  background: #e9edf0 !important;
+  border-color: #c4ccd3 !important;
+}
+
+/* Hero deixa de ser um grande retângulo decorativo. */
+.page-company .hero {
+  margin-bottom: 24px !important;
+  padding: 24px 2px 22px !important;
+  color: #20272e !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid #d8dde2 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.page-company .company-hero-content {
+  gap: 18px !important;
+}
+
+.page-company .company-logo-wrapper {
+  min-width: 68px !important;
+  width: 68px !important;
+  max-width: 68px !important;
+}
+
+/* Logo sem quadrado externo/interno. */
+.page-company .company-logo-box,
+.page-company .company-logo-placeholder {
+  width: 60px !important;
+  height: 60px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-company .default-company-logo {
+  width: 42px !important;
+  height: 42px !important;
+  opacity: .88 !important;
+}
+
+.page-company .company-logo-box #empresaLogo {
+  width: 60px !important;
+  height: 60px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+}
+
+.page-company .change-logo-btn,
+.page-company .remove-logo-btn {
+  margin-top: 8px !important;
+}
+
+.page-company .company-main-info h1 {
+  color: #20272e !important;
+}
+
+.page-company .company-main-info > p,
+.page-company .hero-description {
+  color: #66717b !important;
+}
+
+.page-company .tag {
+  color: #53606b !important;
+  background: #f1f3f5 !important;
+  border-color: #d9dee3 !important;
+}
+
+html[data-theme="escuro"] .page-company {
+  --background: #101418 !important;
+  --card: #181e23 !important;
+  --text: #f1f4f6 !important;
+  --muted: #aeb8c1 !important;
+  --border: #303941 !important;
+  --blue: #929da7 !important;
+  --blue-dark: #78848e !important;
+  --sc-primary: #929da7 !important;
+  background: #101418 !important;
+  color: #f1f4f6 !important;
+}
+
+html[data-theme="escuro"] .page-company .topbar,
+html[data-theme="escuro"] .page-company .section-card,
+html[data-theme="escuro"] .page-company .summary-card,
+html[data-theme="escuro"] .page-company .company-data-card,
+html[data-theme="escuro"] .page-company .company-location-card,
+html[data-theme="escuro"] .page-company .employee-card {
+  background: #181e23 !important;
+  border-color: #303941 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .page-company .hero {
+  color: #f1f4f6 !important;
+  background: transparent !important;
+  border-bottom-color: #303941 !important;
+}
+
+html[data-theme="escuro"] .page-company .company-main-info h1,
+html[data-theme="escuro"] .page-company .company-top-copy strong {
+  color: #f2f4f6 !important;
+}
+
+html[data-theme="escuro"] .page-company .company-main-info > p,
+html[data-theme="escuro"] .page-company .hero-description,
+html[data-theme="escuro"] .page-company .company-top-copy small {
+  color: #aeb8c1 !important;
+}
+
+html[data-theme="escuro"] .page-company .company-logo-box,
+html[data-theme="escuro"] .page-company .company-logo-placeholder {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="escuro"] .page-company .back-btn {
+  color: #e9edf0 !important;
+  background: #242b31 !important;
+  border: 1px solid #3a444d !important;
+}
+
+html[data-theme="escuro"] .page-company .back-btn:hover {
+  background: #303840 !important;
+  border-color: #535e67 !important;
+}
+
+html[data-theme="escuro"] .page-company .tag {
+  color: #cbd2d8 !important;
+  background: #20262c !important;
+  border-color: #374149 !important;
+}
+
+/* Botões primários não usam laranja; aço para ações normais, cores semânticas
+   apenas para sucesso/erro/alerta. */
+.page-company .save-btn,
+.page-company .primary-btn,
+.page-company #confirmarNovoEmailBtn,
+.page-machines .save-machine-btn,
+.page-machines .toggle-form-btn {
+  background: #5d6974 !important;
+  border-color: #5d6974 !important;
+  color: #fff !important;
+}
+
+.page-company .save-btn:hover,
+.page-company .primary-btn:hover,
+.page-company #confirmarNovoEmailBtn:hover,
+.page-machines .save-machine-btn:hover,
+.page-machines .toggle-form-btn:hover {
+  background: #4f5a64 !important;
+}
+
+/* ------------------------------------------------------------------------
+   RESPONSIVIDADE DOS AJUSTES
+   ------------------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .page-company .hero {
+    padding: 20px 0 !important;
+  }
+
+  .page-company .company-hero-content {
+    align-items: flex-start !important;
+  }
+
+  .page-company .company-logo-wrapper {
+    min-width: 56px !important;
+    width: 56px !important;
+  }
+
+  .page-company .company-logo-box,
+  .page-company .company-logo-placeholder {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .page-company .default-company-logo {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* ========================================================================
+   V5 — MODAIS / OVERLAYS MAIS PROFISSIONAIS
+   Remove o fundo azulado aparente nos pop-ups de exclusão/saída/geração
+   de chave, aumenta a opacidade do overlay e padroniza os cards em
+   grafite/chumbo com detalhes discretos.
+   ======================================================================== */
+
+.sc-confirm-backdrop,
+.device-key-overlay,
+.modal.ativo {
+  background: rgba(6, 9, 12, .84) !important;
+  backdrop-filter: blur(12px) saturate(.72) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(.72) !important;
+}
+
+.sc-confirm-card,
+.device-key-modal,
+.modal-card,
+.face-modal-card,
+.faces-manager-card {
+  background: linear-gradient(180deg, #1c2228 0%, #181d23 100%) !important;
+  color: #f2f5f7 !important;
+  border: 1px solid #36414a !important;
+  border-radius: 24px !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .42) !important;
+}
+
+.sc-confirm-card h3,
+.device-key-modal h3,
+.modal-header h2 {
+  color: #f5f7f8 !important;
+  letter-spacing: -.02em;
+}
+
+.sc-confirm-card p,
+.device-key-modal p,
+.modal-header p {
+  color: #bcc5cc !important;
+}
+
+.sc-confirm-card::before {
+  height: 3px !important;
+  background: linear-gradient(90deg, #88939d, #5f6b76) !important;
+}
+
+.sc-confirm-card.is-danger::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+}
+
+.sc-confirm-icon,
+.device-key-modal-icon,
+.modal-icon {
+  background: linear-gradient(180deg, #2a3138, #232a31) !important;
+  border: 1px solid #3a444d !important;
+  color: #c1a164 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03) !important;
+}
+
+.sc-confirm-card.is-danger .sc-confirm-icon,
+.modal-card.danger .modal-icon {
+  background: linear-gradient(180deg, rgba(127, 29, 29, .34), rgba(69, 10, 10, .34)) !important;
+  border-color: rgba(239, 68, 68, .20) !important;
+  color: #ef4444 !important;
+}
+
+.sc-confirm-actions button,
+.device-key-actions button,
+.modal-actions button,
+.modal-card button {
+  min-height: 46px !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+}
+
+.sc-confirm-cancel,
+.device-key-close {
+  background: #20272e !important;
+  color: #eff3f5 !important;
+  border: 1px solid #36414a !important;
+}
+
+.sc-confirm-cancel:hover,
+.device-key-close:hover {
+  background: #29313a !important;
+  border-color: #4a5661 !important;
+}
+
+.device-key-copy {
+  background: linear-gradient(180deg, #7d8a95, #67747e) !important;
+  color: #ffffff !important;
+  border: 1px solid #7d8a95 !important;
+}
+
+.device-key-copy:hover {
+  filter: brightness(1.03) !important;
+}
+
+.sc-confirm-ok:not(.danger):not(.is-danger) {
+  background: linear-gradient(180deg, #7d8a95, #67747e) !important;
+  border-color: #7d8a95 !important;
+  color: #fff !important;
+}
+
+.sc-confirm-ok {
+  box-shadow: none !important;
+}
+
+.device-key-code {
+  background: #13181d !important;
+  color: #edf2f5 !important;
+  border: 1px solid #36414a !important;
+  border-radius: 14px !important;
+}
+
+/* Mantém o perigo apenas nas ações destrutivas, sem poluir o resto. */
+.sc-confirm-card.is-danger,
+.sc-confirm-card.is-danger .sc-confirm-ok,
+.modal-card .danger-btn,
+.modal-card .delete-btn,
+.modal-card .deactivate-btn {
+  --danger-accent: #ef4444;
+}
+
+/* Tema claro também segue a mesma qualidade visual. */
+html:not([data-theme="escuro"]) .sc-confirm-backdrop,
+html:not([data-theme="escuro"]) .device-key-overlay,
+html:not([data-theme="escuro"]) .modal.ativo {
+  background: rgba(15, 23, 42, .46) !important;
+  backdrop-filter: blur(10px) saturate(.86) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(.86) !important;
+}
+
+html:not([data-theme="escuro"]) .device-key-modal,
+html:not([data-theme="escuro"]) .sc-confirm-card,
+html:not([data-theme="escuro"]) .modal-card,
+html:not([data-theme="escuro"]) .face-modal-card,
+html:not([data-theme="escuro"]) .faces-manager-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8fa 100%) !important;
+  color: #20272e !important;
+  border-color: #d8dee4 !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, .18) !important;
+}
+
+html:not([data-theme="escuro"]) .sc-confirm-card h3,
+html:not([data-theme="escuro"]) .device-key-modal h3,
+html:not([data-theme="escuro"]) .modal-header h2 {
+  color: #1f2933 !important;
+}
+
+html:not([data-theme="escuro"]) .sc-confirm-card p,
+html:not([data-theme="escuro"]) .device-key-modal p,
+html:not([data-theme="escuro"]) .modal-header p {
+  color: #5f6b78 !important;
+}
+
+html:not([data-theme="escuro"]) .sc-confirm-cancel,
+html:not([data-theme="escuro"]) .device-key-close {
+  background: #f3f5f7 !important;
+  color: #20272e !important;
+  border-color: #d0d7de !important;
+}
+
+/* ========================================================================
+   V6 — LOGO DA EMPRESA + AÇÕES DE LOGO + HERO DOS CONTROLADORES
+   Corrige logos corporativas horizontais, elimina quebra dos botões e remove
+   o bloco vazio de ícone ao lado do nome nos dashboards por controlador.
+   ======================================================================== */
+
+/* --- Minha Empresa: logo corporativa com proporção real --- */
+.page-company .company-logo-wrapper {
+  width: 132px !important;
+  min-width: 132px !important;
+  max-width: 132px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 7px !important;
+  text-align: left !important;
+}
+
+.page-company .company-logo-box {
+  width: 124px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-company .company-logo-placeholder {
+  width: 72px !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-company .company-logo-placeholder[hidden],
+.page-company #empresaLogo[hidden] {
+  display: none !important;
+}
+
+.page-company .company-logo-box #empresaLogo {
+  width: 124px !important;
+  height: 68px !important;
+  max-width: 124px !important;
+  max-height: 68px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-company .default-company-logo {
+  width: 46px !important;
+  height: 46px !important;
+  object-fit: contain !important;
+}
+
+/* Ações compactas, alinhadas e sem quebra de texto. */
+.page-company .change-logo-btn,
+.page-company .remove-logo-btn {
+  width: 124px !important;
+  min-width: 124px !important;
+  min-height: 34px !important;
+  margin: 0 !important;
+  padding: 7px 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  border-radius: 9px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
+
+.page-company .change-logo-btn {
+  color: #eef2f5 !important;
+  background: #596570 !important;
+  border: 1px solid #6b7781 !important;
+}
+
+.page-company .change-logo-btn:hover {
+  background: #4d5862 !important;
+  border-color: #7e8993 !important;
+  transform: translateY(-1px);
+}
+
+.page-company .remove-logo-btn {
+  color: #c9d0d6 !important;
+  background: transparent !important;
+  border: 1px solid #48525b !important;
+}
+
+.page-company .remove-logo-btn:hover {
+  color: #fecaca !important;
+  background: rgba(220, 38, 38, .08) !important;
+  border-color: rgba(239, 68, 68, .42) !important;
+}
+
+.page-company .change-logo-btn i,
+.page-company .remove-logo-btn i {
+  font-size: 11px !important;
+}
+
+/* Dark: logo enviada continua legível e proporcional. */
+html[data-theme="escuro"] .page-company #empresaLogo {
+  filter: grayscale(1) brightness(0) invert(1) !important;
+  opacity: .96 !important;
+}
+
+html[data-theme="escuro"] .page-company .default-company-logo {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* --- Dashboard por controlador: remove quadrado/ícone vazio --- */
+.dashboard-shell .controller-hero-icon {
+  display: none !important;
+}
+
+.dashboard-shell .controller-hero {
+  gap: 0 !important;
+}
+
+.dashboard-shell .controller-hero-copy {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  flex-basis: auto !important;
+}
+
+.dashboard-shell .controller-state {
+  margin-left: 24px !important;
+}
+
+@media (max-width: 720px) {
+  .page-company .company-hero-content {
+    gap: 16px !important;
+  }
+
+  .page-company .company-logo-wrapper {
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+  }
+
+  .page-company .company-logo-box,
+  .page-company .company-logo-box #empresaLogo,
+  .page-company .change-logo-btn,
+  .page-company .remove-logo-btn {
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+  }
+
+  .page-company .company-logo-box #empresaLogo {
+    object-position: left center !important;
+  }
+
+  .dashboard-shell .controller-state {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .page-company .company-hero-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .page-company .company-logo-wrapper {
+    width: 100% !important;
+    max-width: none !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  .page-company .company-logo-box {
+    width: 124px !important;
+  }
+}

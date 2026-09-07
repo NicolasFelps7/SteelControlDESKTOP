@@ -1615,10 +1615,7 @@ async function executarReconhecimento() {
     );
 
 
-    if (
-      modoFace !== "cadastro" &&
-      livenessBlob
-    ) {
+    if (livenessBlob) {
       form.append(
         "liveness",
         livenessBlob,
@@ -1661,6 +1658,11 @@ async function executarReconhecimento() {
     framesCorretos =
       0;
 
+    if (modoFace === "cadastro") {
+      etapaLiveness = "frontal";
+      livenessConfirmado = false;
+      livenessBlob = null;
+    }
 
     setTimeout(
       () => {
@@ -1668,9 +1670,17 @@ async function executarReconhecimento() {
         autenticando =
           false;
 
+        if (modoFace === "cadastro") {
+          alterarStatus(
+            "analisando",
+            textoAcesso("faceSearching"),
+            textoAcesso("registrationFaceRetry")
+          );
+        }
+
       },
 
-      1800
+      1400
     );
 
   }
@@ -1686,17 +1696,27 @@ async function cadastrarFace(
   form
 ) {
 
+  const verificacaoId =
+    cadastroPendente?.verificacaoId ||
+    cadastroVerificacaoId;
+
+  if (!verificacaoId) {
+    throw new Error(
+      "A verificação do cadastro expirou. Confirme o e-mail novamente."
+    );
+  }
+
+  form.append(
+    "verificacaoId",
+    verificacaoId
+  );
+
   const resposta =
     await fetch(
-      `${API_URL}/auth/face/register-image`,
+      `${API_URL}/auth/register-company/complete-face`,
       {
         method:
           "POST",
-
-        headers: {
-          "Authorization":
-            `Bearer ${cadastroPendente.token}`
-        },
 
         body:
           form
@@ -1713,7 +1733,7 @@ async function cadastrarFace(
   if (!resposta.ok) {
     throw new Error(
       dados.mensagem ||
-      "Não foi possível cadastrar a biometria facial."
+      "A biometria não foi concluída. A conta ainda não foi criada; faça a facial novamente."
     );
   }
 
@@ -1725,8 +1745,10 @@ async function cadastrarFace(
   );
 
 
+  cadastroPendente = dados;
+
   salvarSessao(
-    cadastroPendente
+    dados
   );
 
 
@@ -1736,7 +1758,7 @@ async function cadastrarFace(
   mostrarBoasVindas({
     titulo: textoAcesso(
       "registerWelcomeTitle",
-      { nome: cadastroPendente?.usuario?.nome || "" }
+      { nome: dados?.usuario?.nome || "" }
     ),
     texto: textoAcesso("registerWelcomeText"),
     cadastro: true
@@ -1748,7 +1770,7 @@ async function cadastrarFace(
       window.location.href =
         "/app/maquinas";
     },
-    2300
+    700
   );
 
 }
@@ -2060,10 +2082,21 @@ function fecharFaceId() {
 
   pararCamera();
 
-
   faceModal.classList.remove(
     "ativo"
   );
+
+  if (
+    modoFace === "cadastro" &&
+    cadastroPendente?.contaCriada === false
+  ) {
+    if (mensagemCadastro) {
+      mensagemCadastro.textContent =
+        textoAcesso("registrationFaceRequired");
+      mensagemCadastro.className =
+        "message erro";
+    }
+  }
 
 }
 

@@ -1,0 +1,21 @@
+STEELCONTROL DESKTOP/BACKEND - PATCH 2026-09-04
+
+Este patch acompanha o patch Mobile da mesma data.
+
+Inclui:
+- revogacao de sessao em tempo real quando um funcionario e demitido/desativado;
+- endpoint SSE autenticado /auth/session-events;
+- cadastro Mobile atomico: empresa/administrador/facial sao persistidos juntos somente apos a facial ser validada;
+- cancelamento do cadastro pendente sem criar login parcial;
+- suporte a nome da amostra facial recebido pelo Mobile;
+- Desktop tambem encerra a sessao ativa quando o usuario e desativado.
+
+INSTALACAO
+1. Extraia este ZIP na raiz do SteelControlDESKTOP, substituindo os arquivos.
+2. Nao ha nova migration Prisma neste patch.
+3. Reinicie o SteelControl pelo INICIAR_STEELCONTROL.ps1.
+4. Instale tambem o patch Mobile 2026-09-04 correspondente.
+
+SEGURANCA
+A desativacao continua sendo validada pelo authRequired em cada requisicao.
+O SSE apenas antecipa o logout visual para a sessao aberta; nao substitui a verificacao server-side.

@@ -5,8 +5,8 @@
   const requestedView = new URLSearchParams(window.location.search).get("view");
   if (!token || !machineId || requestedView !== "controller") return;
 
-  const BRAND_ACCENT = "#2563eb";
-  const BRAND_DARK = "#071a3d";
+  const BRAND_ACCENT = "#c47b12";
+  const BRAND_DARK = "#1e2225";
 
   const profiles = {
     ESP32: {

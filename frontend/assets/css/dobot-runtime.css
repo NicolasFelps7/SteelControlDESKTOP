@@ -1,13 +1,13 @@
 /* SteelControl — Dobot Magician Professional Runtime */
-.dobot-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 30px;margin-bottom:18px;border-radius:22px;color:#fff;background:linear-gradient(125deg,#061126 0%,#0b2854 55%,#1d4ed8 100%);box-shadow:0 18px 45px rgba(15,45,100,.18)}
-.dobot-hero h2{font-size:clamp(25px,3vw,36px);margin:5px 0 7px;font-weight:900}.dobot-hero p{margin:0;color:#dbeafe;font-size:14px}.dobot-eyebrow,.dobot-panel-head span{font-size:11px;font-weight:900;letter-spacing:1.2px;color:#93c5fd}.dobot-state{display:flex;align-items:center;gap:9px;padding:11px 15px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);white-space:nowrap}.dobot-state span{width:9px;height:9px;border-radius:50%;background:#f59e0b}.dobot-state.online span{background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.14)}
-.dobot-diagnostics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.dobot-diagnostics article{padding:16px;border:1px solid #dce4ef;border-radius:16px;background:var(--card-bg,#fff);display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:center}.dobot-diagnostics i{grid-row:1/3;color:#2563eb;font-size:20px}.dobot-diagnostics span{font-size:12px;color:#64748b}.dobot-diagnostics strong{font-size:14px}.dobot-main-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}.dobot-panel{padding:20px;border:1px solid #dce4ef;border-radius:19px;background:var(--card-bg,#fff);box-shadow:0 9px 28px rgba(15,23,42,.05)}.dobot-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}.dobot-panel-head h3{margin:4px 0 0;font-size:18px;font-weight:900}.dobot-panel-head p{margin:4px 0 0;color:#64748b;font-size:12px}.dobot-panel-head>i{font-size:23px;color:#2563eb}.dobot-coordinate-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.dobot-coordinate-grid>div{padding:14px 10px;text-align:center;border-radius:14px;background:rgba(37,99,235,.065)}.dobot-coordinate-grid span{display:block;font-size:11px;font-weight:900;color:#2563eb}.dobot-coordinate-grid strong{display:inline-block;font-size:21px;margin:5px 3px;font-variant-numeric:tabular-nums}.dobot-coordinate-grid small{font-size:10px;color:#64748b}.dobot-sensor-list,.dobot-effector-grid{display:grid;gap:8px}.dobot-sensor-list>div,.dobot-effector-grid>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;background:rgba(148,163,184,.08)}.dobot-sensor-list span,.dobot-effector-grid span{font-size:12px;color:#64748b}.dobot-sensor-list strong,.dobot-effector-grid strong{font-size:13px}.dobot-effector-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dobot-note,.dobot-safety-copy{margin:13px 0 0;padding:11px 12px;border-radius:12px;background:rgba(37,99,235,.07);color:#475569;font-size:12px;line-height:1.5}.dobot-control-panel{margin-bottom:28px}.motion-lock{padding:8px 11px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:900}.motion-lock.unlocked{background:#dcfce7;color:#166534}.dobot-control-actions{display:flex;flex-wrap:wrap;gap:9px}.dobot-control-actions button,.dobot-ptp-form button{min-height:42px;border:0;border-radius:11px;padding:0 15px;background:#eaf1ff;color:#1d4ed8;font-weight:800;cursor:pointer}.dobot-control-actions .danger{background:#fee2e2;color:#b91c1c}.dobot-ptp-form{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr)) auto;gap:9px;align-items:end;margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0}.dobot-ptp-form label{display:block;font-size:11px;font-weight:800;color:#64748b;margin-bottom:5px}.dobot-ptp-form input{width:100%;height:42px;border:1px solid #cbd5e1;border-radius:10px;padding:0 10px;background:var(--card-bg,#fff);color:inherit}.dobot-ptp-form button{background:#2563eb;color:#fff}.dobot-config-panel{padding:16px!important;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(135deg,#eff6ff,#f8fbff)}.dobot-config-head{display:flex;gap:11px;align-items:flex-start;margin-bottom:13px}.dobot-config-head>i{font-size:23px;color:#2563eb}.dobot-config-head p{margin:3px 0 0;font-size:12px;color:#64748b}.dobot-config-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.dobot-config-grid label{font-size:11px;font-weight:800;color:#475569}.dobot-config-grid input,.dobot-config-grid select{width:100%;height:42px;margin-top:5px;border:1px solid #cbd5e1;border-radius:9px;padding:0 9px;background:#fff}.dobot-config-grid .dobot-check{grid-column:1/-1;display:flex;align-items:center;gap:8px}.dobot-config-grid .dobot-check input{width:18px;height:18px;margin:0}.dobot-config-panel>small{display:block;margin-top:10px;color:#64748b}
+.dobot-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 30px;margin-bottom:18px;border-radius:22px;color:#fff;background:linear-gradient(125deg,#15181a 0%,#252a2e 55%,#9e600a 100%);box-shadow:0 18px 45px rgba(24,28,31,.18)}
+.dobot-hero h2{font-size:clamp(25px,3vw,36px);margin:5px 0 7px;font-weight:900}.dobot-hero p{margin:0;color:#f6e3c2;font-size:14px}.dobot-eyebrow,.dobot-panel-head span{font-size:11px;font-weight:900;letter-spacing:1.2px;color:#e0b66f}.dobot-state{display:flex;align-items:center;gap:9px;padding:11px 15px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);white-space:nowrap}.dobot-state span{width:9px;height:9px;border-radius:50%;background:#f59e0b}.dobot-state.online span{background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.14)}
+.dobot-diagnostics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.dobot-diagnostics article{padding:16px;border:1px solid #dce4ef;border-radius:16px;background:var(--card-bg,#fff);display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:3px;align-items:center}.dobot-diagnostics i{grid-row:1/3;color:#c47b12;font-size:20px}.dobot-diagnostics span{font-size:12px;color:#64748b}.dobot-diagnostics strong{font-size:14px}.dobot-main-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}.dobot-panel{padding:20px;border:1px solid #dce4ef;border-radius:19px;background:var(--card-bg,#fff);box-shadow:0 9px 28px rgba(15,23,42,.05)}.dobot-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}.dobot-panel-head h3{margin:4px 0 0;font-size:18px;font-weight:900}.dobot-panel-head p{margin:4px 0 0;color:#64748b;font-size:12px}.dobot-panel-head>i{font-size:23px;color:#c47b12}.dobot-coordinate-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.dobot-coordinate-grid>div{padding:14px 10px;text-align:center;border-radius:14px;background:rgba(196,123,18,.065)}.dobot-coordinate-grid span{display:block;font-size:11px;font-weight:900;color:#c47b12}.dobot-coordinate-grid strong{display:inline-block;font-size:21px;margin:5px 3px;font-variant-numeric:tabular-nums}.dobot-coordinate-grid small{font-size:10px;color:#64748b}.dobot-sensor-list,.dobot-effector-grid{display:grid;gap:8px}.dobot-sensor-list>div,.dobot-effector-grid>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;background:rgba(148,163,184,.08)}.dobot-sensor-list span,.dobot-effector-grid span{font-size:12px;color:#64748b}.dobot-sensor-list strong,.dobot-effector-grid strong{font-size:13px}.dobot-effector-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dobot-note,.dobot-safety-copy{margin:13px 0 0;padding:11px 12px;border-radius:12px;background:rgba(196,123,18,.07);color:#475569;font-size:12px;line-height:1.5}.dobot-control-panel{margin-bottom:28px}.motion-lock{padding:8px 11px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:900}.motion-lock.unlocked{background:#dcfce7;color:#166534}.dobot-control-actions{display:flex;flex-wrap:wrap;gap:9px}.dobot-control-actions button,.dobot-ptp-form button{min-height:42px;border:0;border-radius:11px;padding:0 15px;background:#f7efe1;color:#9e600a;font-weight:800;cursor:pointer}.dobot-control-actions .danger{background:#fee2e2;color:#b91c1c}.dobot-ptp-form{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr)) auto;gap:9px;align-items:end;margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0}.dobot-ptp-form label{display:block;font-size:11px;font-weight:800;color:#64748b;margin-bottom:5px}.dobot-ptp-form input{width:100%;height:42px;border:1px solid #cbd5e1;border-radius:10px;padding:0 10px;background:var(--card-bg,#fff);color:inherit}.dobot-ptp-form button{background:#c47b12;color:#fff}.dobot-config-panel{padding:16px!important;border:1px solid #e8c890;border-radius:16px;background:linear-gradient(135deg,#fff4df,#f7f8f9)}.dobot-config-head{display:flex;gap:11px;align-items:flex-start;margin-bottom:13px}.dobot-config-head>i{font-size:23px;color:#c47b12}.dobot-config-head p{margin:3px 0 0;font-size:12px;color:#64748b}.dobot-config-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.dobot-config-grid label{font-size:11px;font-weight:800;color:#475569}.dobot-config-grid input,.dobot-config-grid select{width:100%;height:42px;margin-top:5px;border:1px solid #cbd5e1;border-radius:9px;padding:0 9px;background:#fff}.dobot-config-grid .dobot-check{grid-column:1/-1;display:flex;align-items:center;gap:8px}.dobot-config-grid .dobot-check input{width:18px;height:18px;margin:0}.dobot-config-panel>small{display:block;margin-top:10px;color:#64748b}
 @media(max-width:900px){.dobot-diagnostics{grid-template-columns:repeat(2,1fr)}.dobot-main-grid{grid-template-columns:1fr}.dobot-ptp-form{grid-template-columns:repeat(2,1fr)}.dobot-ptp-form button{grid-column:1/-1}.dobot-config-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.dobot-hero{align-items:flex-start;flex-direction:column;padding:21px}.dobot-coordinate-grid{grid-template-columns:repeat(2,1fr)}.dobot-effector-grid,.dobot-config-grid{grid-template-columns:1fr}.dobot-control-actions button{flex:1 1 140px}}
 
 /* STEELCONTROL_DARK_DOBOT_CONFIG_FIX_20260901 */
 html[data-theme="escuro"] .dobot-config-panel {
-  background: linear-gradient(135deg, #111827, #172033);
-  border-color: #334155;
+  background: linear-gradient(135deg, #202529, #24292d);
+  border-color: #41494f;
   color: var(--texto, #f8fafc);
 }
 
@@ -26,7 +26,7 @@ html[data-theme="escuro"] .dobot-config-grid label {
 
 html[data-theme="escuro"] .dobot-config-grid input,
 html[data-theme="escuro"] .dobot-config-grid select {
-  background: #1e293b;
+  background: #2b3135;
   border-color: #475569;
   color: var(--texto, #f8fafc);
 }
@@ -36,14 +36,14 @@ html[data-theme="escuro"] .dobot-config-grid input::placeholder {
 }
 
 html[data-theme="escuro"] .dobot-config-grid select option {
-  background: #1e293b;
+  background: #2b3135;
   color: #f8fafc;
 }
 
 html[data-theme="escuro"] .dobot-config-grid input:disabled,
 html[data-theme="escuro"] .dobot-config-grid input[readonly],
 html[data-theme="escuro"] .dobot-config-grid select:disabled {
-  background: #172033;
+  background: #24292d;
   color: #cbd5e1;
   opacity: 1;
 }
@@ -56,8 +56,8 @@ html[data-theme="escuro"] .dobot-config-grid select:disabled {
 ========================================================= */
 html[data-theme="escuro"] .dobot-diagnostics article,
 html[data-theme="escuro"] .dobot-panel {
-  background: #111827;
-  border-color: #334155;
+  background: #202529;
+  border-color: #41494f;
   color: #f8fafc;
   box-shadow: 0 12px 34px rgba(0, 0, 0, .24);
 }
@@ -82,30 +82,30 @@ html[data-theme="escuro"] .dobot-ptp-form label {
 html[data-theme="escuro"] .dobot-coordinate-grid > div,
 html[data-theme="escuro"] .dobot-sensor-list > div,
 html[data-theme="escuro"] .dobot-effector-grid > div {
-  background: #172033;
+  background: #24292d;
 }
 
 html[data-theme="escuro"] .dobot-note,
 html[data-theme="escuro"] .dobot-safety-copy {
-  background: #172554;
+  background: #2c2923;
   color: #cbd5e1;
-  border: 1px solid #1e3a8a;
+  border: 1px solid #69430f;
 }
 
 html[data-theme="escuro"] .dobot-ptp-form {
-  border-top-color: #334155;
+  border-top-color: #41494f;
 }
 
 html[data-theme="escuro"] .dobot-ptp-form input {
-  background: #1e293b;
+  background: #2b3135;
   border-color: #475569;
   color: #f8fafc;
 }
 
 html[data-theme="escuro"] .dobot-control-actions button,
 html[data-theme="escuro"] .dobot-ptp-form button:not([type="submit"]) {
-  background: #172554;
-  color: #bfdbfe;
+  background: #2c2923;
+  color: #e8c890;
 }
 
 html[data-theme="escuro"] .dobot-control-actions .danger {

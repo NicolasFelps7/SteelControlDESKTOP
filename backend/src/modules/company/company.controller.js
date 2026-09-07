@@ -53,6 +53,11 @@ import {
   empresaParaResposta
 } from "../../lib/companyView.js";
 
+import {
+  publicarEventoEmpresa,
+  assinarEventosEmpresa
+} from "../../lib/realtime.js";
+
 
 const MAX_FACE_SAMPLES = 1;
 
@@ -305,6 +310,106 @@ function formatarCepEmpresa(
 
   return String(valor || "")
     .trim();
+}
+
+
+
+// =========================================================
+// STREAM EM TEMPO REAL DA EMPRESA
+// GET /empresa/stream
+// Mantém desktop/tablet sincronizados sem recarregar a página.
+// =========================================================
+
+export async function streamEmpresa(
+  req,
+  res,
+  next
+) {
+  try {
+    const empresaId =
+      Number(req.auth?.empresaId);
+
+    if (
+      !Number.isInteger(empresaId) ||
+      empresaId <= 0
+    ) {
+      return res
+        .status(401)
+        .json({
+          mensagem:
+            "Empresa da sessão inválida."
+        });
+    }
+
+    res.setHeader(
+      "Content-Type",
+      "text/event-stream; charset=utf-8"
+    );
+    res.setHeader(
+      "Cache-Control",
+      "no-cache, no-transform"
+    );
+    res.setHeader(
+      "Connection",
+      "keep-alive"
+    );
+    res.setHeader(
+      "X-Accel-Buffering",
+      "no"
+    );
+
+    res.flushHeaders?.();
+
+    const enviar =
+      evento => {
+        res.write(
+          `event: ${evento.tipo || "mensagem"}\n`
+        );
+        res.write(
+          `data: ${JSON.stringify(evento)}\n\n`
+        );
+      };
+
+    enviar({
+      tipo:
+        "conectado",
+      dados: {
+        empresaId
+      },
+      empresaId,
+      em:
+        new Date().toISOString()
+    });
+
+    const cancelar =
+      assinarEventosEmpresa(
+        empresaId,
+        enviar
+      );
+
+    const heartbeat =
+      setInterval(
+        () => {
+          res.write(
+            `: keepalive ${Date.now()}\n\n`
+          );
+        },
+        15_000
+      );
+
+    req.on(
+      "close",
+      () => {
+        clearInterval(
+          heartbeat
+        );
+        cancelar();
+      }
+    );
+
+  } catch (erro) {
+    next(erro);
+  }
 }
 
 
@@ -651,6 +756,16 @@ export async function atualizarEmpresa(
       });
 
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "empresa.atualizada",
+      {
+        empresaId:
+          empresa.id
+      }
+    );
+
+
     return res.json({
 
       mensagem:
@@ -841,6 +956,17 @@ export async function uploadLogo(
       }
     });
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "empresa.logo-atualizada",
+      {
+        empresaId:
+          empresa.id,
+        logoUrl:
+          empresa.logoUrl
+      }
+    );
+
     return res.json({
       mensagem:
         "Logo atualizada com sucesso.",
@@ -937,6 +1063,15 @@ export async function removerLogo(
       }
     });
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "empresa.logo-removida",
+      {
+        empresaId:
+          atualizada.id
+      }
+    );
+
     return res.json({
       mensagem:
         "Logo removida com sucesso. A identidade padrão do SteelControl foi restaurada.",
@@ -946,6 +1081,64 @@ export async function removerLogo(
         )
     });
 
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+
+// =========================================================
+// REVISÃO LEVE DA EMPRESA
+// GET /empresa/revision
+//
+// Fallback de sincronização multi-dispositivo. A revisão vem do
+// PostgreSQL (AuditLog), então continua funcionando mesmo quando
+// o stream SSE é interrompido ou quando houver mais de uma instância
+// do backend. O frontend usa esta rota apenas para saber se precisa
+// recarregar os dados, sem exigir F5.
+// =========================================================
+
+export async function obterRevisaoEmpresa(
+  req,
+  res,
+  next
+) {
+  try {
+    const empresaId = Number(req.auth?.empresaId);
+
+    if (!Number.isInteger(empresaId) || empresaId <= 0) {
+      return res.status(401).json({
+        mensagem: "Empresa da sessão inválida."
+      });
+    }
+
+    const [ultimoEvento, empresa] = await Promise.all([
+      prisma.auditLog.findFirst({
+        where: { empresaId },
+        orderBy: { id: "desc" },
+        select: {
+          id: true,
+          criadoEm: true,
+          entidade: true,
+          acao: true
+        }
+      }),
+      prisma.empresa.findUnique({
+        where: { id: empresaId },
+        select: { atualizadaEm: true }
+      })
+    ]);
+
+    const auditId = Number(ultimoEvento?.id || 0);
+    const empresaAtualizadaEm = empresa?.atualizadaEm?.toISOString?.() || null;
+
+    return res.json({
+      revisao: `${auditId}:${empresaAtualizadaEm || "-"}`,
+      auditId,
+      entidade: ultimoEvento?.entidade || null,
+      acao: ultimoEvento?.acao || null,
+      atualizadoEm: ultimoEvento?.criadoEm?.toISOString?.() || empresaAtualizadaEm
+    });
   } catch (erro) {
     next(erro);
   }
@@ -1322,6 +1515,16 @@ export async function criarUsuario(
       });
 
 
+      publicarEventoEmpresa(
+        req.auth.empresaId,
+        "usuario.reativado",
+        {
+          usuarioId:
+            usuarioReativado.id
+        }
+      );
+
+
       return res
         .status(200)
         .json({
@@ -1420,6 +1623,16 @@ export async function criarUsuario(
       }
 
     });
+
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.criado",
+      {
+        usuarioId:
+          usuario.id
+      }
+    );
 
 
     return res
@@ -1787,6 +2000,16 @@ export async function atualizarUsuario(
     });
 
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.atualizado",
+      {
+        usuarioId:
+          atualizado.id
+      }
+    );
+
+
     return res.json({
 
       mensagem:
@@ -2011,6 +2234,15 @@ export async function removerUsuario(
       }
 
     });
+
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.desativado",
+      {
+        usuarioId
+      }
+    );
 
 
     return res.json({
@@ -2258,6 +2490,17 @@ export async function cadastrarFaceUsuario(
 
     const quantidadeFaces =
       registroFacial.quantidadeFaces;
+
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.facial-atualizada",
+      {
+        usuarioId,
+        cadastrado:
+          true
+      }
+    );
 
 
     return res
@@ -2586,6 +2829,17 @@ export async function removerFaceUsuario(
       });
 
 
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.facial-atualizada",
+      {
+        usuarioId,
+        cadastrado:
+          quantidade > 0
+      }
+    );
+
+
     return res.json({
 
       mensagem:
@@ -2718,6 +2972,17 @@ export async function removerFacesUsuario(
         }
 
       });
+
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.facial-atualizada",
+      {
+        usuarioId,
+        cadastrado:
+          false
+      }
+    );
 
 
     return res.json({
@@ -3122,6 +3387,15 @@ export async function confirmarAlteracaoEmail(
 
     TROCAS_EMAIL_PENDENTES.delete(
       usuarioId
+    );
+
+    publicarEventoEmpresa(
+      req.auth.empresaId,
+      "usuario.atualizado",
+      {
+        usuarioId:
+          atualizado.id
+      }
     );
 
     return res.json({

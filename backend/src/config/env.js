@@ -58,19 +58,27 @@ const databaseUrl =
   );
 
 const emailUser =
-  texto("EMAIL_USER");
+  texto("EMAIL_USER") ||
+  texto("GMAIL_USER") ||
+  texto("MAIL_USER");
 
+// O Google exibe a senha de app normalmente em grupos separados por
+// espaços. Nodemailer deve receber apenas os 16 caracteres. Também
+// aceitamos aliases usados por versões antigas do projeto.
 const emailAppPassword =
-  texto(
-    "EMAIL_APP_PASSWORD"
-  );
+  (
+    texto("EMAIL_APP_PASSWORD") ||
+    texto("GMAIL_APP_PASSWORD") ||
+    texto("EMAIL_PASS") ||
+    texto("MAIL_PASS")
+  ).replace(/\s+/g, "");
 
 if (
   Boolean(emailUser) !==
   Boolean(emailAppPassword)
 ) {
   throw new Error(
-    "Configure EMAIL_USER e EMAIL_APP_PASSWORD juntos."
+    "Configure EMAIL_USER e EMAIL_APP_PASSWORD juntos (ou os aliases GMAIL_USER/GMAIL_APP_PASSWORD)."
   );
 }
 

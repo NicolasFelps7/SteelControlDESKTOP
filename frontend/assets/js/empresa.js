@@ -849,12 +849,18 @@ async function api(
   );
 
 
+  headers.set(
+    "Cache-Control",
+    "no-cache"
+  );
+
   const resposta =
     await fetch(
       `${API_URL}${rota}`,
       {
         ...opcoes,
-        headers
+        headers,
+        cache: "no-store"
       }
     );
 
@@ -2462,26 +2468,22 @@ function escaparHtml(
 // CARREGAR FUNCIONÁRIOS
 // =====================================================
 
-async function carregarFuncionarios() {
+async function carregarFuncionarios(
+  { silencioso = false } = {}
+) {
 
   if (!funcionariosGrid) {
-
     return;
-
   }
 
-
-  funcionariosGrid.innerHTML = `
-
-    <div class="loading-users">
-
-      <i class="fa-solid fa-spinner fa-spin"></i>
-
-      Carregando funcionários...
-
-    </div>
-
-  `;
+  if (!silencioso) {
+    funcionariosGrid.innerHTML = `
+      <div class="loading-users">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Carregando funcionários...
+      </div>
+    `;
+  }
 
 
   try {
@@ -2762,6 +2764,131 @@ function renderizarFuncionarios() {
   );
 
 }
+
+
+// =====================================================
+// ESTADO LOCAL INSTANTÂNEO DOS FUNCIONÁRIOS
+// =====================================================
+
+function emitirAtualizacaoFuncionarios() {
+  const detalhe = {
+    empresaId: empresaAtual?.id || null,
+    atualizadoEm: Date.now()
+  };
+
+  window.dispatchEvent(
+    new CustomEvent(
+      "steelcontrol:funcionarios-atualizados",
+      { detail: detalhe }
+    )
+  );
+
+  try {
+    localStorage.setItem(
+      "steelcontrol:funcionarios-atualizados",
+      String(detalhe.atualizadoEm)
+    );
+  } catch (_) {}
+}
+
+function ordenarFuncionariosLocal() {
+  funcionarios.sort((a, b) =>
+    String(a?.nome || "").localeCompare(
+      String(b?.nome || ""),
+      "pt-BR",
+      { sensitivity: "base" }
+    )
+  );
+}
+
+function atualizarFuncionarioLocal(usuario) {
+  if (!usuario || !Number.isInteger(Number(usuario.id))) {
+    return;
+  }
+
+  const id = Number(usuario.id);
+  const indice = funcionarios.findIndex(
+    item => Number(item.id) === id
+  );
+
+  const anterior = indice >= 0
+    ? funcionarios[indice]
+    : {};
+
+  const normalizado = {
+    ...anterior,
+    ...usuario,
+    id,
+    quantidadeFaces:
+      usuario.quantidadeFaces ??
+      anterior.quantidadeFaces ??
+      0,
+    facialCadastrada:
+      usuario.facialCadastrada ??
+      anterior.facialCadastrada ??
+      false
+  };
+
+  if (normalizado.ativo === false) {
+    removerFuncionarioLocal(id, { emitir: false });
+    return;
+  }
+
+  if (indice >= 0) {
+    funcionarios.splice(indice, 1, normalizado);
+  } else {
+    funcionarios.push(normalizado);
+  }
+
+  ordenarFuncionariosLocal();
+  renderizarFuncionarios();
+  atualizarResumo();
+  emitirAtualizacaoFuncionarios();
+}
+
+function removerFuncionarioLocal(
+  usuarioId,
+  { emitir = true } = {}
+) {
+  const id = Number(usuarioId);
+
+  funcionarios = funcionarios.filter(
+    item => Number(item.id) !== id
+  );
+
+  if (
+    funcionarioEmEdicao &&
+    Number(funcionarioEmEdicao.id) === id
+  ) {
+    fecharEditarFuncionario();
+  }
+
+  if (
+    usuarioFacialSelecionado &&
+    Number(usuarioFacialSelecionado.id) === id
+  ) {
+    fecharCameraFacial();
+  }
+
+  renderizarFuncionarios();
+  atualizarResumo();
+
+  if (emitir) {
+    emitirAtualizacaoFuncionarios();
+  }
+}
+
+window.addEventListener(
+  "storage",
+  event => {
+    if (
+      event.key ===
+      "steelcontrol:funcionarios-atualizados"
+    ) {
+      carregarFuncionarios({ silencioso: true });
+    }
+  }
+);
 
 
 
@@ -3254,19 +3381,19 @@ document
         }
 
 
-        await carregarFuncionarios();
+        if (resultado.usuario) {
+          atualizarFuncionarioLocal(
+            resultado.usuario
+          );
+        } else {
+          await carregarFuncionarios({
+            silencioso: true
+          });
+        }
 
         carregarUsuarioAtual();
 
-
-        setTimeout(
-          () => {
-
-            fecharEditarFuncionario();
-
-          },
-          700
-        );
+        fecharEditarFuncionario();
 
 
       } catch (erro) {
@@ -3426,19 +3553,15 @@ async function confirmarNovoEmailAdministrador() {
       null;
 
 
-    await carregarFuncionarios();
+    atualizarFuncionarioLocal({
+      ...funcionarioEmEdicao,
+      ...(resultado.usuario || {}),
+      email: emailConfirmado
+    });
 
     carregarUsuarioAtual();
 
-
-    setTimeout(
-      () => {
-
-        fecharEditarFuncionario();
-
-      },
-      900
-    );
+    fecharEditarFuncionario();
 
 
   } catch (erro) {
@@ -3522,7 +3645,9 @@ async function removerFuncionario(
       }
     );
 
-    await carregarFuncionarios();
+    removerFuncionarioLocal(
+      usuarioId
+    );
 
     notificarEmpresa(
       `${nome} foi desativado com sucesso.`,
@@ -3818,18 +3943,17 @@ formFuncionario
 
         formFuncionario.reset();
 
+        if (resultado.usuario) {
+          atualizarFuncionarioLocal(
+            resultado.usuario
+          );
+        } else {
+          await carregarFuncionarios({
+            silencioso: true
+          });
+        }
 
-        await carregarFuncionarios();
-
-
-        setTimeout(
-          () => {
-
-            fecharNovoFuncionario();
-
-          },
-          900
-        );
+        fecharNovoFuncionario();
 
 
       } catch (erro) {
@@ -4531,31 +4655,29 @@ async function cadastrarEmbeddingFuncionario() {
     );
 
 
-    setTimeout(
-      async () => {
+    const usuarioAtualizado = {
+      ...usuarioFacialSelecionado,
+      quantidadeFaces: 1,
+      facialCadastrada: true
+    };
 
-        fecharCameraFacial();
+    fecharCameraFacial();
 
-
-        await carregarFuncionarios();
-
-
-        if (
-          mensagemEmpresa
-        ) {
-
-          mensagemEmpresa.textContent =
-            `Facial "${resultado.nomeFacial || nomeAmostra}" de ${nomeFuncionario} cadastrada com sucesso.`;
-
-
-          mensagemEmpresa.className =
-            "message success";
-
-        }
-
-      },
-      1300
+    atualizarFuncionarioLocal(
+      usuarioAtualizado
     );
+
+    if (
+      mensagemEmpresa
+    ) {
+
+      mensagemEmpresa.textContent =
+        `Facial "${resultado.nomeFacial || nomeAmostra}" de ${nomeFuncionario} cadastrada com sucesso.`;
+
+      mensagemEmpresa.className =
+        "message success";
+
+    }
 
 
   } catch (erro) {
@@ -4838,20 +4960,27 @@ async function excluirFacialNomeada(
         "form-message success";
     }
 
-    await carregarFuncionarios();
-
-    // Atualiza a lista sem fechar o modal, facilitando remover
-    // outra amostra se necessário.
+    // Atualiza a lista sem fechar o modal e sincroniza o card
+    // do funcionário imediatamente, sem recarregar a página.
     const atualizado =
       await api(
         `/empresa/usuarios/${usuarioId}/faces`
       );
 
-    renderizarFaciaisGerenciador(
-      usuario,
+    const faciaisAtuais =
       Array.isArray(atualizado.faciais)
         ? atualizado.faciais
-        : []
+        : [];
+
+    atualizarFuncionarioLocal({
+      ...usuario,
+      quantidadeFaces: faciaisAtuais.length,
+      facialCadastrada: faciaisAtuais.length > 0
+    });
+
+    renderizarFaciaisGerenciador(
+      usuario,
+      faciaisAtuais
     );
 
   } catch (erro) {
@@ -5502,4 +5631,118 @@ document.addEventListener(
     await carregarFuncionarios();
 
   }
+);
+
+// =====================================================
+// SINCRONIZAÇÃO MULTI-DISPOSITIVO — MINHA EMPRESA
+// =====================================================
+let steelEmpresaRealtimeTimer = null;
+
+window.addEventListener(
+  "steelcontrol:empresa-evento",
+  event => {
+    const tipo = String(event.detail?.tipo || "");
+    if (!tipo || tipo === "conectado") return;
+
+    clearTimeout(steelEmpresaRealtimeTimer);
+    steelEmpresaRealtimeTimer = setTimeout(async () => {
+      try {
+        if (tipo.startsWith("usuario.")) {
+          await carregarFuncionarios({ silencioso: true });
+          return;
+        }
+
+        if (tipo.startsWith("empresa.")) {
+          await carregarEmpresa();
+          await carregarFuncionarios({ silencioso: true });
+        }
+      } catch (_) {}
+    }, 120);
+  }
+);
+
+
+// =====================================================
+// FALLBACK REALTIME CONFIÁVEL — REVISÃO NO POSTGRESQL
+// =====================================================
+// O SSE continua sendo a via principal. Esta verificação leve existe
+// para garantir que uma alteração feita no tablet apareça no PC mesmo
+// quando o navegador perder/pausar o stream. Não recarrega a página:
+// somente busca novamente os dados quando a revisão realmente muda.
+let steelEmpresaRevisaoAtual = null;
+let steelEmpresaRevisionBusy = false;
+let steelEmpresaRevisionInterval = null;
+
+async function verificarRevisaoEmpresa() {
+  if (
+    steelEmpresaRevisionBusy ||
+    document.hidden ||
+    !token
+  ) {
+    return;
+  }
+
+  steelEmpresaRevisionBusy = true;
+
+  try {
+    const dados = await api(
+      `/empresa/revision?_=${Date.now()}`
+    );
+
+    const revisao = String(dados?.revisao || "");
+    if (!revisao) return;
+
+    if (steelEmpresaRevisaoAtual === null) {
+      steelEmpresaRevisaoAtual = revisao;
+      return;
+    }
+
+    if (revisao !== steelEmpresaRevisaoAtual) {
+      steelEmpresaRevisaoAtual = revisao;
+
+      // Atualização silenciosa: nenhum F5, nenhum piscar de tela.
+      await carregarFuncionarios({ silencioso: true });
+
+      // Dados institucionais também podem ter sido alterados por outro
+      // dispositivo. Mantém logo/nome/endereço sincronizados.
+      try {
+        await carregarEmpresa();
+      } catch (_) {}
+    }
+  } catch (_) {
+    // Se a rede oscilar, tentamos novamente no próximo ciclo.
+  } finally {
+    steelEmpresaRevisionBusy = false;
+  }
+}
+
+function iniciarFallbackRevisaoEmpresa() {
+  if (steelEmpresaRevisionInterval) return;
+
+  // Obtém a revisão inicial logo após abrir a tela.
+  verificarRevisaoEmpresa();
+
+  steelEmpresaRevisionInterval = setInterval(
+    verificarRevisaoEmpresa,
+    1000
+  );
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    verificarRevisaoEmpresa();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (steelEmpresaRevisionInterval) {
+    clearInterval(steelEmpresaRevisionInterval);
+  }
+});
+
+// A página já possui seu DOMContentLoaded de inicialização. Este listener
+// separado inicia apenas o fallback e não interfere no carregamento normal.
+document.addEventListener(
+  "DOMContentLoaded",
+  iniciarFallbackRevisaoEmpresa
 );

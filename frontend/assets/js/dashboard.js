@@ -155,12 +155,15 @@ async function fetchAutenticado(
   }
 
 
+  headers.set("Cache-Control", "no-cache");
+
   const resposta =
     await fetch(
       url,
       {
         ...options,
-        headers
+        headers,
+        cache: "no-store"
       }
     );
 
@@ -4557,3 +4560,33 @@ if (
 ) {
   auditMenuButton.hidden = true;
 }
+
+// =====================================================
+// SINCRONIZAÇÃO MULTI-DISPOSITIVO — DASHBOARD
+// =====================================================
+let steelDashboardRealtimeTimer = null;
+
+window.addEventListener(
+  "steelcontrol:empresa-evento",
+  event => {
+    const tipo = String(event.detail?.tipo || "");
+    if (!tipo || tipo === "conectado") return;
+
+    clearTimeout(steelDashboardRealtimeTimer);
+    steelDashboardRealtimeTimer = setTimeout(async () => {
+      try {
+        if (
+          tipo.startsWith("usuario.") ||
+          tipo.startsWith("empresa.")
+        ) {
+          await carregarResumoEmpresa();
+        }
+
+        if (tipo.startsWith("maquina.")) {
+          await buscarDados();
+          await carregarResumoEmpresa();
+        }
+      } catch (_) {}
+    }, 120);
+  }
+);

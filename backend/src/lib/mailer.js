@@ -139,7 +139,7 @@ function criarTemplateEmail({
         style="
           margin:0;
           padding:0;
-          background:#eef2f7;
+          background:#eef1f3;
           font-family:Arial,Helvetica,sans-serif;
         "
       >
@@ -149,9 +149,10 @@ function criarTemplateEmail({
           cellpadding="0"
           cellspacing="0"
           border="0"
+          role="presentation"
           style="
             width:100%;
-            background:#eef2f7;
+            background:#eef1f3;
             padding:40px 16px;
           "
         >
@@ -165,69 +166,66 @@ function criarTemplateEmail({
                 cellpadding="0"
                 cellspacing="0"
                 border="0"
+                role="presentation"
                 style="
                   width:100%;
                   max-width:600px;
                   background:#ffffff;
-                  border-radius:22px;
+                  border-radius:20px;
                   overflow:hidden;
-                  border:1px solid #dbe3ee;
-                  box-shadow:0 12px 30px rgba(15,23,42,0.08);
+                  border:1px solid #d8dde2;
+                  box-shadow:0 16px 38px rgba(20,28,35,0.10);
                 "
               >
 
 
-                <!-- CABEÇALHO -->
+                <!-- CABEÇALHO INDUSTRIAL -->
 
                 <tr>
 
                   <td
-                    align="center"
+                    align="left"
                     style="
-                      padding:36px 28px 30px;
-                      background:
-                        linear-gradient(
-                          135deg,
-                          #0f172a 0%,
-                          #172554 55%,
-                          #1d4ed8 100%
-                        );
+                      padding:34px 34px 30px;
+                      background:#1a2026;
+                      border-bottom:3px solid #9d7b45;
                     "
                   >
 
-                    ${
-                      logoExiste()
-                        ? `
-                          <img
-                            src="cid:steelcontrol-logo"
-                            alt="SteelControl"
-                            width="92"
-                            style="
-                              display:block;
-                              width:92px;
-                              max-width:92px;
-                              height:auto;
-                              margin:0 auto 18px;
-                              object-fit:contain;
-                            "
-                          />
-                        `
-                        : ""
-                    }
-
-
-                    <div
-                      style="
-                        color:#93c5fd;
-                        font-size:12px;
-                        font-weight:700;
-                        letter-spacing:2.5px;
-                        text-transform:uppercase;
-                        margin-bottom:10px;
-                      "
+                    <table
+                      cellpadding="0"
+                      cellspacing="0"
+                      border="0"
+                      role="presentation"
+                      style="margin:0 0 18px;"
                     >
-                      STEELCONTROL
-                    </div>
+                      <tr>
+                        <td
+                          style="
+                            width:9px;
+                            height:9px;
+                            border-radius:50%;
+                            background:#9d7b45;
+                            font-size:0;
+                            line-height:0;
+                          "
+                        >
+                          &nbsp;
+                        </td>
+                        <td
+                          style="
+                            padding-left:10px;
+                            color:#d7dde2;
+                            font-size:11px;
+                            font-weight:700;
+                            letter-spacing:2.2px;
+                            text-transform:uppercase;
+                          "
+                        >
+                          STEELCONTROL &nbsp;•&nbsp; GESTÃO INDUSTRIAL
+                        </td>
+                      </tr>
+                    </table>
 
 
                     <h1
@@ -237,6 +235,7 @@ function criarTemplateEmail({
                         font-size:28px;
                         line-height:1.25;
                         font-weight:800;
+                        letter-spacing:-0.4px;
                       "
                     >
                       ${tituloSeguro}
@@ -245,8 +244,8 @@ function criarTemplateEmail({
 
                     <p
                       style="
-                        margin:12px 0 0;
-                        color:#dbeafe;
+                        margin:11px 0 0;
+                        color:#b9c2ca;
                         font-size:14px;
                         line-height:1.6;
                       "
@@ -265,14 +264,14 @@ function criarTemplateEmail({
 
                   <td
                     style="
-                      padding:34px 32px 30px;
+                      padding:34px 34px 30px;
                     "
                   >
 
                     <p
                       style="
                         margin:0 0 14px;
-                        color:#0f172a;
+                        color:#20272e;
                         font-size:16px;
                         line-height:1.7;
                       "
@@ -287,7 +286,7 @@ function criarTemplateEmail({
                     <p
                       style="
                         margin:0 0 24px;
-                        color:#475569;
+                        color:#5f6b76;
                         font-size:14px;
                         line-height:1.75;
                       "
@@ -303,9 +302,8 @@ function criarTemplateEmail({
                       cellpadding="0"
                       cellspacing="0"
                       border="0"
-                      style="
-                        margin:26px 0;
-                      "
+                      role="presentation"
+                      style="margin:26px 0;"
                     >
 
                       <tr>
@@ -314,18 +312,19 @@ function criarTemplateEmail({
                           align="center"
                           style="
                             padding:26px 20px;
-                            border-radius:18px;
-                            border:1px solid #bfdbfe;
-                            background:#eff6ff;
+                            border-radius:16px;
+                            border:1px solid #d5dbe0;
+                            border-left:4px solid #9d7b45;
+                            background:#f5f7f8;
                           "
                         >
 
                           <div
                             style="
-                              color:#64748b;
+                              color:#66727d;
                               font-size:11px;
                               font-weight:700;
-                              letter-spacing:1.5px;
+                              letter-spacing:1.6px;
                               text-transform:uppercase;
                               margin-bottom:12px;
                             "
@@ -336,11 +335,11 @@ function criarTemplateEmail({
 
                           <div
                             style="
-                              color:#2563eb;
+                              color:#20272e;
                               font-size:40px;
                               line-height:1;
                               font-weight:800;
-                              letter-spacing:12px;
+                              letter-spacing:10px;
                             "
                           >
                             ${codigo}
@@ -361,15 +360,15 @@ function criarTemplateEmail({
                         margin:0 0 16px;
                         padding:14px 16px;
                         border-radius:12px;
-                        background:#f8fafc;
-                        border:1px solid #e2e8f0;
-                        color:#475569;
+                        background:#f1f3f5;
+                        border:1px solid #dde2e6;
+                        color:#58636d;
                         font-size:13px;
                         line-height:1.6;
                       "
                     >
                       ⏱ Este código expira em
-                      <strong>
+                      <strong style="color:#2d353c;">
                         10 minutos
                       </strong>.
                     </div>
@@ -378,7 +377,7 @@ function criarTemplateEmail({
                     <p
                       style="
                         margin:0;
-                        color:#64748b;
+                        color:#66727d;
                         font-size:13px;
                         line-height:1.7;
                       "
@@ -394,9 +393,9 @@ function criarTemplateEmail({
                         margin-top:24px;
                         padding:16px;
                         border-radius:12px;
-                        background:#fff7ed;
-                        border:1px solid #fed7aa;
-                        color:#9a3412;
+                        background:#f8f5ef;
+                        border:1px solid #e4d7c0;
+                        color:#6d5940;
                         font-size:12px;
                         line-height:1.6;
                       "
@@ -418,14 +417,14 @@ function criarTemplateEmail({
                     align="center"
                     style="
                       padding:22px 24px 24px;
-                      border-top:1px solid #e2e8f0;
-                      background:#f8fafc;
+                      border-top:1px solid #e0e5e9;
+                      background:#f6f7f8;
                     "
                   >
 
                     <div
                       style="
-                        color:#0f172a;
+                        color:#27313a;
                         font-size:13px;
                         font-weight:700;
                         margin-bottom:5px;
@@ -437,7 +436,7 @@ function criarTemplateEmail({
 
                     <div
                       style="
-                        color:#94a3b8;
+                        color:#7a858f;
                         font-size:11px;
                         line-height:1.6;
                       "
@@ -448,7 +447,7 @@ function criarTemplateEmail({
 
                     <div
                       style="
-                        color:#cbd5e1;
+                        color:#a1aab2;
                         font-size:10px;
                         margin-top:8px;
                       "
@@ -490,24 +489,7 @@ async function enviarEmail({
     criarTransporter();
 
 
-  const attachments =
-    [];
-
-
-  if (
-    logoExiste()
-  ) {
-    attachments.push({
-      filename:
-        "steel-icon.png",
-
-      path:
-        caminhoLogo,
-
-      cid:
-        "steelcontrol-logo"
-    });
-  }
+  const attachments = [];
 
 
   try {
@@ -542,21 +524,97 @@ async function enviarEmail({
       erroOriginal
     );
 
+    const codigo =
+      String(erroOriginal?.code || "").toUpperCase();
 
-    const erro =
-      new Error(
-        "Não foi possível enviar o código por e-mail. Verifique a configuração do Gmail."
-      );
+    const resposta =
+      String(erroOriginal?.response || erroOriginal?.message || "")
+        .toLowerCase();
 
+    let mensagem =
+      "Não foi possível enviar o código por e-mail. Verifique a configuração do Gmail.";
 
-    erro.statusCode =
-      502;
+    let statusCode = 502;
 
+    if (
+      codigo === "EAUTH" ||
+      resposta.includes("535") ||
+      resposta.includes("badcredentials") ||
+      resposta.includes("username and password not accepted")
+    ) {
+      mensagem =
+        "O Gmail recusou a autenticação. Use uma Senha de app do Google em EMAIL_APP_PASSWORD (não use a senha normal da conta) e reinicie o backend.";
+      statusCode = 503;
+    } else if (
+      ["ETIMEDOUT", "ECONNECTION", "ECONNREFUSED", "ENOTFOUND", "ESOCKET"].includes(codigo)
+    ) {
+      mensagem =
+        "Não foi possível conectar ao Gmail. Verifique sua internet, firewall/antivírus e tente novamente.";
+      statusCode = 503;
+    } else if (
+      resposta.includes("daily user sending limit") ||
+      resposta.includes("quota") ||
+      resposta.includes("rate limit")
+    ) {
+      mensagem =
+        "O Gmail recusou temporariamente o envio por limite da conta. Aguarde alguns minutos ou use outra conta de envio.";
+      statusCode = 429;
+    }
 
+    const erro = new Error(mensagem);
+    erro.statusCode = statusCode;
+    erro.emailErrorCode = codigo || null;
     throw erro;
   }
 }
 
+
+// =========================================================
+// DIAGNÓSTICO DE E-MAIL
+// =========================================================
+
+export async function verificarConfiguracaoEmail() {
+  const transporter = criarTransporter();
+
+  try {
+    await transporter.verify();
+    return { ok: true, email: env.emailUser };
+  } catch (erroOriginal) {
+    const codigo = String(erroOriginal?.code || "").toUpperCase();
+    const resposta = String(erroOriginal?.response || erroOriginal?.message || "").toLowerCase();
+
+    const erro = new Error(
+      codigo === "EAUTH" || resposta.includes("535")
+        ? "O Gmail recusou a autenticação. Gere uma Senha de app do Google e coloque-a em EMAIL_APP_PASSWORD."
+        : "Não foi possível validar a conexão com o Gmail."
+    );
+    erro.statusCode = 503;
+    throw erro;
+  } finally {
+    transporter.close?.();
+  }
+}
+
+export async function enviarEmailTeste() {
+  if (!env.emailUser) {
+    const erro = new Error("EMAIL_USER não configurado.");
+    erro.statusCode = 503;
+    throw erro;
+  }
+
+  return enviarEmail({
+    destino: env.emailUser,
+    subject: "SteelControl — teste de e-mail",
+    html: criarTemplateEmail({
+      titulo: "E-mail configurado",
+      subtitulo: "Teste do backend SteelControl",
+      nome: "Administrador",
+      codigo: "OK",
+      mensagemPrincipal: "O backend conseguiu autenticar e enviar e-mail pelo Gmail.",
+      mensagemSecundaria: "Você já pode voltar ao cadastro da empresa e solicitar o código de confirmação."
+    })
+  });
+}
 
 // =========================================================
 // ALTERAÇÃO DE E-MAIL
