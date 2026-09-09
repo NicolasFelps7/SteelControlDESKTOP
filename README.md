@@ -25,7 +25,7 @@ Projeto de TCC para monitoramento e gestão de máquinas industriais, com fronte
   gateway industrial e equipamentos genéricos;
 
 O cadastro sugere o protocolo e cria o painel compatível com o controlador.
-Consulte `PAINEIS_ADAPTATIVOS_CONTROLADORES.md` para os campos de telemetria
+Consulte `docs/CONTROLADORES.md` para os campos de telemetria
 específicos de cada integração.
 
 ## Arquitetura
@@ -53,7 +53,7 @@ Sensores / Máquina / Robô
 
 Para HTTP/REST a integração está pronta diretamente. Para Modbus, OPC UA, MQTT ou protocolos proprietários, o controlador/gateway deve ler o equipamento e enviar o JSON padrão do SteelControl. Isso permite integrar fabricantes diferentes sem reescrever o dashboard.
 
-Leia `INTEGRACAO_MAQUINA_REAL.md` e `device-examples/ESP32_HTTP_STEELCONTROL.ino`.
+Leia `docs/integracoes/MAQUINA_REAL.md` e `device-examples/ESP32_HTTP_STEELCONTROL.ino`.
 
 ## Requisitos
 
@@ -152,7 +152,7 @@ Nenhum software consegue conectar automaticamente em qualquer máquina industria
 
 ## VERSÃO CONGELADA PARA TCC
 
-As correções finais de estabilidade estão documentadas em `VERSAO_CONGELADA_TCC.md`. Rode `VALIDAR_PROJETO.ps1` antes da apresentação.
+As correções finais de estabilidade estão documentadas em `docs/RELEASE_TCC.md`. Rode `VALIDAR_PROJETO.ps1` antes da apresentação.
 
 
 > **Unidade:** o campo `consumoEnergia` é mantido por compatibilidade, mas representa a **carga elétrica normalizada de 0 a 100%**.
@@ -161,7 +161,7 @@ As correções finais de estabilidade estão documentadas em `VERSAO_CONGELADA_T
 
 ## Hospedagem / Produção
 
-A versão atual está preparada para hospedagem com frontend + API Node no mesmo serviço, PostgreSQL gerenciado e Face API Python separada. Consulte [`HOSPEDAGEM_PRONTA.md`](HOSPEDAGEM_PRONTA.md).
+A versão atual está preparada para hospedagem com frontend + API Node no mesmo serviço, PostgreSQL gerenciado e Face API Python separada. Consulte [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 Validação rápida antes do deploy:
 
@@ -171,7 +171,7 @@ node tools/check-production.mjs
 
 
 ## Integração Dobot Magician
-A versão profissional inclui `dobot-gateway/`, modo MOCK sem hardware e driver USB/Serial real. Consulte `INTEGRACAO_DOBOT_MAGICIAN.md`.
+A versão profissional inclui `dobot-gateway/`, modo MOCK sem hardware e driver USB/Serial real. Consulte `docs/integracoes/DOBOT.md`.
 
 ---
 
@@ -203,7 +203,7 @@ Documentação:
 
 - `docs/HARDENING_ENGENHARIA.md`
 - `docs/PROCESSO_DE_RELEASE.md`
-- `docs/VALIDACAO_2026-09-01.md`
+- `docs/VALIDACAO.md`
 - `docs/CHECKLIST_SEGURANCA_RELEASE.md`
 
 O arquivo `CODE_FREEZE.sha256` comprova a integridade dos arquivos funcionais congelados.

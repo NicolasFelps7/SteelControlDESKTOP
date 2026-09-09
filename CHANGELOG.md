@@ -1,3 +1,13 @@
+# 2026-09-09 — Organização final de arquivos
+
+- Removido o workflow legado `.github/workflows/flutter-quality.yml`; o repositório Desktop não executa mais CI de Flutter/Mobile.
+- Removidos resíduos Flutter/Mobile que estavam por engano no projeto Desktop.
+- Removidas notas antigas de patches e assets sem referência.
+- CSS, imagens e documentação receberam nomes semânticos e profissionais.
+- Documentação técnica foi centralizada em `docs/`.
+- Referências internas e validações foram atualizadas para os novos caminhos.
+- Nenhuma regra funcional, API, banco, Face API, IHM, telemetria ou segurança foi alterada.
+
 # 2026-09-07 — Command Center V3: cores e tipografia
 
 - Padronização da paleta de todos os dashboards (padrão, controladores, IHM e Dobot).

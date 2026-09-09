@@ -1,9 +1,0 @@
-STEELCONTROL FACE V13 — MULTI-TEMPLATE + SEGUNDO FATOR
-
-1) Extraia o patch na raiz do Desktop e aceite substituir.
-2) NÃO há migration nova nesta versão.
-3) Reinicie o SteelControl: .\INICIAR_STEELCONTROL.ps1
-4) Faça Ctrl+F5 uma vez no navegador.
-5) Para o segundo fator por e-mail funcionar, mantenha as credenciais Gmail/Nodemailer do projeto configuradas no .env local.
-6) Biometrias antigas continuam funcionando com 1 template. Para obter 3 templates, remova e cadastre novamente a facial daquele perfil.
-7) Em produção com várias réplicas do backend, mova os challenges temporários de 2FA para Redis/armazenamento compartilhado com TTL.

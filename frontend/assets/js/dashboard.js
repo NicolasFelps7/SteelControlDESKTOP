@@ -2929,7 +2929,7 @@ async function carregarResumoEmpresa() {
 
 
     let logoFinal =
-      "assets/img/dash.png";
+      "assets/img/steelcontrol-wordmark.png";
 
     const logoInformada =
       empresa.logoUrl ||
@@ -2977,7 +2977,7 @@ async function carregarResumoEmpresa() {
       logoConfigEl.onerror = () => {
         logoConfigEl.onerror = null;
         logoConfigEl.src =
-          "assets/img/dash.png";
+          "assets/img/steelcontrol-wordmark.png";
       };
       logoConfigEl.onload = () =>
         prepararLogoParaTema(

@@ -47,7 +47,7 @@ html[data-theme="escuro"] .home-page .hero-background {
       rgba(12, 17, 23, .08) 0%,
       rgba(12, 17, 23, .10) 62%,
       rgba(12, 17, 23, .32) 100%),
-    url('../img/industrial-home.jpg') !important;
+    url('../img/home-industrial.jpg') !important;
   background-size: cover !important;
   background-position: center 48% !important;
   background-repeat: no-repeat !important;
@@ -208,7 +208,7 @@ html[data-theme="escuro"] .home-page .hero-container.hero-no-preview .hero-conte
       rgba(10,15,20,.12) 0%,
       rgba(10,15,20,.24) 48%,
       rgba(10,15,20,.50) 100%),
-    url('../img/industrial-login.jpg') !important;
+    url('../img/login-industrial.jpg') !important;
   background-size: cover !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
@@ -805,7 +805,7 @@ html[data-theme="escuro"] .login-shell body {
 html[data-theme="escuro"] .login-shell .login-page {
   background-image:
     linear-gradient(90deg, rgba(11, 15, 19, .42), rgba(11, 15, 19, .58)),
-    url('../img/industrial-login.jpg') !important;
+    url('../img/login-industrial.jpg') !important;
   background-color: var(--sc-v4-dark-bg) !important;
 }
 

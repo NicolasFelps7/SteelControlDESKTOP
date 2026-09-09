@@ -27,11 +27,11 @@ requireText("frontend/assets/js/empresa.js", 'codigo === "FACE_ALREADY_LINKED"',
 requireText("frontend/assets/js/empresa.js", "fecharCameraFacial();", "Desktop não fecha a captura facial em fluxos protegidos");
 
 const docs = [
-  "HOSPEDAGEM_PRONTA.md",
-  "INTEGRACAO_DOBOT_MAGICIAN.md",
-  "INTEGRACAO_MAQUINA_REAL.md",
-  "PAINEIS_ADAPTATIVOS_CONTROLADORES.md",
-  "VERSAO_CONGELADA_TCC.md"
+  "docs/DEPLOY.md",
+  "docs/integracoes/DOBOT.md",
+  "docs/integracoes/MAQUINA_REAL.md",
+  "docs/CONTROLADORES.md",
+  "docs/RELEASE_TCC.md"
 ];
 for (const rel of docs) {
   if (!fs.existsSync(path.join(root, rel))) erros.push(`Documento referenciado ausente: ${rel}`);
