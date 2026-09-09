@@ -92,3 +92,14 @@ Antes de publicar uma versão:
 4. validar backup/migrations do PostgreSQL;
 5. criar tag Git imutável para a versão apresentada.
 
+
+## Biometria facial — múltiplos templates e ambiguidade (V13)
+
+- Um perfil mantém um único registro biométrico, que pode conter até três templates internos (frontal inicial, movimento/liveness e frontal final).
+- Registros legados de um único vetor permanecem compatíveis.
+- O reconhecimento agrupa templates por usuário e usa consenso entre evidências.
+- A anti-duplicidade compara todas as capturas de enrollment contra todos os templates existentes sob lock transacional/advisory lock.
+- Identidades com margem insuficiente não são escolhidas automaticamente: o backend retorna um challenge opaco de segundo fator.
+- O segundo fator por e-mail usa código de 6 dígitos, hash bcrypt, TTL de 5 minutos e limites de tentativas/envios.
+- O challenge não expõe ao cliente os candidatos biométricos detectados.
+- Em implantação multi-instância, o armazenamento temporário dos challenges deve ser migrado do Map em memória para Redis/armazenamento compartilhado com TTL.

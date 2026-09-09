@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import os
+import hmac
 
 from insightface.app import FaceAnalysis
 
@@ -51,6 +52,16 @@ FACE_API_KEY = os.getenv(
     ""
 ).strip()
 
+STEELCONTROL_ENV = os.getenv(
+    "STEELCONTROL_ENV",
+    "development"
+).strip().lower()
+
+if STEELCONTROL_ENV == "production" and len(FACE_API_KEY) < 32:
+    raise RuntimeError(
+        "FACE_API_KEY deve possuir pelo menos 32 caracteres em produção."
+    )
+
 
 @app.middleware("http")
 async def proteger_face_api(
@@ -69,7 +80,7 @@ async def proteger_face_api(
             ""
         )
 
-        if recebida != FACE_API_KEY:
+        if not hmac.compare_digest(recebida, FACE_API_KEY):
             return JSONResponse(
                 status_code=401,
                 content={

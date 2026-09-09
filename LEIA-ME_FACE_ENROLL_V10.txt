@@ -1,0 +1,10 @@
+STEELCONTROL DESKTOP — CADASTRO FACIAL V10
+
+Extraia este ZIP na raiz do Desktop e aceite substituir os arquivos.
+Depois inicie o SteelControl normalmente e faça Ctrl+F5 uma vez no navegador.
+
+Mudanças:
+- corrige o grid legado que criava área branca vazia no modal;
+- câmera e painel de validação ficam proporcionais;
+- mensagens de erro/sucesso ficam compactas;
+- preserva Face API, backend, banco e regras biométricas.

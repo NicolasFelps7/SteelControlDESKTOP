@@ -5,7 +5,9 @@ import {
   validarMesmaPessoaLiveness,
   similaridadeCosseno,
   encontrarCorrespondenciaFacial,
-  classificarCorrespondenciaFacial
+  classificarCorrespondenciaFacial,
+  criarPacoteTemplatesFaciais,
+  extrairTemplatesFaciais
 } from "../src/lib/faceSecurity.js";
 
 import {
@@ -19,7 +21,8 @@ import {
 } from "../src/lib/maintenancePolicy.js";
 
 import {
-  criarAmostraFacialExclusiva
+  criarAmostraFacialExclusiva,
+  FACE_DUPLICATE_THRESHOLD
 } from "../src/lib/faceIdentity.js";
 
 
@@ -281,6 +284,112 @@ test("cadastro facial rejeita segunda biometria no mesmo perfil", async () => {
   assert.equal(tentouCriar, false);
 });
 
+test("cadastro facial usa limiar conservador para impedir duplicidade", () => {
+  assert.equal(FACE_DUPLICATE_THRESHOLD, 0.50);
+});
+
+
+test("cadastro facial bloqueia duplicidade detectada na captura de liveness", async () => {
+  let tentouCriar = false;
+
+  const tx = {
+    async $queryRawUnsafe() {
+      return [{ lock: "" }];
+    },
+    faceEmbedding: {
+      async count() {
+        return 0;
+      },
+      async findFirst() {
+        return null;
+      },
+      async findMany() {
+        return [
+          {
+            id: 77,
+            usuarioId: 22,
+            embedding: [1, 0]
+          }
+        ];
+      },
+      async create() {
+        tentouCriar = true;
+        return null;
+      }
+    }
+  };
+
+  const prismaFake = {
+    async $transaction(callback) {
+      return callback(tx);
+    }
+  };
+
+  const resultado =
+    await criarAmostraFacialExclusiva({
+      prisma: prismaFake,
+      usuarioId: 10,
+      embedding: [0, 1],
+      embeddingsVerificacao: [
+        [0.51, Math.sqrt(1 - 0.51 ** 2)]
+      ],
+      nome: "Principal"
+    });
+
+  assert.equal(resultado.ok, false);
+  assert.equal(resultado.motivo, "outro_perfil");
+  assert.ok(resultado.similaridade >= 0.50);
+  assert.equal(tentouCriar, false);
+});
+
+
+
+test("pacote facial mantém até três templates e aceita formato legado", () => {
+  const pacote = criarPacoteTemplatesFaciais({
+    inicial: [1, 0, 0],
+    movimento: [0.98, 0.2, 0],
+    final: [0.99, 0.01, 0]
+  });
+
+  assert.equal(pacote.versao, 2);
+  assert.equal(pacote.templates.length, 3);
+  assert.equal(extrairTemplatesFaciais([1, 0, 0]).length, 1);
+  assert.equal(extrairTemplatesFaciais(pacote).length, 3);
+});
+
+test("login facial usa consenso entre múltiplos templates por identidade", () => {
+  const faceA = {
+    id: 1,
+    usuarioId: 10,
+    embedding: criarPacoteTemplatesFaciais({
+      inicial: [1, 0, 0],
+      movimento: [0.98, 0.2, 0],
+      final: [0.999, 0.02, 0]
+    })
+  };
+
+  const faceB = {
+    id: 2,
+    usuarioId: 20,
+    embedding: criarPacoteTemplatesFaciais({
+      inicial: [0.65, 0.76, 0],
+      movimento: [0.62, 0.78, 0],
+      final: [0.6, 0.8, 0]
+    })
+  };
+
+  const resultado = classificarCorrespondenciaFacial({
+    embedding: [1, 0, 0],
+    faces: [faceA, faceB],
+    threshold: 0.58,
+    margemMinima: 0.08
+  });
+
+  assert.equal(resultado.status, "reconhecido");
+  assert.equal(resultado.melhor.usuarioId, 10);
+  assert.equal(resultado.melhor.quantidadeTemplates, 3);
+});
+
 test("administrador pode acionar simulador", () => {
   assert.equal(
     podeAcionarSimulacao("ADMINISTRADOR"),
@@ -525,7 +634,8 @@ test("heartbeat recente mantém conexão real ativa", () => {
 import {
   calcularCiclosDesdeManutencao,
   dataLimiteReentrega,
-  comandoJaFinalizado
+  comandoJaFinalizado,
+  normalizarStatusAck
 } from "../src/lib/industrialPolicy.js";
 
 test("manutenção por ciclos usa baseline da última manutenção", () => {
@@ -543,4 +653,13 @@ test("status finais de comando são reconhecidos", () => {
   assert.equal(comandoJaFinalizado("FALHOU"), true);
   assert.equal(comandoJaFinalizado("CANCELADO"), true);
   assert.equal(comandoJaFinalizado("ENTREGUE"), false);
+});
+
+
+test("ACK aceita somente status explícitos", () => {
+  assert.equal(normalizarStatusAck("concluido"), "CONCLUIDO");
+  assert.equal(normalizarStatusAck("FALHOU"), "FALHOU");
+  assert.equal(normalizarStatusAck("OK"), null);
+  assert.equal(normalizarStatusAck("CONCLUIDDO"), null);
+  assert.equal(normalizarStatusAck(undefined), null);
 });

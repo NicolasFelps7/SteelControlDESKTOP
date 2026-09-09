@@ -13,6 +13,8 @@ import {
   registerFaceImage,
   loginFaceImage,
   loginFace,
+  requestFaceAmbiguousCode,
+  verifyFaceAmbiguousCode,
   faceStatus,
   removeFace,
   listFaceSamples,
@@ -26,6 +28,10 @@ import {
 import {
   criarRateLimit
 } from "../../middlewares/security.js";
+
+import {
+  streamSessionEvents
+} from "../../lib/sessionEvents.js";
 
 export const authRoutes =
   Router();
@@ -143,6 +149,10 @@ authRoutes.post(
       maxCount: 1
     },
     {
+      name: "inicial",
+      maxCount: 1
+    },
+    {
       name: "liveness",
       maxCount: 1
     }
@@ -155,6 +165,12 @@ authRoutes.post(
   limiteAnaliseFacial,
   uploadFace.single("imagem"),
   analisarFaceImage
+);
+
+authRoutes.get(
+  "/session-events",
+  authRequired,
+  streamSessionEvents
 );
 
 authRoutes.get(
@@ -173,7 +189,12 @@ authRoutes.get(
 authRoutes.post(
   "/face/register-image",
   authRequired,
-  uploadFace.single("imagem"),
+  limiteFacial,
+  uploadFace.fields([
+    { name: "imagem", maxCount: 1 },
+    { name: "inicial", maxCount: 1 },
+    { name: "liveness", maxCount: 1 }
+  ]),
   registerFaceImage
 );
 
@@ -191,6 +212,18 @@ authRoutes.post(
     }
   ]),
   loginFaceImage
+);
+
+authRoutes.post(
+  "/face/ambiguous/request-code",
+  limiteEmail,
+  requestFaceAmbiguousCode
+);
+
+authRoutes.post(
+  "/face/ambiguous/verify-code",
+  limiteLogin,
+  verifyFaceAmbiguousCode
 );
 
 // Compatibilidade temporária com clientes antigos.

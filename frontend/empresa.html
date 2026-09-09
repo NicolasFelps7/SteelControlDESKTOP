@@ -27,6 +27,10 @@
 
   <link rel="stylesheet" href="assets/css/industrial-branding.css?v=20260907_COMPANY_CONTROLLER_V6">
 
+  <link rel="stylesheet" href="assets/css/industrial-command-center.css?v=20260907_COMMAND_CENTER_FINAL">
+
+  <link rel="stylesheet" href="assets/css/facial-command-center.css?v=20260908_FACE_ENROLL_V11">
+
 </head>
 
 
@@ -1271,204 +1275,108 @@
        MODAL FACIAL
   =================================================== -->
 
-  <div
-    class="modal"
-    id="faceModal"
-  >
-
-    <div class="modal-card face-modal-card">
-
-      <button
-        type="button"
-        class="close-modal"
-        onclick="fecharCameraFacial()"
-      >
-
+  <div class="modal face-command-modal" id="faceModal">
+    <div class="modal-card face-modal-card face-command-card face-enroll-card">
+      <button type="button" class="close-modal face-command-close" onclick="fecharCameraFacial()" aria-label="Fechar cadastro facial">
         <i class="fa-solid fa-xmark"></i>
-
       </button>
 
-
-      <div class="modal-header">
-
-        <div class="modal-icon">
-
-          <i class="fa-solid fa-face-viewfinder"></i>
-
+      <div class="face-command-topbar">
+        <div class="face-command-brand">
+          <span class="face-command-brand-icon"><i class="fa-solid fa-face-viewfinder"></i></span>
+          <span>
+            <strong>Cadastrar facial</strong>
+            <small id="funcionarioFacialNome">Funcionário • cadastro facial único</small>
+          </span>
         </div>
-
-
-        <div>
-
-          <h2>
-            Cadastrar facial
-          </h2>
-
-          <p id="funcionarioFacialNome">
-            Funcionário
-          </p>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- NOME DA AMOSTRA FACIAL -->
-
-      <div class="face-sample-name-field">
-
-        <label for="nomeFacialAmostra">
-          <i class="fa-solid fa-tag"></i>
-          Nome desta facial
-        </label>
-
-        <input
-          type="text"
-          id="nomeFacialAmostra"
-          maxlength="40"
-          autocomplete="off"
-          placeholder="Ex.: Principal, Sem óculos, Turno A"
-        >
-
-        <small>
-          Esse nome será usado para identificar a amostra na hora de remover.
-        </small>
-
-      </div>
-
-
-      <!-- CONSENTIMENTO -->
-
-      <label class="consent-box">
-
-        <input
-          type="checkbox"
-          id="consentimentoFace" aria-label="Consentimento para cadastro facial"
-        >
-
-        <span>
-          Confirmo que o funcionário autorizou o uso dos dados biométricos
-          para autenticação. Cada rosto pode ficar vinculado a apenas um
-          perfil no SteelControl.
+        <span class="face-command-state" id="faceEnrollState">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>ENROLL</span>
         </span>
-
-      </label>
-
-
-
-      <!-- CÂMERA -->
-
-      <div class="camera-container">
-
-        <video
-          id="faceVideo"
-          autoplay
-          playsinline
-          muted
-        ></video>
-
-
-        <canvas
-          id="faceOverlay"
-        ></canvas>
-
-
-        <div
-          class="camera-loading"
-          id="cameraLoading"
-        >
-
-          <i class="fa-solid fa-spinner fa-spin"></i>
-
-          <span>
-            Abrindo câmera...
-          </span>
-
-        </div>
-
-
-        <div class="face-guide">
-
-          <span class="corner top-left"></span>
-          <span class="corner top-right"></span>
-          <span class="corner bottom-left"></span>
-          <span class="corner bottom-right"></span>
-
-        </div>
-
       </div>
 
+      <div class="face-command-layout face-enroll-layout">
+        <section class="face-camera-console">
+          <div class="face-command-heading">
+            <span class="face-flutter-kicker">Captura biométrica</span>
+            <h2>Posicione o rosto</h2>
+            <p>Centralize o funcionário no enquadramento e mantenha boa iluminação.</p>
+          </div>
 
+          <div class="face-command-camera-shell">
+            <div class="camera-container face-tech-camera">
+              <video id="faceVideo" autoplay playsinline muted></video>
+              <canvas id="faceOverlay"></canvas>
+              <div class="camera-loading" id="cameraLoading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Abrindo câmera...</span>
+              </div>
+              <div aria-hidden="true" class="face-tech-guide">
+                <span class="face-tech-corner c1"></span>
+                <span class="face-tech-corner c2"></span>
+                <span class="face-tech-corner c3"></span>
+                <span class="face-tech-corner c4"></span>
+                <span class="face-scan-line"></span>
+              </div>
+              <span class="face-tech-badge face-tech-badge-camera"><i class="fa-solid fa-video"></i> CAM 01</span>
+              <span class="face-tech-badge face-tech-badge-mode"><i class="fa-solid fa-user-plus"></i> ENROLL</span>
+            </div>
+          </div>
 
-      <!-- STATUS CÂMERA -->
+          <div class="camera-status analisando face-command-status" id="cameraStatus">
+            <div class="indicator"></div>
+            <div>
+              <strong id="cameraStatusTitulo">Procurando rosto...</strong>
+              <span id="cameraStatusTexto">Posicione seu rosto no centro.</span>
+            </div>
+          </div>
 
-      <div
-        class="camera-status analisando"
-        id="cameraStatus"
-      >
+          <div class="face-progress face-command-enroll-progress">
+            <div class="progress-info">
+              <span>Qualidade da captura</span>
+              <strong id="progressoTexto">0%</strong>
+            </div>
+            <div class="progress-bar"><div class="progress-value" id="progressoFace"></div></div>
+          </div>
+        </section>
 
-        <div class="indicator"></div>
+        <aside class="face-validation-console face-enroll-console">
+          <div class="face-validation-title">
+            <i class="fa-solid fa-fingerprint"></i>
+            <div><strong>Cadastro protegido</strong><span>Validação biométrica pelo backend</span></div>
+          </div>
 
-        <div>
+          <div class="face-sample-name-field face-command-field">
+            <label for="nomeFacialAmostra"><i class="fa-solid fa-tag"></i> Nome desta facial</label>
+            <input type="text" id="nomeFacialAmostra" maxlength="40" autocomplete="off" placeholder="Ex.: Principal, Sem óculos, Turno A">
+            <small>Identificação interna da biometria deste perfil.</small>
+          </div>
 
-          <strong id="cameraStatusTitulo">
-            Procurando rosto...
-          </strong>
+          <label class="consent-box face-command-consent">
+            <input type="checkbox" id="consentimentoFace" aria-label="Consentimento para cadastro facial">
+            <span>Confirmo que o funcionário autorizou o uso dos dados biométricos para autenticação. Cada rosto pode ficar vinculado a apenas um perfil no SteelControl.</span>
+          </label>
 
-          <span id="cameraStatusTexto">
-            Posicione seu rosto no centro.
-          </span>
+          <div class="face-validation-steps face-enroll-steps">
+            <div class="face-validation-step active" data-enroll-step="position">
+              <span class="face-validation-step-icon"><i class="fa-solid fa-crosshairs"></i></span>
+              <span><strong>Enquadramento</strong><small>Rosto centralizado e único na imagem.</small></span>
+            </div>
+            <div class="face-validation-step" data-enroll-step="quality">
+              <span class="face-validation-step-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+              <span><strong>Qualidade</strong><small>Iluminação, pose e nitidez validadas automaticamente.</small></span>
+            </div>
+            <div class="face-validation-step" data-enroll-step="secure">
+              <span class="face-validation-step-icon"><i class="fa-solid fa-lock"></i></span>
+              <span><strong>Proteção</strong><small>O embedding é gerado e vinculado com segurança.</small></span>
+            </div>
+          </div>
 
-        </div>
-
+          <p class="camera-help face-command-help"><i class="fa-solid fa-circle-info"></i> Evite bonés, óculos escuros e pouca iluminação.</p>
+        </aside>
       </div>
-
-
-
-      <!-- PROGRESSO -->
-
-      <div class="face-progress">
-
-        <div class="progress-info">
-
-          <span>
-            Qualidade da captura
-          </span>
-
-          <strong id="progressoTexto">
-            0%
-          </strong>
-
-        </div>
-
-
-        <div class="progress-bar">
-
-          <div
-            class="progress-value"
-            id="progressoFace"
-          ></div>
-
-        </div>
-
-      </div>
-
-
-      <p class="camera-help">
-
-        <i class="fa-solid fa-circle-info"></i>
-
-        Olhe diretamente para a câmera.
-        Evite bonés, óculos escuros e pouca iluminação.
-
-      </p>
-
     </div>
-
   </div>
-
-
 
   <!-- ==================================================
        MODAL GERENCIAR FACIAIS
@@ -1528,9 +1436,9 @@
   ></canvas>
 
 
-  <script src="assets/js/config.js?v=20260907_REALTIME_V10"></script>
+  <script src="assets/js/config.js?v=20260907_LOGO_DARK_FIX"></script>
 
-  <script src="assets/js/empresa.js?v=20260907_REALTIME_V12"></script>
+  <script src="assets/js/empresa.js?v=20260908_FACE_MULTI_TEMPLATE_V13"></script>
 
 </body>
 

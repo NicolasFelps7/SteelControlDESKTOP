@@ -4246,12 +4246,21 @@ window.addEventListener(
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-    [
-      document.getElementById("empresaLogoSidebar"),
-      document.getElementById("configEmpresaLogo")
-    ]
-      .filter(Boolean)
-      .forEach(prepararLogoParaTema);
+    const logoSidebar =
+      document.getElementById("empresaLogoSidebar");
+
+    if (logoSidebar) {
+      logoSidebar.classList.remove("logo-monocromatica-escura");
+      logoSidebar.style.setProperty("filter", "none", "important");
+      logoSidebar.style.setProperty("opacity", "1", "important");
+    }
+
+    const logoConteudo =
+      document.getElementById("configEmpresaLogo");
+
+    if (logoConteudo) {
+      prepararLogoParaTema(logoConteudo);
+    }
   }
 );
 

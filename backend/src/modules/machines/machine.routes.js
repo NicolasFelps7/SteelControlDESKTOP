@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authRequired } from "../../middlewares/auth.js";
 import {
   listar,
+  sincronizar,
   criar,
   buscar,
   atualizar,
@@ -23,6 +24,7 @@ export const machineRoutes = Router();
 machineRoutes.use(authRequired);
 
 machineRoutes.get("/", listar);
+machineRoutes.get("/sync", sincronizar);
 machineRoutes.post("/", criar);
 
 machineRoutes.get("/:id/stream", streamMaquina);

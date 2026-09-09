@@ -2,7 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import { processarTelemetria } from "../../lib/telemetryService.js";
 import { publicarEventoMaquina } from "../../lib/realtime.js";
 import { calcularEstadoConexao } from "../../lib/machinePolicy.js";
-import { dataLimiteReentrega, comandoJaFinalizado } from "../../lib/industrialPolicy.js";
+import { dataLimiteReentrega, comandoJaFinalizado, normalizarStatusAck } from "../../lib/industrialPolicy.js";
 import { comandoPayloadExpirado } from "../../lib/hmiPolicy.js";
 
 const COMMAND_LEASE_MS = Math.max(
@@ -195,12 +195,14 @@ export async function confirmarComando(req, res, next) {
       return res.status(400).json({ mensagem: "Comando inválido." });
     }
 
-    const statusRecebido = String(req.body.status || "CONCLUIDO")
-      .trim()
-      .toUpperCase();
-    const status = ["CONCLUIDO", "FALHOU"].includes(statusRecebido)
-      ? statusRecebido
-      : "CONCLUIDO";
+    const status = normalizarStatusAck(req.body.status);
+
+    if (!status) {
+      return res.status(400).json({
+        codigo: "ACK_STATUS_INVALIDO",
+        mensagem: "Status de confirmação inválido. Use CONCLUIDO ou FALHOU."
+      });
+    }
 
     const comando = await prisma.comandoMaquina.findFirst({
       where: { id: comandoId, maquinaId: maquina.id }

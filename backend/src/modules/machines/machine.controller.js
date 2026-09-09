@@ -284,6 +284,41 @@ export async function listar(req, res, next) {
   }
 }
 
+export async function sincronizar(req, res, next) {
+  try {
+    const maquinas = await prisma.maquina.findMany({
+      where: {
+        empresaId: req.auth.empresaId,
+        ativo: true
+      },
+      orderBy: { id: "desc" },
+      include: {
+        telemetria: {
+          orderBy: { criadoEm: "desc" },
+          take: 1
+        }
+      }
+    });
+
+    const itens = maquinas.map(maquina => {
+      const { telemetria, deviceKeyHash, ...dados } = maquina;
+      return {
+        ...dados,
+        estadoConexao: calcularEstadoConexao(maquina)
+      };
+    });
+
+    return res.json({
+      empresaId: req.auth.empresaId,
+      usuarioId: req.auth.usuarioId,
+      total: itens.length,
+      maquinas: itens
+    });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
 export async function criar(req, res, next) {
   try {
     if (!exigirAdministrador(req, res)) {
@@ -402,7 +437,14 @@ export async function criar(req, res, next) {
 
 export async function buscar(req, res, next) {
   try {
-    const maquina = await carregarCompleta(req, req.params.id);
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        mensagem: "Identificador de máquina inválido."
+      });
+    }
+
+    const maquina = await carregarCompleta(req, id);
 
     if (!maquina) {
       return res.status(404).json({ mensagem: "Máquina não encontrada." });
@@ -1188,6 +1230,27 @@ export async function liberarSeguranca(req, res, next) {
 
     if (!maquina.paradaSeguranca) {
       return res.json({ mensagem: "A máquina não possui parada de segurança ativa." });
+    }
+
+    if (maquina.modoSimulacao === false) {
+      const estadoConexao = calcularEstadoConexao(maquina);
+      const ultimaTelemetriaMs = maquina.ultimaTelemetriaEm
+        ? new Date(maquina.ultimaTelemetriaEm).getTime()
+        : 0;
+      const intervalo = Math.max(500, Number(maquina.intervaloLeitura) || 2000);
+      const limiteTelemetriaMs = Math.max(10_000, Math.min(60_000, intervalo * 5));
+      const telemetriaFresca =
+        Number.isFinite(ultimaTelemetriaMs) &&
+        ultimaTelemetriaMs > 0 &&
+        Date.now() - ultimaTelemetriaMs <= limiteTelemetriaMs;
+
+      if (estadoConexao.codigo !== "CONECTADA" || !telemetriaFresca) {
+        return res.status(409).json({
+          codigo: "SAFETY_RELEASE_REQUIRES_FRESH_TELEMETRY",
+          mensagem:
+            "Não é possível liberar a parada: confirme conexão estável e telemetria recente do equipamento real."
+        });
+      }
     }
 
     const aindaInsegura =

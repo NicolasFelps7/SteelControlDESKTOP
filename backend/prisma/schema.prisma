@@ -54,8 +54,9 @@ model Usuario {
   email     String   @unique
   senhaHash String
   cargo     Cargo    @default(VISITANTE)
-  ativo     Boolean  @default(true)
-  criadaEm  DateTime @default(now())
+  ativo        Boolean  @default(true)
+  tokenVersion Int      @default(0)
+  criadaEm     DateTime @default(now())
 
   empresa   Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   faces     FaceEmbedding[]

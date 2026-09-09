@@ -582,6 +582,27 @@ const PT = {
   cameraSomenteAutenticacao:
     "A câmera é utilizada somente durante a autenticação.",
 
+  faceValidationAutomatic:
+    "Validação automática",
+  faceFlowSupervised:
+    "Fluxo biométrico supervisionado",
+  faceStepPositionTitle:
+    "Posição inicial",
+  faceStepPositionText:
+    "Centralize o rosto e mantenha o enquadramento.",
+  faceStepLivenessTitle:
+    "Prova de vida",
+  faceStepLivenessText:
+    "Movimente levemente a cabeça quando solicitado.",
+  faceStepReturnTitle:
+    "Retorno ao centro",
+  faceStepReturnText:
+    "Olhe novamente para a câmera.",
+  faceStepVerifyTitle:
+    "Validando identidade",
+  faceStepVerifyText:
+    "O backend confirma a identidade com segurança.",
+
   mostrarSenha:
     "Mostrar senha",
 
@@ -1637,6 +1658,27 @@ const EN = {
   cameraSomenteAutenticacao:
     "The camera is used only during authentication.",
 
+  faceValidationAutomatic:
+    "Automatic validation",
+  faceFlowSupervised:
+    "Supervised biometric flow",
+  faceStepPositionTitle:
+    "Initial position",
+  faceStepPositionText:
+    "Center your face and keep it inside the frame.",
+  faceStepLivenessTitle:
+    "Liveness check",
+  faceStepLivenessText:
+    "Move your head slightly when requested.",
+  faceStepReturnTitle:
+    "Return to center",
+  faceStepReturnText:
+    "Look directly at the camera again.",
+  faceStepVerifyTitle:
+    "Verifying identity",
+  faceStepVerifyText:
+    "The backend securely confirms your identity.",
+
   mostrarSenha:
     "Show password",
 
@@ -2655,6 +2697,27 @@ const ES = {
   cameraSomenteAutenticacao:
     "La cámara se utiliza únicamente durante la autenticación.",
 
+  faceValidationAutomatic:
+    "Validación automática",
+  faceFlowSupervised:
+    "Flujo biométrico supervisado",
+  faceStepPositionTitle:
+    "Posición inicial",
+  faceStepPositionText:
+    "Centre el rostro y mantenga el encuadre.",
+  faceStepLivenessTitle:
+    "Prueba de vida",
+  faceStepLivenessText:
+    "Mueva ligeramente la cabeza cuando se le indique.",
+  faceStepReturnTitle:
+    "Volver al centro",
+  faceStepReturnText:
+    "Mire nuevamente directamente a la cámara.",
+  faceStepVerifyTitle:
+    "Verificando identidad",
+  faceStepVerifyText:
+    "El backend confirma su identidad de forma segura.",
+
   loginSucesso:
     "¡Inicio de sesión exitoso!",
 
@@ -3508,6 +3571,27 @@ const FR = {
   faceAutomatico:
     "Reconnaissance automatique — aucun bouton n’est nécessaire.",
 
+  faceValidationAutomatic:
+    "Validation automatique",
+  faceFlowSupervised:
+    "Flux biométrique supervisé",
+  faceStepPositionTitle:
+    "Position initiale",
+  faceStepPositionText:
+    "Centrez votre visage et conservez le cadrage.",
+  faceStepLivenessTitle:
+    "Test de présence",
+  faceStepLivenessText:
+    "Bougez légèrement la tête lorsque cela est demandé.",
+  faceStepReturnTitle:
+    "Retour au centre",
+  faceStepReturnText:
+    "Regardez à nouveau directement la caméra.",
+  faceStepVerifyTitle:
+    "Vérification de l'identité",
+  faceStepVerifyText:
+    "Le backend confirme votre identité de manière sécurisée.",
+
   faceTexto:
     "Placez votre visage devant la caméra",
 
@@ -4238,6 +4322,27 @@ const DE = {
   faceAutomatico:
     "Automatische Erkennung — Sie müssen keine Taste drücken.",
 
+  faceValidationAutomatic:
+    "Automatische Validierung",
+  faceFlowSupervised:
+    "Überwachter biometrischer Ablauf",
+  faceStepPositionTitle:
+    "Ausgangsposition",
+  faceStepPositionText:
+    "Zentrieren Sie Ihr Gesicht und halten Sie den Bildausschnitt.",
+  faceStepLivenessTitle:
+    "Lebenderkennung",
+  faceStepLivenessText:
+    "Bewegen Sie den Kopf leicht, wenn Sie dazu aufgefordert werden.",
+  faceStepReturnTitle:
+    "Zurück zur Mitte",
+  faceStepReturnText:
+    "Schauen Sie wieder direkt in die Kamera.",
+  faceStepVerifyTitle:
+    "Identität wird geprüft",
+  faceStepVerifyText:
+    "Das Backend bestätigt Ihre Identität sicher.",
+
   faceTexto:
     "Positionieren Sie Ihr Gesicht vor der Kamera",
 
@@ -4964,6 +5069,27 @@ const IT = {
 
   faceAutomatico:
     "Riconoscimento automatico — non è necessario premere alcun pulsante.",
+
+  faceValidationAutomatic:
+    "Validazione automatica",
+  faceFlowSupervised:
+    "Flusso biometrico supervisionato",
+  faceStepPositionTitle:
+    "Posizione iniziale",
+  faceStepPositionText:
+    "Centra il volto e mantieni l’inquadratura.",
+  faceStepLivenessTitle:
+    "Prova di vitalità",
+  faceStepLivenessText:
+    "Muovi leggermente la testa quando richiesto.",
+  faceStepReturnTitle:
+    "Ritorno al centro",
+  faceStepReturnText:
+    "Guarda di nuovo direttamente la fotocamera.",
+  faceStepVerifyTitle:
+    "Verifica identità",
+  faceStepVerifyText:
+    "Il backend conferma la tua identità in modo sicuro.",
 
   faceTexto:
     "Posiziona il volto davanti alla fotocamera",
@@ -5713,6 +5839,27 @@ const TRADUCOES_FR_COMPLEMENTARES = {
     "Technologie pour les environnements industriels",
   cameraSomenteAutenticacao:
     "La caméra est utilisée uniquement pendant l'authentification.",
+
+  faceValidationAutomatic:
+    "Validation automatique",
+  faceFlowSupervised:
+    "Flux biométrique supervisé",
+  faceStepPositionTitle:
+    "Position initiale",
+  faceStepPositionText:
+    "Centrez votre visage et conservez le cadrage.",
+  faceStepLivenessTitle:
+    "Test de présence",
+  faceStepLivenessText:
+    "Bougez légèrement la tête lorsque cela est demandé.",
+  faceStepReturnTitle:
+    "Retour au centre",
+  faceStepReturnText:
+    "Regardez à nouveau directement la caméra.",
+  faceStepVerifyTitle:
+    "Vérification de l'identité",
+  faceStepVerifyText:
+    "Le backend confirme votre identité de manière sécurisée.",
   empresaSubtitulo:
     "Gérez les employés, les données institutionnelles, la localisation et les méthodes d'authentification de l'entreprise.",
   equipamentosIntro:
@@ -5846,12 +5993,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Câmera indisponível", cameraPermission: "Permita o acesso à câmera no navegador",
     movementConfirmed: "Movimento confirmado", lookFrontAgain: "Agora volte a olhar diretamente para a câmera.",
     livenessCheck: "Prova de vida", turnHead: "Vire levemente a cabeça para um dos lados.",
+    turnHeadTimed: "Vire levemente a cabeça em até {segundos}s.",
+    livenessMovementTimeoutRetry: "Prova de vida não detectada. Você não movimentou a cabeça a tempo. Faça o reconhecimento facial novamente.",
+    retryFacialBiometric: "Refazer biometria facial",
     correctPosition: "Posição correta", stayStillCount: "Mantenha-se parado... {atual}/2",
     livenessComplete: "Prova de vida concluída", lookCameraCount: "Olhe para a câmera... {atual}/2",
     analysisFailed: "Falha na análise", checkPythonApi: "Verifique se a API Python está funcionando",
     adjustPosition: "Ajuste sua posição", validationFailed: "Não foi possível validar",
     ambiguousIdentity: "Identidade ambígua", faceNotRegistered: "Rosto não cadastrado",
-    faceNotFoundSecurely: "Não encontramos este rosto com segurança. Entre com e-mail e senha."
+    faceNotFoundSecurely: "Não encontramos este rosto com segurança. Entre com e-mail e senha.",
+    face2faDescription: "Duas identidades ficaram muito próximas. Confirme o e-mail da sua conta para impedir acesso ao perfil errado.",
+    face2faEmail: "E-mail da sua conta", face2faSend: "Enviar código", face2faCode: "Código de 6 dígitos",
+    face2faVerify: "Confirmar identidade", face2faOtherEmail: "Usar outro e-mail",
+    face2faSecurity: "O código expira em 5 minutos. Os perfis candidatos não são exibidos.",
+    face2faSending: "Enviando código de confirmação...", face2faConfirming: "Confirmando identidade...",
+    face2faInvalidEmail: "Informe o e-mail da sua conta.", face2faInvalidCode: "Digite o código de 6 dígitos."
   },
   en: {
     loginWelcomeTitle: "Welcome, {nome}!",
@@ -5879,12 +6035,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Camera unavailable", cameraPermission: "Allow camera access in your browser",
     movementConfirmed: "Movement confirmed", lookFrontAgain: "Now look directly at the camera again.",
     livenessCheck: "Liveness check", turnHead: "Turn your head slightly to one side.",
+    turnHeadTimed: "Turn your head slightly within {segundos}s.",
+    livenessMovementTimeoutRetry: "Liveness was not detected. You did not move your head in time. Start facial recognition again.",
+    retryFacialBiometric: "Retry facial biometrics",
     correctPosition: "Correct position", stayStillCount: "Stay still... {atual}/2",
     livenessComplete: "Liveness check complete", lookCameraCount: "Look at the camera... {atual}/2",
     analysisFailed: "Analysis failed", checkPythonApi: "Make sure the Python API is running",
     adjustPosition: "Adjust your position", validationFailed: "Unable to validate",
     ambiguousIdentity: "Ambiguous identity", faceNotRegistered: "Face not registered",
-    faceNotFoundSecurely: "We could not identify this face securely. Sign in with email and password."
+    faceNotFoundSecurely: "We could not identify this face securely. Sign in with email and password.",
+    face2faDescription: "Two identities were too close. Confirm your account email to prevent access to the wrong profile.",
+    face2faEmail: "Your account email", face2faSend: "Send code", face2faCode: "6-digit code",
+    face2faVerify: "Confirm identity", face2faOtherEmail: "Use another email",
+    face2faSecurity: "The code expires in 5 minutes. Candidate profiles are not displayed.",
+    face2faSending: "Sending confirmation code...", face2faConfirming: "Confirming identity...",
+    face2faInvalidEmail: "Enter your account email.", face2faInvalidCode: "Enter the 6-digit code."
   },
   es: {
     loginWelcomeTitle: "¡Bienvenido, {nome}!",
@@ -5912,12 +6077,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Cámara no disponible", cameraPermission: "Permita el acceso a la cámara en el navegador",
     movementConfirmed: "Movimiento confirmado", lookFrontAgain: "Vuelva a mirar directamente a la cámara.",
     livenessCheck: "Prueba de vida", turnHead: "Gire ligeramente la cabeza hacia un lado.",
+    turnHeadTimed: "Gire ligeramente la cabeza en un máximo de {segundos}s.",
+    livenessMovementTimeoutRetry: "No se detectó la prueba de vida. No movió la cabeza a tiempo. Realice nuevamente el reconocimiento facial.",
+    retryFacialBiometric: "Repetir biometría facial",
     correctPosition: "Posición correcta", stayStillCount: "Manténgase quieto... {atual}/2",
     livenessComplete: "Prueba de vida completada", lookCameraCount: "Mire a la cámara... {atual}/2",
     analysisFailed: "Error de análisis", checkPythonApi: "Compruebe que la API de Python esté funcionando",
     adjustPosition: "Ajuste su posición", validationFailed: "No fue posible validar",
     ambiguousIdentity: "Identidad ambigua", faceNotRegistered: "Rostro no registrado",
-    faceNotFoundSecurely: "No pudimos identificar este rostro de forma segura. Ingrese con correo y contraseña."
+    faceNotFoundSecurely: "No pudimos identificar este rostro de forma segura. Ingrese con correo y contraseña.",
+    face2faDescription: "Dos identidades quedaron demasiado próximas. Confirme el correo de su cuenta para evitar el acceso al perfil equivocado.",
+    face2faEmail: "Correo de su cuenta", face2faSend: "Enviar código", face2faCode: "Código de 6 dígitos",
+    face2faVerify: "Confirmar identidad", face2faOtherEmail: "Usar otro correo",
+    face2faSecurity: "El código vence en 5 minutos. Los perfiles candidatos no se muestran.",
+    face2faSending: "Enviando código de confirmación...", face2faConfirming: "Confirmando identidad...",
+    face2faInvalidEmail: "Ingrese el correo de su cuenta.", face2faInvalidCode: "Ingrese el código de 6 dígitos."
   },
   fr: {
     loginWelcomeTitle: "Bienvenue, {nome} !",
@@ -5945,12 +6119,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Caméra indisponible", cameraPermission: "Autorisez l'accès à la caméra dans le navigateur",
     movementConfirmed: "Mouvement confirmé", lookFrontAgain: "Regardez de nouveau directement la caméra.",
     livenessCheck: "Test de présence", turnHead: "Tournez légèrement la tête d'un côté.",
+    turnHeadTimed: "Tournez légèrement la tête dans les {segundos}s.",
+    livenessMovementTimeoutRetry: "La preuve de vie n'a pas été détectée. Vous n'avez pas bougé la tête à temps. Recommencez la reconnaissance faciale.",
+    retryFacialBiometric: "Recommencer la biométrie faciale",
     correctPosition: "Position correcte", stayStillCount: "Restez immobile... {atual}/2",
     livenessComplete: "Test de présence terminé", lookCameraCount: "Regardez la caméra... {atual}/2",
     analysisFailed: "Échec de l'analyse", checkPythonApi: "Vérifiez que l'API Python fonctionne",
     adjustPosition: "Ajustez votre position", validationFailed: "Validation impossible",
     ambiguousIdentity: "Identité ambiguë", faceNotRegistered: "Visage non enregistré",
-    faceNotFoundSecurely: "Nous n'avons pas pu identifier ce visage de manière sûre. Connectez-vous par e-mail et mot de passe."
+    faceNotFoundSecurely: "Nous n'avons pas pu identifier ce visage de manière sûre. Connectez-vous par e-mail et mot de passe.",
+    face2faDescription: "Deux identités sont trop proches. Confirmez l’e-mail de votre compte pour éviter l’accès au mauvais profil.",
+    face2faEmail: "E-mail de votre compte", face2faSend: "Envoyer le code", face2faCode: "Code à 6 chiffres",
+    face2faVerify: "Confirmer l’identité", face2faOtherEmail: "Utiliser un autre e-mail",
+    face2faSecurity: "Le code expire dans 5 minutes. Les profils candidats ne sont pas affichés.",
+    face2faSending: "Envoi du code de confirmation...", face2faConfirming: "Confirmation de l’identité...",
+    face2faInvalidEmail: "Saisissez l’e-mail de votre compte.", face2faInvalidCode: "Saisissez le code à 6 chiffres."
   },
   de: {
     loginWelcomeTitle: "Willkommen, {nome}!",
@@ -5978,12 +6161,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Kamera nicht verfügbar", cameraPermission: "Erlauben Sie den Kamerazugriff im Browser",
     movementConfirmed: "Bewegung bestätigt", lookFrontAgain: "Schauen Sie wieder direkt in die Kamera.",
     livenessCheck: "Lebenderkennung", turnHead: "Drehen Sie den Kopf leicht zu einer Seite.",
+    turnHeadTimed: "Drehen Sie den Kopf innerhalb von {segundos}s leicht zur Seite.",
+    livenessMovementTimeoutRetry: "Die Lebenderkennung wurde nicht bestätigt. Sie haben den Kopf nicht rechtzeitig bewegt. Starten Sie die Gesichtserkennung erneut.",
+    retryFacialBiometric: "Gesichtsbiometrie erneut durchführen",
     correctPosition: "Korrekte Position", stayStillCount: "Stillhalten... {atual}/2",
     livenessComplete: "Lebenderkennung abgeschlossen", lookCameraCount: "In die Kamera schauen... {atual}/2",
     analysisFailed: "Analyse fehlgeschlagen", checkPythonApi: "Prüfen Sie, ob die Python-API läuft",
     adjustPosition: "Position anpassen", validationFailed: "Validierung nicht möglich",
     ambiguousIdentity: "Mehrdeutige Identität", faceNotRegistered: "Gesicht nicht registriert",
-    faceNotFoundSecurely: "Dieses Gesicht konnte nicht sicher erkannt werden. Melden Sie sich mit E-Mail und Passwort an."
+    faceNotFoundSecurely: "Dieses Gesicht konnte nicht sicher erkannt werden. Melden Sie sich mit E-Mail und Passwort an.",
+    face2faDescription: "Zwei Identitäten lagen zu nah beieinander. Bestätigen Sie die E-Mail Ihres Kontos, um den Zugriff auf das falsche Profil zu verhindern.",
+    face2faEmail: "E-Mail Ihres Kontos", face2faSend: "Code senden", face2faCode: "6-stelliger Code",
+    face2faVerify: "Identität bestätigen", face2faOtherEmail: "Andere E-Mail verwenden",
+    face2faSecurity: "Der Code läuft in 5 Minuten ab. Kandidatenprofile werden nicht angezeigt.",
+    face2faSending: "Bestätigungscode wird gesendet...", face2faConfirming: "Identität wird bestätigt...",
+    face2faInvalidEmail: "Geben Sie die E-Mail Ihres Kontos ein.", face2faInvalidCode: "Geben Sie den 6-stelligen Code ein."
   },
   it: {
     loginWelcomeTitle: "Benvenuto, {nome}!",
@@ -6011,12 +6203,21 @@ const TRADUCOES_EXPERIENCIA_ACESSO = {
     cameraUnavailable: "Fotocamera non disponibile", cameraPermission: "Consenti l'accesso alla fotocamera nel browser",
     movementConfirmed: "Movimento confermato", lookFrontAgain: "Guarda di nuovo direttamente la fotocamera.",
     livenessCheck: "Prova di vitalità", turnHead: "Gira leggermente la testa da un lato.",
+    turnHeadTimed: "Gira leggermente la testa entro {segundos}s.",
+    livenessMovementTimeoutRetry: "La prova di vitalità non è stata rilevata. Non hai mosso la testa in tempo. Ripeti il riconoscimento facciale.",
+    retryFacialBiometric: "Ripeti biometria facciale",
     correctPosition: "Posizione corretta", stayStillCount: "Rimani fermo... {atual}/2",
     livenessComplete: "Prova di vitalità completata", lookCameraCount: "Guarda la fotocamera... {atual}/2",
     analysisFailed: "Analisi non riuscita", checkPythonApi: "Verifica che l'API Python sia in esecuzione",
     adjustPosition: "Regola la posizione", validationFailed: "Impossibile convalidare",
     ambiguousIdentity: "Identità ambigua", faceNotRegistered: "Volto non registrato",
-    faceNotFoundSecurely: "Non è stato possibile identificare il volto in modo sicuro. Accedi con e-mail e password."
+    faceNotFoundSecurely: "Non è stato possibile identificare il volto in modo sicuro. Accedi con e-mail e password.",
+    face2faDescription: "Due identità sono risultate troppo vicine. Conferma l’e-mail del tuo account per evitare l’accesso al profilo errato.",
+    face2faEmail: "E-mail del tuo account", face2faSend: "Invia codice", face2faCode: "Codice a 6 cifre",
+    face2faVerify: "Conferma identità", face2faOtherEmail: "Usa un’altra e-mail",
+    face2faSecurity: "Il codice scade in 5 minuti. I profili candidati non vengono mostrati.",
+    face2faSending: "Invio del codice di conferma...", face2faConfirming: "Conferma dell’identità...",
+    face2faInvalidEmail: "Inserisci l’e-mail del tuo account.", face2faInvalidCode: "Inserisci il codice a 6 cifre."
   }
 };
 
@@ -7472,7 +7673,7 @@ function criarSeletorGlobalIdioma() {
   container.setAttribute("aria-label", "Language");
 
   container.innerHTML = `
-    <span class="steel-language-icon" aria-hidden="true">🌐</span>
+    <span class="steel-language-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
     <select id="steelLanguageSelect" aria-label="Language">
       <option value="pt">PT</option>
       <option value="en">EN</option>
@@ -7483,7 +7684,15 @@ function criarSeletorGlobalIdioma() {
     </select>
   `;
 
-  document.body.appendChild(container);
+  // Na Home, integra o seletor ao cabeçalho para manter a interface limpa.
+  const homeHeaderActions = document.querySelector(".home-page .header-actions");
+  const homeLoginButton = homeHeaderActions?.querySelector(".login-btn");
+
+  if (homeHeaderActions && homeLoginButton) {
+    homeHeaderActions.insertBefore(container, homeLoginButton);
+  } else {
+    document.body.appendChild(container);
+  }
 
   const select = container.querySelector("#steelLanguageSelect");
 
@@ -8049,8 +8258,29 @@ function aplicarContrasteLogoEmpresa() {
   const escuro =
     document.documentElement.getAttribute("data-theme") === "escuro";
 
+  // A marca do sidebar usa uma placa clara própria nos dois temas.
+  // Nunca inverter essa imagem: logos pretas/industriais ficavam brancas
+  // sobre a própria placa clara e aparentavam desaparecer no tema escuro.
+  const logoSidebar =
+    document.getElementById("empresaLogoSidebar");
+
+  if (logoSidebar) {
+    logoSidebar.classList.remove("logo-monocromatica-escura");
+    logoSidebar.style.setProperty(
+      "filter",
+      "none",
+      "important"
+    );
+    logoSidebar.style.setProperty(
+      "opacity",
+      "1",
+      "important"
+    );
+  }
+
+  // Logos exibidas dentro do conteúdo continuam recebendo contraste
+  // automático no tema escuro.
   [
-    document.getElementById("empresaLogoSidebar"),
     document.getElementById("configEmpresaLogo"),
     document.getElementById("empresaLogo")
   ]
@@ -8601,6 +8831,120 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
             try {
               publicar(JSON.parse(linhaData.slice(5).trim()));
             } catch (_) {}
+          }
+        }
+      } catch (erro) {
+        if (encerrando || erro?.name === "AbortError") return;
+      }
+
+      await pausa(espera);
+      espera = Math.min(10000, Math.round(espera * 1.7));
+    }
+  }
+
+  window.addEventListener("beforeunload", () => {
+    encerrando = true;
+    controller?.abort();
+  });
+
+  conectar();
+})();
+
+
+// =========================================================
+// SESSION REVOCATION — MULTI-DISPOSITIVO
+// =========================================================
+// Mantém Desktop e Mobile coerentes: quando a conta é desativada ou a senha
+// revoga a versão do token, o backend encerra o stream e a UI limpa a sessão.
+(() => {
+  if (window.__steelSessionRealtimeStarted) return;
+
+  const token = localStorage.getItem("token");
+  const api = String(window.STEELCONTROL_API_URL || "").replace(/\/$/, "");
+  if (!token || !api) return;
+
+  window.__steelSessionRealtimeStarted = true;
+  let encerrando = false;
+  let controller = null;
+  let espera = 1000;
+
+  const limparSessao = motivo => {
+    [
+      "autenticado",
+      "token",
+      "usuarioId",
+      "usuarioLogado",
+      "nomeUsuario",
+      "cargoUsuario",
+      "empresa",
+      "maquinaId",
+      "maquinaSelecionada",
+      "setorSelecionado"
+    ].forEach(chave => localStorage.removeItem(chave));
+
+    try {
+      sessionStorage.setItem(
+        "steelcontrol_session_notice",
+        motivo || "Sua sessão foi encerrada. Entre novamente."
+      );
+    } catch (_) {}
+
+    window.location.replace("/app/login?session=revoked");
+  };
+
+  const pausa = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  async function conectar() {
+    while (!encerrando) {
+      try {
+        controller = new AbortController();
+        const resposta = await fetch(`${api}/auth/session-events`, {
+          method: "GET",
+          headers: {
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache"
+          },
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        if (resposta.status === 401) {
+          limparSessao("Sua sessão foi revogada. Entre novamente.");
+          return;
+        }
+        if (!resposta.ok || !resposta.body) {
+          throw new Error("Stream de sessão indisponível.");
+        }
+
+        espera = 1000;
+        const reader = resposta.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let eventoAtual = "";
+
+        while (!encerrando) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const blocos = buffer.split("\n\n");
+          buffer = blocos.pop() || "";
+
+          for (const bloco of blocos) {
+            eventoAtual = "";
+            let dados = null;
+            for (const linha of bloco.split("\n")) {
+              if (linha.startsWith("event:")) eventoAtual = linha.slice(6).trim();
+              if (linha.startsWith("data:")) {
+                try { dados = JSON.parse(linha.slice(5).trim()); } catch (_) {}
+              }
+            }
+
+            if (eventoAtual === "revoked") {
+              limparSessao(dados?.motivo || "Sua sessão foi encerrada pelo administrador.");
+              return;
+            }
           }
         }
       } catch (erro) {

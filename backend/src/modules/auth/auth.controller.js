@@ -12,7 +12,8 @@ import {
 
 
 import {
-  enviarCodigoCadastroEmpresa
+  enviarCodigoCadastroEmpresa,
+  enviarCodigoSegundoFatorFacial
 } from "../../lib/mailer.js";
 
 import {
@@ -23,11 +24,13 @@ import {
 import {
   validarMesmaPessoaLiveness,
   classificarCorrespondenciaFacial,
-  encontrarCorrespondenciaFacial
+  encontrarCorrespondenciaFacial,
+  criarPacoteTemplatesFaciais
 } from "../../lib/faceSecurity.js";
 
 import {
-  criarAmostraFacialExclusiva
+  criarAmostraFacialExclusiva,
+  FACE_DUPLICATE_THRESHOLD
 } from "../../lib/faceIdentity.js";
 
 // =========================================================
@@ -39,6 +42,34 @@ import { empresaParaResposta } from "../../lib/companyView.js";
 const FACE_THRESHOLD = 0.58;
 const FACE_MIN_MARGIN = 0.08;
 const MAX_FACE_SAMPLES = 1;
+
+// Um registro FaceEmbedding por perfil, contendo ate 3 templates.
+const FACE_TEMPLATE_LIMIT = 3;
+
+// Segundo fator efemero para casos de identidade ambigua.
+// Nenhum e-mail/candidato e exposto ao cliente antes da confirmacao.
+const FACE_2FA_TTL_MS = 5 * 60 * 1000;
+const FACE_2FA_MAX_ATTEMPTS = 5;
+const FACE_2FA_MAX_SENDS = 3;
+const FACE_2FA_CHALLENGES = new Map();
+
+function limparFace2FAExpirados() {
+  const agora = Date.now();
+  for (const [id, desafio] of FACE_2FA_CHALLENGES.entries()) {
+    if (!desafio || desafio.expiraEm <= agora) {
+      FACE_2FA_CHALLENGES.delete(id);
+    }
+  }
+}
+
+function mascararEmailFace2FA(email) {
+  const valor = String(email || "").trim();
+  const [local, dominio] = valor.split("@");
+  if (!local || !dominio) return "***";
+  const inicio = local.slice(0, 1);
+  const fim = local.length > 2 ? local.slice(-1) : "";
+  return `${inicio}${"*".repeat(Math.max(2, local.length - 2))}${fim}@${dominio}`;
+}
 
 
 // =========================================================
@@ -69,7 +100,8 @@ function criarToken(usuario) {
     {
       usuarioId: usuario.id,
       empresaId: usuario.empresaId,
-      cargo: usuario.cargo
+      cargo: usuario.cargo,
+      tokenVersion: Number(usuario.tokenVersion || 0)
     },
     env.jwtSecret,
     {
@@ -1083,6 +1115,9 @@ export async function completeCompanyRegistrationWithFace(
     const imagemFinal =
       req.files?.imagem?.[0];
 
+    const imagemInicial =
+      req.files?.inicial?.[0] || null;
+
     const imagemLiveness =
       req.files?.liveness?.[0];
 
@@ -1147,14 +1182,18 @@ export async function completeCompanyRegistrationWithFace(
 
     const [
       analiseFinal,
-      analiseLiveness
+      analiseLiveness,
+      analiseInicial
     ] = await Promise.all([
       analisarImagemFacial(
         imagemFinal
       ),
       analisarImagemFacial(
         imagemLiveness
-      )
+      ),
+      imagemInicial
+        ? analisarImagemFacial(imagemInicial)
+        : Promise.resolve(null)
     ]);
 
     if (
@@ -1172,6 +1211,23 @@ export async function completeCompanyRegistrationWithFace(
             "A imagem frontal não atingiu a qualidade necessária. Tente novamente.",
           repetirFacial: true
         });
+    }
+
+    if (
+      imagemInicial &&
+      (
+        !analiseInicial?.detectado ||
+        analiseInicial?.quantidadeRostos !== 1 ||
+        analiseInicial?.pronto !== true
+      )
+    ) {
+      return res.status(422).json({
+        codigo: "REGISTRATION_INITIAL_FACE_NOT_READY",
+        mensagem:
+          analiseInicial?.orientacao ||
+          "A primeira captura facial não atingiu a qualidade necessária.",
+        repetirFacial: true
+      });
     }
 
     const yaw =
@@ -1198,7 +1254,8 @@ export async function completeCompanyRegistrationWithFace(
 
     const [
       facialMovimento,
-      facialFinal
+      facialFinal,
+      facialInicial
     ] =
       await Promise.all([
         gerarEmbeddingPorImagem(
@@ -1206,7 +1263,10 @@ export async function completeCompanyRegistrationWithFace(
         ),
         gerarEmbeddingPorImagem(
           imagemFinal
-        )
+        ),
+        imagemInicial
+          ? gerarEmbeddingPorImagem(imagemInicial)
+          : Promise.resolve(null)
       ]);
 
     if (
@@ -1215,7 +1275,8 @@ export async function completeCompanyRegistrationWithFace(
       ) ||
       !embeddingValido(
         facialFinal?.embedding
-      )
+      ) ||
+      (imagemInicial && !embeddingValido(facialInicial?.embedding))
     ) {
       return res
         .status(422)
@@ -1246,6 +1307,24 @@ export async function completeCompanyRegistrationWithFace(
             "A prova de vida e a imagem final não pertencem à mesma pessoa. Refaça a facial sem sair da frente da câmera.",
           repetirFacial: true
         });
+    }
+
+    if (imagemInicial) {
+      const identidadeInicial =
+        validarMesmaPessoaLiveness({
+          embeddingMovimento: facialInicial.embedding,
+          embeddingFinal: facialFinal.embedding,
+          threshold: 0.50
+        });
+
+      if (!identidadeInicial.valida) {
+        return res.status(422).json({
+          codigo: "REGISTRATION_INITIAL_IDENTITY_MISMATCH",
+          mensagem:
+            "A primeira captura e a imagem final não pertencem à mesma pessoa. Refaça a facial sem sair da frente da câmera.",
+          repetirFacial: true
+        });
+      }
     }
 
     const resultado =
@@ -1308,15 +1387,31 @@ export async function completeCompanyRegistrationWithFace(
             throw erro;
           }
 
-          const faceDuplicada =
-            encontrarCorrespondenciaFacial({
-              embedding:
-                facialFinal.embedding,
-              faces:
-                outrasFaces,
-              threshold:
-                FACE_THRESHOLD
-            });
+          const candidatosDuplicidade = [
+            facialFinal.embedding,
+            facialMovimento.embedding,
+            facialInicial?.embedding
+          ].filter(Array.isArray);
+
+          let faceDuplicada = null;
+
+          for (const candidato of candidatosDuplicidade) {
+            const encontrada =
+              encontrarCorrespondenciaFacial({
+                embedding: candidato,
+                faces: outrasFaces,
+                threshold:
+                  FACE_DUPLICATE_THRESHOLD
+              });
+
+            if (
+              encontrada &&
+              (!faceDuplicada ||
+                encontrada.similaridade > faceDuplicada.similaridade)
+            ) {
+              faceDuplicada = encontrada;
+            }
+          }
 
           if (faceDuplicada) {
             const erro =
@@ -1363,7 +1458,11 @@ export async function completeCompanyRegistrationWithFace(
                 nome:
                   "Facial principal",
                 embedding:
-                  facialFinal.embedding,
+                  criarPacoteTemplatesFaciais({
+                    inicial: facialInicial?.embedding,
+                    movimento: facialMovimento.embedding,
+                    final: facialFinal.embedding
+                  }),
                 modelo:
                   "insightface-buffalo_l"
               }
@@ -1592,15 +1691,146 @@ export async function registerFaceImage(
   next
 ) {
   try {
-    const facial =
-      await gerarEmbeddingPorImagem(
-        req.file
-      );
+    const imagemFinal =
+      req.files?.imagem?.[0] || null;
+
+    const imagemInicial =
+      req.files?.inicial?.[0] || null;
+
+    const imagemLiveness =
+      req.files?.liveness?.[0] || null;
+
+    if (!imagemFinal || !imagemLiveness) {
+      return res.status(400).json({
+        codigo: "FACE_ENROLL_LIVENESS_REQUIRED",
+        mensagem:
+          "O cadastro facial exige imagem frontal e prova de vida por movimento."
+      });
+    }
+
+    const [
+      analiseFinal,
+      analiseLiveness,
+      analiseInicial
+    ] = await Promise.all([
+      analisarImagemFacial(imagemFinal),
+      analisarImagemFacial(imagemLiveness),
+      imagemInicial
+        ? analisarImagemFacial(imagemInicial)
+        : Promise.resolve(null)
+    ]);
+
+    if (
+      !analiseFinal?.detectado ||
+      analiseFinal?.quantidadeRostos !== 1 ||
+      analiseFinal?.pronto !== true
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_NOT_READY",
+        mensagem:
+          analiseFinal?.orientacao ||
+          "A imagem facial não atingiu a qualidade necessária para cadastro."
+      });
+    }
+
+    if (
+      imagemInicial &&
+      (
+        !analiseInicial?.detectado ||
+        analiseInicial?.quantidadeRostos !== 1 ||
+        analiseInicial?.pronto !== true
+      )
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_INITIAL_NOT_READY",
+        mensagem:
+          analiseInicial?.orientacao ||
+          "A primeira captura facial não atingiu a qualidade necessária."
+      });
+    }
+
+    const yaw =
+      Number(analiseLiveness?.pose?.yaw);
+
+    if (
+      !analiseLiveness?.detectado ||
+      analiseLiveness?.quantidadeRostos !== 1 ||
+      !Number.isFinite(yaw) ||
+      Math.abs(yaw) < 12
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_ENROLL_LIVENESS_FAILED",
+        mensagem:
+          "A prova de vida não foi confirmada. Vire levemente a cabeça e tente novamente."
+      });
+    }
+
+    const [
+      facialMovimento,
+      facialFinal,
+      facialInicial
+    ] = await Promise.all([
+      gerarEmbeddingPorImagem(imagemLiveness),
+      gerarEmbeddingPorImagem(imagemFinal),
+      imagemInicial
+        ? gerarEmbeddingPorImagem(imagemInicial)
+        : Promise.resolve(null)
+    ]);
+
+    if (
+      !embeddingValido(facialMovimento?.embedding) ||
+      !embeddingValido(facialFinal?.embedding) ||
+      (imagemInicial && !embeddingValido(facialInicial?.embedding))
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_EMBEDDING_INVALID",
+        mensagem:
+          "Não foi possível gerar uma biometria facial válida. Tente novamente."
+      });
+    }
+
+    const identidadeLiveness =
+      validarMesmaPessoaLiveness({
+        embeddingMovimento:
+          facialMovimento.embedding,
+        embeddingFinal:
+          facialFinal.embedding,
+        threshold: 0.50
+      });
+
+    if (!identidadeLiveness.valida) {
+      return res.status(422).json({
+        codigo: "FACE_ENROLL_LIVENESS_IDENTITY_MISMATCH",
+        mensagem:
+          "A prova de vida e a imagem final não pertencem à mesma pessoa."
+      });
+    }
+
+    if (imagemInicial) {
+      const identidadeInicial =
+        validarMesmaPessoaLiveness({
+          embeddingMovimento: facialInicial.embedding,
+          embeddingFinal: facialFinal.embedding,
+          threshold: 0.50
+        });
+
+      if (!identidadeInicial.valida) {
+        return res.status(422).json({
+          codigo: "FACE_INITIAL_IDENTITY_MISMATCH",
+          mensagem:
+            "A primeira captura e a imagem final não pertencem à mesma pessoa."
+        });
+      }
+    }
 
     req.body = {
       ...(req.body || {}),
       embedding:
-        facial.embedding
+        facialFinal.embedding,
+      embeddingLiveness:
+        facialMovimento.embedding,
+      embeddingInicial:
+        facialInicial?.embedding || null
     };
 
     return registerFace(
@@ -1747,6 +1977,8 @@ export async function registerFace(
 
     const {
       embedding,
+      embeddingLiveness,
+      embeddingInicial,
       nomeFacial
     } = req.body;
 
@@ -1796,6 +2028,14 @@ export async function registerFace(
         prisma,
         usuarioId,
         embedding,
+        embeddingInicial:
+          embeddingValido(embeddingInicial)
+            ? embeddingInicial
+            : null,
+        embeddingsVerificacao:
+          embeddingValido(embeddingLiveness)
+            ? [embeddingLiveness]
+            : [],
         nome:
           nomeFacial,
       });
@@ -2148,6 +2388,26 @@ export async function loginFace(
       classificacao.status ===
       "ambiguo"
     ) {
+      limparFace2FAExpirados();
+
+      const candidatos = [
+        classificacao.melhor?.usuarioId,
+        classificacao.segundo?.usuarioId
+      ].filter(Number.isInteger);
+
+      const challengeId = randomUUID();
+
+      FACE_2FA_CHALLENGES.set(challengeId, {
+        candidatos: [...new Set(candidatos)],
+        criadoEm: Date.now(),
+        expiraEm: Date.now() + FACE_2FA_TTL_MS,
+        tentativas: 0,
+        envios: 0,
+        usuarioId: null,
+        emailNormalizado: null,
+        codigoHash: null,
+        codigoExpiraEm: null
+      });
 
       return res
         .status(401)
@@ -2156,10 +2416,14 @@ export async function loginFace(
             "FACE_AMBIGUOUS",
 
           mensagem:
-            "Não foi possível confirmar sua identidade com segurança.",
+            "Duas identidades ficaram muito próximas. Confirme sua identidade com um segundo fator.",
 
           orientacao:
-            "Olhe diretamente para a câmera e tente novamente."
+            "Informe o e-mail da sua conta para receber um código de confirmação.",
+
+          segundoFator: true,
+          challengeId,
+          expiraEmSegundos: Math.floor(FACE_2FA_TTL_MS / 1000)
         });
     }
 
@@ -2225,6 +2489,180 @@ export async function loginFace(
 // =========================================================
 // STATUS FACIAL
 // =========================================================
+
+// =========================================================
+// SEGUNDO FATOR PARA IDENTIDADE FACIAL AMBIGUA
+// =========================================================
+
+export async function requestFaceAmbiguousCode(req, res, next) {
+  try {
+    limparFace2FAExpirados();
+
+    const challengeId = String(req.body?.challengeId || "").trim();
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const desafio = FACE_2FA_CHALLENGES.get(challengeId);
+
+    if (!challengeId || !email || !desafio || desafio.expiraEm <= Date.now()) {
+      FACE_2FA_CHALLENGES.delete(challengeId);
+      return res.status(400).json({
+        codigo: "FACE_2FA_EXPIRED",
+        mensagem: "A confirmação adicional expirou. Refaça o reconhecimento facial."
+      });
+    }
+
+    if (desafio.envios >= FACE_2FA_MAX_SENDS) {
+      return res.status(429).json({
+        codigo: "FACE_2FA_SEND_LIMIT",
+        mensagem: "Limite de códigos atingido. Refaça o reconhecimento facial em alguns minutos."
+      });
+    }
+
+    const usuario = await prisma.usuario.findFirst({
+      where: {
+        id: { in: desafio.candidatos },
+        email: {
+          equals: email,
+          mode: "insensitive"
+        },
+        ativo: true
+      },
+      include: { empresa: true }
+    });
+
+    // Resposta deliberadamente genérica: não informa quais candidatos
+    // foram encontrados pela biometria.
+    if (!usuario) {
+      desafio.tentativas += 1;
+      if (desafio.tentativas >= FACE_2FA_MAX_ATTEMPTS) {
+        FACE_2FA_CHALLENGES.delete(challengeId);
+      }
+      return res.status(400).json({
+        codigo: "FACE_2FA_EMAIL_MISMATCH",
+        mensagem: "Não foi possível confirmar este e-mail para o reconhecimento realizado."
+      });
+    }
+
+    const codigo = String(randomInt(100000, 1000000));
+    const codigoHash = await bcrypt.hash(codigo, 10);
+
+    await enviarCodigoSegundoFatorFacial({
+      destino: usuario.email,
+      codigo,
+      nome: usuario.nome
+    });
+
+    desafio.usuarioId = usuario.id;
+    desafio.emailNormalizado = email;
+    desafio.codigoHash = codigoHash;
+    desafio.codigoExpiraEm = Date.now() + FACE_2FA_TTL_MS;
+    desafio.envios += 1;
+    desafio.tentativas = 0;
+
+    return res.json({
+      codigo: "FACE_2FA_CODE_SENT",
+      mensagem: "Código de confirmação enviado.",
+      email: mascararEmailFace2FA(usuario.email),
+      expiraEmSegundos: Math.floor(FACE_2FA_TTL_MS / 1000)
+    });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+export async function verifyFaceAmbiguousCode(req, res, next) {
+  try {
+    limparFace2FAExpirados();
+
+    const challengeId = String(req.body?.challengeId || "").trim();
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const codigo = String(req.body?.codigo || "").replace(/\D/g, "").slice(0, 6);
+    const desafio = FACE_2FA_CHALLENGES.get(challengeId);
+
+    if (
+      !desafio ||
+      desafio.expiraEm <= Date.now() ||
+      !desafio.codigoHash ||
+      !desafio.codigoExpiraEm ||
+      desafio.codigoExpiraEm <= Date.now()
+    ) {
+      FACE_2FA_CHALLENGES.delete(challengeId);
+      return res.status(400).json({
+        codigo: "FACE_2FA_EXPIRED",
+        mensagem: "O código expirou. Refaça o reconhecimento facial."
+      });
+    }
+
+    if (
+      email !== desafio.emailNormalizado ||
+      !/^\d{6}$/.test(codigo)
+    ) {
+      return res.status(400).json({
+        codigo: "FACE_2FA_INVALID",
+        mensagem: "Código ou e-mail inválido."
+      });
+    }
+
+    desafio.tentativas += 1;
+
+    if (desafio.tentativas > FACE_2FA_MAX_ATTEMPTS) {
+      FACE_2FA_CHALLENGES.delete(challengeId);
+      return res.status(429).json({
+        codigo: "FACE_2FA_ATTEMPTS_EXCEEDED",
+        mensagem: "Muitas tentativas incorretas. Refaça o reconhecimento facial."
+      });
+    }
+
+    const valido = await bcrypt.compare(codigo, desafio.codigoHash);
+
+    if (!valido) {
+      return res.status(401).json({
+        codigo: "FACE_2FA_INVALID",
+        mensagem: "Código de confirmação incorreto.",
+        tentativasRestantes: Math.max(0, FACE_2FA_MAX_ATTEMPTS - desafio.tentativas)
+      });
+    }
+
+    const usuario = await prisma.usuario.findFirst({
+      where: {
+        id: desafio.usuarioId,
+        email: {
+          equals: email,
+          mode: "insensitive"
+        },
+        ativo: true
+      },
+      include: { empresa: true }
+    });
+
+    if (!usuario || !desafio.candidatos.includes(usuario.id)) {
+      FACE_2FA_CHALLENGES.delete(challengeId);
+      return res.status(401).json({
+        codigo: "FACE_2FA_IDENTITY_INVALID",
+        mensagem: "Não foi possível confirmar a identidade."
+      });
+    }
+
+    FACE_2FA_CHALLENGES.delete(challengeId);
+
+    return res.json({
+      mensagem: `Identidade confirmada. Bem-vindo, ${usuario.nome}!`,
+      token: criarToken(usuario),
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        cargo: cargoParaTela(usuario.cargo)
+      },
+      empresa: empresaParaResposta(usuario.empresa),
+      reconhecimento: {
+        segundoFator: true,
+        metodo: "email_codigo"
+      }
+    });
+  } catch (erro) {
+    next(erro);
+  }
+}
 
 export async function faceStatus(
   req,

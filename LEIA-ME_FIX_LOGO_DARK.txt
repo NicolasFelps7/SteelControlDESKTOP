@@ -1,0 +1,8 @@
+STEELCONTROL — FIX LOGO DARK
+
+Correção: a logo preta do sidebar não é mais invertida no tema escuro.
+Ela permanece com as cores originais sobre uma placa clara de alto contraste.
+
+Após extrair por cima da pasta do Desktop, use Ctrl+F5 uma vez se o navegador mantiver CSS/JS em cache.
+
+Nenhuma regra funcional, API, IHM, telemetria ou segurança foi alterada.

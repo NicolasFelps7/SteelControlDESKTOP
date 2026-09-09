@@ -1,0 +1,16 @@
+STEELCONTROL — COMMAND CENTER V3
+
+Este pacote altera somente a camada visual do Desktop.
+
+Principais ajustes:
+- paleta unificada em todos os dashboards;
+- Dobot/PLC/ESP32/IHM com a mesma linguagem visual;
+- menos bege/laranja e menos gradientes;
+- âmbar somente como cor de acento/estado;
+- tipografia do cadastro de máquinas mais natural e corporativa;
+- tema escuro padronizado.
+
+Depois de extrair, inicie normalmente com:
+  .\INICIAR_STEELCONTROL.ps1
+
+Se o navegador ainda mostrar o CSS anterior, use Ctrl+F5 uma única vez.

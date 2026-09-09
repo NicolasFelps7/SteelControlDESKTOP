@@ -1,0 +1,44 @@
+STEELCONTROL DESKTOP — PATCH TOP 2026-09-07
+
+COMO APLICAR
+1. Faça um backup da pasta atual do SteelControl Desktop.
+2. Extraia TODO o conteúdo deste ZIP diretamente dentro da raiz do projeto Desktop, permitindo substituir arquivos existentes.
+3. Não apague seu .env funcional.
+
+PASSOS RECOMENDADOS APÓS EXTRAIR
+- cd backend
+- npm ci --include=dev
+- npx prisma generate
+- npx prisma migrate deploy
+- cd ..
+- npm run quality
+
+IMPORTANTE
+- Esta versão adiciona a migration 20260907120000_session_revocation para tokenVersion/revogação de sessão.
+- A rota GET /auth/session-events agora existe e permite logout remoto instantâneo quando o funcionário é desativado.
+- ACK de equipamento só aceita CONCLUIDO ou FALHOU; status desconhecido retorna erro.
+- Liberação de parada em máquina real exige conexão e telemetria recentes.
+- Cadastro facial ganhou validação final de qualidade no backend.
+- Face API falha fechada em produção quando FACE_API_KEY não é forte/configurada.
+- Os documentos citados no README foram incluídos.
+
+VALIDADO NESTA AUDITORIA
+- 47 testes Node executáveis: PASS
+- 13 testes Face API Python: PASS
+- check-production: PASS
+- validar-estatico: PASS
+- painéis/IHM: PASS
+- Dobot: PASS
+- secret scan: PASS
+- Docker hardening: PASS
+- platform hardening: PASS
+- code freeze: PASS
+
+NÃO VALIDADO NESTE AMBIENTE
+- E2E completo com PostgreSQL real
+- Gmail real
+- câmera real
+- ESP32/Dobot físicos
+- Redis/MQTT/Modbus/OPC UA externos
+
+A parada do SteelControl é supervisória e não substitui E-Stop, Safety PLC ou circuito de segurança certificado.

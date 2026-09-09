@@ -151,6 +151,21 @@ const mensagemCadastro =
     "mensagemCadastro"
   );
 
+const avisoSessaoRemota = (() => {
+  try {
+    const valor = sessionStorage.getItem("steelcontrol_session_notice");
+    sessionStorage.removeItem("steelcontrol_session_notice");
+    return valor;
+  } catch (_) {
+    return null;
+  }
+})();
+
+if (avisoSessaoRemota && mensagem) {
+  mensagem.textContent = avisoSessaoRemota;
+  mensagem.className = "message erro";
+}
+
 const areaLogin =
   document.getElementById(
     "areaLogin"
@@ -263,6 +278,15 @@ let livenessConfirmado =
 
 let livenessBlob =
   null;
+
+let frontalInicialBlob =
+  null;
+
+let livenessMovementTimer =
+  null;
+
+const LIVENESS_MOVEMENT_TIMEOUT_MS =
+  8000;
 
 let modoFace =
   "login";
@@ -1029,6 +1053,85 @@ cadastroForm.addEventListener(
 );
 
 
+
+
+function limparTimeoutLivenessMovimento() {
+
+  if (livenessMovementTimer) {
+    clearTimeout(livenessMovementTimer);
+    livenessMovementTimer = null;
+  }
+
+}
+
+
+function mensagemFalhaMovimento() {
+
+  const alvo =
+    modoFace === "cadastro"
+      ? mensagemCadastro
+      : mensagem;
+
+  if (alvo) {
+    alvo.textContent =
+      textoAcesso("livenessMovementTimeoutRetry");
+
+    alvo.className =
+      "message erro";
+  }
+
+  const btnRefazer =
+    document.getElementById("btnRefazerFaceCadastro");
+
+  if (btnRefazer && modoFace === "cadastro") {
+    btnRefazer.hidden = false;
+  }
+
+}
+
+
+function falharLivenessPorImobilidade() {
+
+  if (
+    etapaLiveness !== "movimento" ||
+    autenticando ||
+    !faceModal.classList.contains("ativo")
+  ) {
+    return;
+  }
+
+  limparTimeoutLivenessMovimento();
+
+  framesCorretos = 0;
+  etapaLiveness = "frontal";
+  livenessConfirmado = false;
+  livenessBlob = null;
+  frontalInicialBlob = null;
+  autenticando = false;
+  analisando = false;
+
+  pararCamera();
+
+  faceModal.classList.remove("ativo");
+
+  mensagemFalhaMovimento();
+
+}
+
+
+function iniciarTimeoutLivenessMovimento() {
+
+  limparTimeoutLivenessMovimento();
+
+  livenessMovementTimer =
+    setTimeout(
+      falharLivenessPorImobilidade,
+      LIVENESS_MOVEMENT_TIMEOUT_MS
+    );
+
+}
+
+
 // ========================================================
 // BOTÃO LOGIN FACIAL
 // ========================================================
@@ -1054,6 +1157,15 @@ async function abrirFaceId() {
 
 async function abrirCameraFace() {
 
+  limparTimeoutLivenessMovimento();
+
+  const btnRefazer =
+    document.getElementById("btnRefazerFaceCadastro");
+
+  if (btnRefazer) {
+    btnRefazer.hidden = true;
+  }
+
   faceModal.classList.add(
     "ativo"
   );
@@ -1073,6 +1185,9 @@ async function abrirCameraFace() {
     false;
 
   livenessBlob =
+    null;
+
+  frontalInicialBlob =
     null;
 
 
@@ -1380,6 +1495,8 @@ async function analisarFrame() {
         Math.abs(yaw) >= 12
       ) {
 
+        limparTimeoutLivenessMovimento();
+
         livenessConfirmado =
           true;
 
@@ -1403,7 +1520,7 @@ async function analisarFrame() {
         alterarStatus(
           "analisando",
           textoAcesso("livenessCheck"),
-          textoAcesso("turnHead")
+          textoAcesso("turnHeadTimed", { segundos: 8 })
         );
 
       }
@@ -1440,16 +1557,22 @@ async function analisarFrame() {
         framesCorretos >= 2
       ) {
 
+        if (blob) {
+          frontalInicialBlob = blob;
+        }
+
         etapaLiveness =
           "movimento";
 
         framesCorretos =
           0;
 
+        iniciarTimeoutLivenessMovimento();
+
         alterarStatus(
           "analisando",
           textoAcesso("livenessCheck"),
-          textoAcesso("turnHead")
+          textoAcesso("turnHeadTimed", { segundos: 8 })
         );
 
       }
@@ -1576,6 +1699,8 @@ function atualizarDeteccao(
 
 async function executarReconhecimento() {
 
+  limparTimeoutLivenessMovimento();
+
   if (autenticando) {
 
     return;
@@ -1613,6 +1738,17 @@ async function executarReconhecimento() {
       blob,
       "face.jpg"
     );
+
+    if (
+      modoFace === "cadastro" &&
+      frontalInicialBlob
+    ) {
+      form.append(
+        "inicial",
+        frontalInicialBlob,
+        "inicial.jpg"
+      );
+    }
 
 
     if (livenessBlob) {
@@ -1662,6 +1798,7 @@ async function executarReconhecimento() {
       etapaLiveness = "frontal";
       livenessConfirmado = false;
       livenessBlob = null;
+      frontalInicialBlob = null;
     }
 
     setTimeout(
@@ -1778,6 +1915,158 @@ async function cadastrarFace(
 
 
 // ========================================================
+// SEGUNDO FATOR PARA IDENTIDADE FACIAL AMBIGUA
+// ========================================================
+
+function fecharSegundoFatorFacial() {
+  document
+    .querySelector(".face-2fa-overlay")
+    ?.remove();
+}
+
+async function abrirSegundoFatorFacial(challengeId) {
+  if (!challengeId) return;
+
+  limparTimeoutLivenessMovimento();
+  pararCamera();
+  faceModal?.classList.remove("ativo");
+  autenticando = false;
+  analisando = false;
+
+  fecharSegundoFatorFacial();
+
+  const overlay = document.createElement("div");
+  overlay.className = "face-2fa-overlay";
+  overlay.innerHTML = `
+    <section class="face-2fa-card" role="dialog" aria-modal="true" aria-labelledby="face2faTitle">
+      <button type="button" class="face-2fa-close" aria-label="Fechar">×</button>
+      <div class="face-2fa-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="face-2fa-kicker">STEELCONTROL • SEGUNDO FATOR</span>
+      <h2 id="face2faTitle">${textoAcesso("ambiguousIdentity")}</h2>
+      <p class="face-2fa-description">${textoAcesso("face2faDescription")}</p>
+
+      <div class="face-2fa-step face-2fa-email-step">
+        <label for="face2faEmail">${textoAcesso("face2faEmail")}</label>
+        <input id="face2faEmail" type="email" autocomplete="email" placeholder="nome@empresa.com">
+        <button type="button" class="face-2fa-primary face-2fa-send">${textoAcesso("face2faSend")}</button>
+      </div>
+
+      <div class="face-2fa-step face-2fa-code-step" hidden>
+        <div class="face-2fa-sent"></div>
+        <label for="face2faCode">${textoAcesso("face2faCode")}</label>
+        <input id="face2faCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+        <button type="button" class="face-2fa-primary face-2fa-verify">${textoAcesso("face2faVerify")}</button>
+        <button type="button" class="face-2fa-link face-2fa-back">${textoAcesso("face2faOtherEmail")}</button>
+      </div>
+
+      <div class="face-2fa-message" aria-live="polite"></div>
+      <small class="face-2fa-security">${textoAcesso("face2faSecurity")}</small>
+    </section>
+  `;
+
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("is-visible"));
+
+  const emailInput = overlay.querySelector("#face2faEmail");
+  const codeInput = overlay.querySelector("#face2faCode");
+  const emailStep = overlay.querySelector(".face-2fa-email-step");
+  const codeStep = overlay.querySelector(".face-2fa-code-step");
+  const message = overlay.querySelector(".face-2fa-message");
+  const sent = overlay.querySelector(".face-2fa-sent");
+  const sendButton = overlay.querySelector(".face-2fa-send");
+  const verifyButton = overlay.querySelector(".face-2fa-verify");
+
+  const setMessage = (text, error = false) => {
+    message.textContent = text || "";
+    message.classList.toggle("is-error", Boolean(error));
+  };
+
+  overlay.querySelector(".face-2fa-close")?.addEventListener("click", fecharSegundoFatorFacial);
+
+  overlay.querySelector(".face-2fa-back")?.addEventListener("click", () => {
+    codeStep.hidden = true;
+    emailStep.hidden = false;
+    codeInput.value = "";
+    setMessage("");
+    emailInput.focus();
+  });
+
+  sendButton?.addEventListener("click", async () => {
+    const email = String(emailInput.value || "").trim().toLowerCase();
+    if (!email || !email.includes("@")) {
+      setMessage(textoAcesso("face2faInvalidEmail"), true);
+      emailInput.focus();
+      return;
+    }
+
+    sendButton.disabled = true;
+    setMessage(textoAcesso("face2faSending"));
+
+    try {
+      const resposta = await fetch(`${API_URL}/auth/face/ambiguous/request-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ challengeId, email })
+      });
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(dados.mensagem || "Não foi possível enviar o código.");
+
+      sent.textContent = `Código enviado para ${dados.email || "o e-mail confirmado"}.`;
+      emailStep.hidden = true;
+      codeStep.hidden = false;
+      setMessage("");
+      codeInput.focus();
+    } catch (erro) {
+      setMessage(erro.message || "Não foi possível enviar o código.", true);
+    } finally {
+      sendButton.disabled = false;
+    }
+  });
+
+  verifyButton?.addEventListener("click", async () => {
+    const email = String(emailInput.value || "").trim().toLowerCase();
+    const codigo = String(codeInput.value || "").replace(/\D/g, "").slice(0, 6);
+
+    if (codigo.length !== 6) {
+      setMessage(textoAcesso("face2faInvalidCode"), true);
+      codeInput.focus();
+      return;
+    }
+
+    verifyButton.disabled = true;
+    setMessage(textoAcesso("face2faConfirming"));
+
+    try {
+      const resposta = await fetch(`${API_URL}/auth/face/ambiguous/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ challengeId, email, codigo })
+      });
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(dados.mensagem || "Código inválido.");
+
+      salvarSessao(dados);
+      fecharSegundoFatorFacial();
+      mostrarBoasVindas({
+        titulo: textoAcesso("faceRecognizedTitle"),
+        texto: textoAcesso("faceRecognizedText", { nome: dados?.usuario?.nome || "" }),
+        cadastro: false
+      });
+      setTimeout(() => {
+        window.location.href = "/app/maquinas";
+      }, 700);
+    } catch (erro) {
+      setMessage(erro.message || "Não foi possível confirmar a identidade.", true);
+    } finally {
+      verifyButton.disabled = false;
+    }
+  });
+
+  emailInput?.focus();
+}
+
+
+// ========================================================
 // LOGIN FACIAL
 // ========================================================
 
@@ -1804,6 +2093,20 @@ async function autenticarFace(
 
 
   if (!resposta.ok) {
+
+    if (
+      dados.codigo === "FACE_AMBIGUOUS" &&
+      dados.segundoFator === true &&
+      dados.challengeId
+    ) {
+      alterarStatus(
+        "analisando",
+        textoAcesso("ambiguousIdentity"),
+        "Confirmação adicional necessária."
+      );
+      await abrirSegundoFatorFacial(dados.challengeId);
+      return;
+    }
 
     if (
       dados.codigo ===
@@ -2061,7 +2364,7 @@ function alterarStatus(
 ) {
 
   faceStatus.className =
-    `face-status ${tipo}`;
+    `face-status ${tipo} face-status-flutter face-command-status`;
 
 
   faceStatusTitulo.textContent =
@@ -2071,6 +2374,44 @@ function alterarStatus(
   faceStatusTexto.textContent =
     texto;
 
+
+  atualizarConsoleFacialDesktop(tipo, titulo);
+
+}
+
+
+function atualizarConsoleFacialDesktop(tipo = "analisando", titulo = "") {
+
+  const etapas = ["frontal", "movimento", "retorno", "verificacao"];
+  const etapaAtual = autenticando
+    ? "verificacao"
+    : (etapaLiveness || "frontal");
+
+  const indiceAtual = Math.max(0, etapas.indexOf(etapaAtual));
+
+  document.querySelectorAll("[data-face-step]").forEach((item) => {
+    const indice = etapas.indexOf(item.dataset.faceStep);
+    item.classList.toggle("complete", indice >= 0 && indice < indiceAtual);
+    item.classList.toggle("active", indice === indiceAtual);
+  });
+
+  const progresso = document.getElementById("faceCommandProgress");
+  if (progresso) {
+    const valores = [18, 46, 72, 90];
+    progresso.style.width = `${tipo === "erro" ? Math.max(8, valores[indiceAtual] - 8) : valores[indiceAtual]}%`;
+    progresso.style.background = tipo === "erro"
+      ? "#e25555"
+      : tipo === "sucesso" && etapaAtual === "verificacao"
+        ? "#22a96b"
+        : "linear-gradient(90deg, #b86d09, #e1a03d)";
+  }
+
+  const estado = document.getElementById("faceCommandState");
+  if (estado) {
+    estado.classList.toggle("error", tipo === "erro");
+    const label = estado.querySelector("span");
+    if (label && titulo) label.textContent = titulo;
+  }
 }
 
 
@@ -2106,6 +2447,8 @@ function fecharFaceId() {
 // ========================================================
 
 function pararCamera() {
+
+  limparTimeoutLivenessMovimento();
 
   if (faceInterval) {
 
@@ -2145,6 +2488,23 @@ function pararCamera() {
   analisando =
     false;
 
+}
+
+
+
+
+const btnRefazerFaceCadastro =
+  document.getElementById("btnRefazerFaceCadastro");
+
+if (btnRefazerFaceCadastro) {
+  btnRefazerFaceCadastro.addEventListener(
+    "click",
+    async () => {
+      modoFace = "cadastro";
+      btnRefazerFaceCadastro.hidden = true;
+      await abrirCameraFace();
+    }
+  );
 }
 
 

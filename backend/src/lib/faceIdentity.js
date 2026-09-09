@@ -1,11 +1,17 @@
 import {
-  encontrarCorrespondenciaFacial
+  encontrarCorrespondenciaFacial,
+  criarPacoteTemplatesFaciais
 } from "./faceSecurity.js";
 
 // Mantém a mesma referência de identidade usada no login facial.
 // Se uma nova amostra reconheceria uma pessoa já existente, ela não pode
 // ser vinculada a outro perfil.
-export const FACE_DUPLICATE_THRESHOLD = 0.58;
+// Limiar deliberadamente mais conservador para CADASTRO do que para login.
+// O objetivo do enrollment é impedir que uma identidade já existente seja
+// vinculada a outro perfil, mesmo sob pequenas variações de pose/iluminação.
+// Este valor ainda precisa ser calibrado com dados reais da empresa; nenhum
+// limiar biométrico pode ser tratado como garantia absoluta de 100%.
+export const FACE_DUPLICATE_THRESHOLD = 0.50;
 
 // Lock global de cadastro facial no PostgreSQL. Evita que dois cadastros
 // simultâneos passem pela verificação antes de qualquer um ser gravado.
@@ -27,6 +33,8 @@ export async function criarAmostraFacialExclusiva({
   prisma,
   usuarioId,
   embedding,
+  embeddingsVerificacao = [],
+  embeddingInicial = null,
   nome,
   modelo = "insightface-buffalo_l",
   threshold = FACE_DUPLICATE_THRESHOLD
@@ -100,12 +108,35 @@ export async function criarAmostraFacialExclusiva({
           }
         });
 
-      const duplicada =
-        encontrarCorrespondenciaFacial({
-          embedding,
-          faces: outrasFaces,
-          threshold
-        });
+      // Verifica mais de uma captura do mesmo enrollment (frontal +
+      // movimento/liveness quando disponível). Isso reduz falso negativo de
+      // duplicidade causado por pose, iluminação ou um único frame ruim.
+      const candidatos = [
+        embedding,
+        embeddingInicial,
+        ...(Array.isArray(embeddingsVerificacao)
+          ? embeddingsVerificacao
+          : [])
+      ].filter(Array.isArray);
+
+      let duplicada = null;
+
+      for (const candidato of candidatos) {
+        const correspondencia =
+          encontrarCorrespondenciaFacial({
+            embedding: candidato,
+            faces: outrasFaces,
+            threshold
+          });
+
+        if (
+          correspondencia &&
+          (!duplicada ||
+            correspondencia.similaridade > duplicada.similaridade)
+        ) {
+          duplicada = correspondencia;
+        }
+      }
 
       if (duplicada) {
         return {
@@ -117,12 +148,24 @@ export async function criarAmostraFacialExclusiva({
         };
       }
 
+      const embeddingMovimento =
+        Array.isArray(embeddingsVerificacao)
+          ? embeddingsVerificacao.find(Array.isArray) || null
+          : null;
+
+      const pacoteTemplates =
+        criarPacoteTemplatesFaciais({
+          inicial: embeddingInicial,
+          movimento: embeddingMovimento,
+          final: embedding
+        });
+
       const face =
         await tx.faceEmbedding.create({
           data: {
             usuarioId,
             nome: nomeFinal,
-            embedding,
+            embedding: pacoteTemplates,
             modelo
           }
         });

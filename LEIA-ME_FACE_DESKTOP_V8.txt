@@ -1,0 +1,9 @@
+STEELCONTROL DESKTOP — FACIAL COMMAND CENTER V8
+
+1. Extraia este ZIP na raiz do Desktop atual.
+2. Aceite substituir os arquivos existentes.
+3. Ligue normalmente com .\INICIAR_STEELCONTROL.ps1
+4. No navegador, use Ctrl+F5 uma vez para limpar cache.
+
+Alteração visual apenas no fluxo facial do Desktop.
+Backend, Face API, banco e regras biométricas não foram alterados.

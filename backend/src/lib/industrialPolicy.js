@@ -21,3 +21,9 @@ export function comandoJaFinalizado(status) {
     String(status || "").trim().toUpperCase()
   );
 }
+
+
+export function normalizarStatusAck(valor) {
+  const status = String(valor || "").trim().toUpperCase();
+  return ["CONCLUIDO", "FALHOU"].includes(status) ? status : null;
+}

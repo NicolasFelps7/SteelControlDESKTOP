@@ -55,6 +55,7 @@ export async function authRequired(
           empresaId: true,
           cargo: true,
           ativo: true,
+          tokenVersion: true,
           email: true,
           nome: true
         }
@@ -69,6 +70,17 @@ export async function authRequired(
         .json({
           mensagem:
             "Conta inexistente ou desativada. Faça login novamente."
+        });
+    }
+
+    const versaoToken = Number(payload.tokenVersion ?? 0);
+    if (versaoToken !== Number(usuario.tokenVersion || 0)) {
+      return res
+        .status(401)
+        .json({
+          codigo: "SESSION_REVOKED",
+          mensagem:
+            "Esta sessão foi revogada. Faça login novamente."
         });
     }
 

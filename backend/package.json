@@ -15,7 +15,8 @@
     "prisma:deploy": "prisma migrate deploy",
     "start:prod": "prisma migrate deploy && node src/server.js",
     "check": "node ../tools/check-production.mjs",
-    "email:test": "node tools/test-email.js"
+    "email:test": "node tools/test-email.js",
+    "face:audit": "node tools/audit-face-duplicates.js"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",

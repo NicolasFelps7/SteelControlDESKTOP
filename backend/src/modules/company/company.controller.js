@@ -38,12 +38,17 @@ import {
 } from "../../lib/mailer.js";
 
 import {
-  gerarEmbeddingPorImagem
+  gerarEmbeddingPorImagem,
+  analisarImagemFacial
 } from "../../lib/faceApi.js";
 
 import {
   criarAmostraFacialExclusiva
 } from "../../lib/faceIdentity.js";
+
+import {
+  validarMesmaPessoaLiveness
+} from "../../lib/faceSecurity.js";
 
 import {
   registrarAuditoria
@@ -57,6 +62,10 @@ import {
   publicarEventoEmpresa,
   assinarEventosEmpresa
 } from "../../lib/realtime.js";
+
+import {
+  revogarSessoesUsuario
+} from "../../lib/sessionEvents.js";
 
 
 const MAX_FACE_SAMPLES = 1;
@@ -1976,17 +1985,39 @@ export async function atualizarUsuario(
     }
 
 
-    const atualizado =
-      await prisma.usuario.update({
+    const revogarPorSenha = Boolean(data.senhaHash);
+    const revogarPorDesativacao = data.ativo === false;
 
-        where: {
-          id:
-            usuarioId
-        },
+    if (revogarPorSenha || revogarPorDesativacao) {
+      data.tokenVersion = { increment: 1 };
+    }
 
-        data
+    const atualizado = revogarPorDesativacao
+      ? await prisma.$transaction(async tx => {
+          const item = await tx.usuario.update({
+            where: { id: usuarioId },
+            data
+          });
 
-      });
+          await tx.faceEmbedding.deleteMany({
+            where: { usuarioId }
+          });
+
+          return item;
+        })
+      : await prisma.usuario.update({
+          where: { id: usuarioId },
+          data
+        });
+
+    if (revogarPorDesativacao || revogarPorSenha) {
+      revogarSessoesUsuario(
+        usuarioId,
+        revogarPorDesativacao
+          ? "Seu acesso ao SteelControl foi encerrado pelo administrador."
+          : "Sua senha foi alterada. Entre novamente para continuar."
+      );
+    }
 
 
     await registrarAuditoria({
@@ -2178,7 +2209,11 @@ export async function removerUsuario(
           data: {
 
             ativo:
-              false
+              false,
+
+            tokenVersion: {
+              increment: 1
+            }
 
           }
 
@@ -2236,6 +2271,11 @@ export async function removerUsuario(
     });
 
 
+    revogarSessoesUsuario(
+      usuarioId,
+      "Seu acesso ao SteelControl foi encerrado pelo administrador."
+    );
+
     publicarEventoEmpresa(
       req.auth.empresaId,
       "usuario.desativado",
@@ -2273,15 +2313,157 @@ export async function cadastrarFaceUsuarioImagem(
   next
 ) {
   try {
-    const facial =
-      await gerarEmbeddingPorImagem(
-        req.file
-      );
+    const imagemFinal =
+      req.files?.imagem?.[0] ||
+      req.file ||
+      null;
+
+    const imagemInicial =
+      req.files?.inicial?.[0] ||
+      null;
+
+    const imagemLiveness =
+      req.files?.liveness?.[0] ||
+      null;
+
+    if (!imagemFinal || !imagemLiveness) {
+      return res.status(400).json({
+        codigo: "FACE_ENROLL_LIVENESS_REQUIRED",
+        mensagem:
+          "O cadastro facial exige imagem frontal e prova de vida por movimento.",
+        repetirFacial: true
+      });
+    }
+
+    const [
+      analiseFinal,
+      analiseLiveness,
+      analiseInicial
+    ] = await Promise.all([
+      analisarImagemFacial(imagemFinal),
+      analisarImagemFacial(imagemLiveness),
+      imagemInicial
+        ? analisarImagemFacial(imagemInicial)
+        : Promise.resolve(null)
+    ]);
+
+    if (
+      !analiseFinal?.detectado ||
+      analiseFinal?.quantidadeRostos !== 1 ||
+      analiseFinal?.pronto !== true
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_NOT_READY",
+        mensagem:
+          analiseFinal?.orientacao ||
+          "A imagem facial não atingiu a qualidade necessária para cadastro.",
+        repetirFacial: true
+      });
+    }
+
+    if (
+      imagemInicial &&
+      (
+        !analiseInicial?.detectado ||
+        analiseInicial?.quantidadeRostos !== 1 ||
+        analiseInicial?.pronto !== true
+      )
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_INITIAL_NOT_READY",
+        mensagem:
+          analiseInicial?.orientacao ||
+          "A primeira captura facial não atingiu a qualidade necessária para cadastro.",
+        repetirFacial: true
+      });
+    }
+
+    const yaw =
+      Number(analiseLiveness?.pose?.yaw);
+
+    if (
+      !analiseLiveness?.detectado ||
+      analiseLiveness?.quantidadeRostos !== 1 ||
+      !Number.isFinite(yaw) ||
+      Math.abs(yaw) < 12
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_ENROLL_LIVENESS_FAILED",
+        mensagem:
+          "A prova de vida não foi confirmada. Vire levemente a cabeça e tente novamente.",
+        repetirFacial: true
+      });
+    }
+
+    const [
+      facialMovimento,
+      facialFinal,
+      facialInicial
+    ] = await Promise.all([
+      gerarEmbeddingPorImagem(imagemLiveness),
+      gerarEmbeddingPorImagem(imagemFinal),
+      imagemInicial
+        ? gerarEmbeddingPorImagem(imagemInicial)
+        : Promise.resolve(null)
+    ]);
+
+    if (
+      !embeddingValido(facialMovimento?.embedding) ||
+      !embeddingValido(facialFinal?.embedding) ||
+      (imagemInicial && !embeddingValido(facialInicial?.embedding))
+    ) {
+      return res.status(422).json({
+        codigo: "FACE_EMBEDDING_INVALID",
+        mensagem:
+          "Não foi possível gerar uma biometria facial válida. Tente novamente.",
+        repetirFacial: true
+      });
+    }
+
+    const identidadeLiveness =
+      validarMesmaPessoaLiveness({
+        embeddingMovimento:
+          facialMovimento.embedding,
+        embeddingFinal:
+          facialFinal.embedding,
+        threshold: 0.50
+      });
+
+    if (!identidadeLiveness.valida) {
+      return res.status(422).json({
+        codigo: "FACE_ENROLL_LIVENESS_IDENTITY_MISMATCH",
+        mensagem:
+          "A prova de vida e a imagem final não pertencem à mesma pessoa. Refaça o cadastro sem sair da frente da câmera.",
+        repetirFacial: true
+      });
+    }
+
+    if (imagemInicial) {
+      const identidadeInicial =
+        validarMesmaPessoaLiveness({
+          embeddingMovimento: facialInicial.embedding,
+          embeddingFinal: facialFinal.embedding,
+          threshold: 0.50
+        });
+
+      if (!identidadeInicial.valida) {
+        return res.status(422).json({
+          codigo: "FACE_INITIAL_IDENTITY_MISMATCH",
+          mensagem:
+            "A primeira captura e a imagem final não pertencem à mesma pessoa. Refaça o cadastro sem sair da frente da câmera.",
+          repetirFacial: true
+        });
+      }
+    }
 
     req.body = {
       ...(req.body || {}),
       embedding:
-        facial.embedding
+        facialFinal.embedding,
+      embeddingLiveness:
+        facialMovimento.embedding,
+      embeddingInicial:
+        facialInicial?.embedding || null
     };
 
     return cadastrarFaceUsuario(
@@ -2350,6 +2532,8 @@ export async function cadastrarFaceUsuario(
 
     const {
       embedding,
+      embeddingLiveness,
+      embeddingInicial,
       nomeFacial
     } = req.body;
 
@@ -2410,6 +2594,14 @@ export async function cadastrarFaceUsuario(
         prisma,
         usuarioId,
         embedding,
+        embeddingInicial:
+          embeddingValido(embeddingInicial)
+            ? embeddingInicial
+            : null,
+        embeddingsVerificacao:
+          embeddingValido(embeddingLiveness)
+            ? [embeddingLiveness]
+            : [],
         nome:
           nomeFacial,
       });
@@ -2468,6 +2660,19 @@ export async function cadastrarFaceUsuario(
       registroFacial.motivo ===
         "outro_perfil"
     ) {
+
+      await registrarAuditoria({
+        req,
+        acao: "FACE_DUPLICADA_BLOQUEADA",
+        entidade: "USUARIO",
+        entidadeId: usuarioId,
+        detalhes: {
+          resultado: "Cadastro biométrico bloqueado",
+          similaridade: Number(
+            registroFacial.similaridade || 0
+          ).toFixed(4)
+        }
+      });
 
       return res
         .status(409)

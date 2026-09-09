@@ -1,0 +1,141 @@
+/* ========================================================================
+   STEELCONTROL — SIDEBAR CLEAN V5
+   Desktop: navegação operacional limpa. O contexto da máquina permanece
+   no cabeçalho do dashboard; card lateral é exclusivo do Mobile.
+   Camada somente visual.
+   ======================================================================== */
+
+@media (min-width: 981px) {
+  .dashboard-shell .sidebar {
+    width: 238px !important;
+    padding: 18px 14px 16px !important;
+    background: #151a1d !important;
+    border-right: 1px solid #2d363b !important;
+    box-shadow: none !important;
+  }
+
+  .dashboard-shell .main {
+    margin-left: 238px !important;
+    width: calc(100% - 238px) !important;
+  }
+
+  /* Marca: compacta, alinhada e sem card artificial. */
+  .dashboard-shell .logo {
+    min-height: 76px !important;
+    margin: 0 0 14px !important;
+    padding: 8px 8px 15px !important;
+    gap: 10px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid #30393e !important;
+    border-radius: 0 !important;
+  }
+
+  .dashboard-shell .logo img,
+  .dashboard-shell #empresaLogoSidebar {
+    width: 38px !important;
+    height: 42px !important;
+    flex: 0 0 38px !important;
+    object-fit: contain !important;
+    border-radius: 7px !important;
+  }
+
+  .dashboard-shell .sidebar-brand-copy {
+    min-width: 0 !important;
+  }
+
+  .dashboard-shell .sidebar-brand-copy strong {
+    color: #f5f7f8 !important;
+    font-size: 16px !important;
+    line-height: 1.1 !important;
+    font-weight: 700 !important;
+    letter-spacing: -.02em !important;
+  }
+
+  .dashboard-shell .sidebar-brand-copy span {
+    margin-top: 4px !important;
+    color: #8f9aa0 !important;
+    font-size: 7.5px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    letter-spacing: .15em !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Menu: ritmo curto e constante, sem grandes vazios. */
+  .dashboard-shell .sidebar nav {
+    display: flex !important;
+    flex: 1 !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 2px 0 0 !important;
+    border: 0 !important;
+  }
+
+  .dashboard-shell .menu-btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 10px 11px !important;
+    gap: 10px !important;
+    border: 0 !important;
+    border-left: 2px solid transparent !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    color: #c2cbd0 !important;
+    box-shadow: none !important;
+    font-size: 12.5px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    transform: none !important;
+  }
+
+  .dashboard-shell .menu-btn i {
+    width: 18px !important;
+    min-width: 18px !important;
+    color: #87939a !important;
+    font-size: 13px !important;
+    text-align: center !important;
+  }
+
+  .dashboard-shell .menu-btn:hover {
+    background: #1e262a !important;
+    color: #f4f6f7 !important;
+    border-left-color: #69757b !important;
+    transform: none !important;
+  }
+
+  .dashboard-shell .menu-btn.active {
+    background: #242d31 !important;
+    color: #ffffff !important;
+    border-left-color: var(--sc-v3-accent, #c78322) !important;
+    box-shadow: inset 0 0 0 1px #334046 !important;
+  }
+
+  .dashboard-shell .menu-btn.active i {
+    color: #e0a13d !important;
+  }
+
+  /* Mantém Configurações visualmente no mesmo fluxo, sem espaçamento artificial. */
+  .dashboard-shell .menu-btn:last-child {
+    margin-top: 2px !important;
+  }
+}
+
+/* A sidebar permanece grafite nos dois temas; o restante do dashboard muda. */
+html[data-theme="escuro"] .dashboard-shell .sidebar,
+html[data-theme="dark"] .dashboard-shell .sidebar {
+  background: #151a1d !important;
+  border-right-color: #2d363b !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell .menu-btn.active,
+html[data-theme="dark"] .dashboard-shell .menu-btn.active {
+  background: #242d31 !important;
+  border-left-color: #d39332 !important;
+}
+
+@media (max-width: 980px) {
+  /* Responsividade continua sendo controlada pelo dashboard base. */
+}

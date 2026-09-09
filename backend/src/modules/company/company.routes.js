@@ -44,6 +44,15 @@ const limiteConfirmacaoAlteracaoEmail =
       "Muitas tentativas de confirmação. Solicite um novo código mais tarde."
   });
 
+const limiteCadastroFacial =
+  criarRateLimit({
+    janelaMs: 10 * 60 * 1000,
+    limite: 12,
+    prefixo: "company-face-enroll",
+    mensagem:
+      "Muitas tentativas de cadastro facial. Aguarde alguns minutos antes de tentar novamente."
+  });
+
 const uploadLogoMiddleware =
   multer({
     storage:
@@ -208,7 +217,12 @@ companyRoutes.get(
 companyRoutes.post(
   "/usuarios/:usuarioId/face-image",
   authRequired,
-  uploadFace.single("imagem"),
+  limiteCadastroFacial,
+  uploadFace.fields([
+    { name: "imagem", maxCount: 1 },
+    { name: "inicial", maxCount: 1 },
+    { name: "liveness", maxCount: 1 }
+  ]),
   cadastrarFaceUsuarioImagem
 );
 

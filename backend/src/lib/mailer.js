@@ -702,3 +702,38 @@ export async function enviarCodigoCadastroEmpresa({
     html
   });
 }
+// =========================================================
+// SEGUNDO FATOR PARA IDENTIDADE FACIAL AMBIGUA
+// =========================================================
+
+export async function enviarCodigoSegundoFatorFacial({
+  destino,
+  codigo,
+  nome
+}) {
+  const html =
+    criarTemplateEmail({
+      titulo:
+        "Confirme sua identidade",
+
+      subtitulo:
+        "Segundo fator para reconhecimento facial",
+
+      nome,
+
+      codigo,
+
+      mensagemPrincipal:
+        "O SteelControl detectou duas identidades faciais muito próximas. Para impedir acesso ao perfil errado, confirme sua identidade com o código abaixo.",
+
+      mensagemSecundaria:
+        "Se você não tentou entrar por reconhecimento facial, ignore esta mensagem. O código expira em poucos minutos."
+    });
+
+  return enviarEmail({
+    destino,
+    subject:
+      "SteelControl — confirmação de identidade facial",
+    html
+  });
+}

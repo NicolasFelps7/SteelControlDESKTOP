@@ -1,0 +1,21 @@
+STEELCONTROL — COMMAND CENTER V2
+
+O QUE FOI ALTERADO
+- Contraste da logo do sidebar corrigido no tema claro e escuro.
+- Banner do controlador redesenhado em grafite com detalhe âmbar.
+- Título/status do controlador com contraste reforçado.
+- IHM refinada para aparência supervisória/industrial, com menos arredondamento e sombra.
+- Dark mode da IHM revisado.
+
+NÃO FOI ALTERADO
+- Backend
+- Banco/Prisma
+- Reconhecimento facial
+- Telemetria
+- Rotas
+- IHM/comandos funcionais
+- Regras de segurança
+
+DEPOIS DE EXTRAIR
+1. Ligue normalmente com .\INICIAR_STEELCONTROL.ps1
+2. Se o navegador mostrar CSS antigo, use Ctrl + F5 uma única vez.

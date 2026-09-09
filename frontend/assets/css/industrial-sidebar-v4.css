@@ -1,0 +1,144 @@
+/* ========================================================================
+   STEELCONTROL — SIDEBAR V4
+   Barra lateral operacional unificada com o Mobile Command Center.
+   Camada apenas visual.
+   ======================================================================== */
+
+@media (min-width: 981px) {
+  .dashboard-shell .sidebar {
+    width: 250px !important;
+    padding: 16px 14px 15px !important;
+    background: #151a1d !important;
+    border-right: 1px solid #2f383d !important;
+  }
+
+  .dashboard-shell .main {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+  }
+
+  .dashboard-shell .logo {
+    min-height: 68px !important;
+    margin: 0 !important;
+    padding: 7px 8px 12px !important;
+    border-bottom: 0 !important;
+  }
+
+  .dashboard-shell .logo img,
+  .dashboard-shell #empresaLogoSidebar {
+    width: 40px !important;
+    height: 40px !important;
+    flex: 0 0 40px !important;
+    border-radius: 7px !important;
+  }
+
+  .dashboard-shell .sidebar-brand-copy strong {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    letter-spacing: -.02em !important;
+  }
+
+  .dashboard-shell .sidebar-brand-copy span {
+    margin-top: 4px !important;
+    font-size: 7.5px !important;
+    letter-spacing: .15em !important;
+  }
+
+  .dashboard-shell .sidebar-machine-card {
+    display: grid;
+    gap: 4px;
+    margin: 3px 2px 14px;
+    padding: 12px 12px 11px 13px;
+    background: #1b2327;
+    border: 1px solid #323d42;
+    border-left: 3px solid var(--sc-v3-accent, #c78322);
+    border-radius: 8px;
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .dashboard-shell .sidebar-machine-card-label {
+    color: #9ca7ad;
+    font-size: 8px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: .11em;
+    white-space: nowrap;
+  }
+
+  .dashboard-shell .sidebar-machine-card strong {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: #f5f7f8;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-shell .sidebar-machine-card > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    color: #aeb8bd;
+    font-size: 10px;
+    line-height: 1.25;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-shell .sidebar nav {
+    position: relative;
+    display: grid !important;
+    gap: 3px !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #313b40;
+  }
+
+  .dashboard-shell .menu-btn {
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    border-left-width: 2px !important;
+    border-radius: 5px !important;
+    color: #c8d0d4 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+
+  .dashboard-shell .menu-btn i {
+    width: 18px !important;
+    color: #8b979d !important;
+  }
+
+  .dashboard-shell .menu-btn:hover {
+    background: #1e262a !important;
+    color: #f1f4f5 !important;
+  }
+
+  .dashboard-shell .menu-btn.active {
+    background: #242d32 !important;
+    border-left-color: var(--sc-v3-accent, #c78322) !important;
+    box-shadow: inset 0 0 0 1px #344047 !important;
+  }
+
+  .dashboard-shell .menu-btn.active i {
+    color: #e2a03c !important;
+  }
+}
+
+html[data-theme="escuro"] .dashboard-shell .sidebar-machine-card,
+html[data-theme="dark"] .dashboard-shell .sidebar-machine-card {
+  background: #171e22;
+  border-color: #303b40;
+  border-left-color: var(--sc-v3-accent, #d39332);
+}
+
+/* Mantém responsividade existente do dashboard em telas menores. */
+@media (max-width: 980px) {
+  .dashboard-shell .sidebar-machine-card {
+    display: none;
+  }
+}

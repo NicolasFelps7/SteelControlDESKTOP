@@ -151,44 +151,35 @@ export async function criar(
       });
     }
 
-    const item =
-      await prisma.manutencao.create({
+    const item = await prisma.$transaction(async tx => {
+      const criado = await tx.manutencao.create({
         data: {
-          maquinaId:
-            maquina.id,
+          maquinaId: maquina.id,
           tipo,
           tecnico,
           descricao,
-          ciclosNoRegistro:
-            maquina.ciclos
+          ciclosNoRegistro: maquina.ciclos
         }
       });
 
-    await prisma.maquina.update({
-      where: {
-        id:
-          maquina.id
-      },
-      data: {
-        ultimaManutencao:
-          formatarData(
-            item.criadaEm
-          ),
-        proximaManutencao:
-          `No ciclo ${maquina.ciclos + maquina.ciclosManutencao}`,
-        ciclosUltimaManutencao:
-          maquina.ciclos,
-        manutencao:
-          `${tipo} registrada`,
-        status:
-          "Ligada",
-        logs: {
-          create: {
-            mensagem:
-              `Manutenção ${tipo} registrada por ${tecnico}.`
+      await tx.maquina.update({
+        where: { id: maquina.id },
+        data: {
+          ultimaManutencao: formatarData(criado.criadaEm),
+          proximaManutencao: `No ciclo ${maquina.ciclos + maquina.ciclosManutencao}`,
+          ciclosUltimaManutencao: maquina.ciclos,
+          manutencao: `${tipo} registrada`,
+          // Uma manutenção registrada não pode mascarar uma parada de segurança ativa.
+          status: maquina.paradaSeguranca ? maquina.status : "Ligada",
+          logs: {
+            create: {
+              mensagem: `Manutenção ${tipo} registrada por ${tecnico}.`
+            }
           }
         }
-      }
+      });
+
+      return criado;
     });
 
     await registrarAuditoria({

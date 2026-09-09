@@ -1,0 +1,943 @@
+/* =========================================================
+   STEELCONTROL — BIOMETRIC COMMAND CENTER
+   Visual compartilhado entre Login e Minha Empresa.
+   Mantém regras funcionais e IDs existentes; somente UI.
+   ========================================================= */
+
+:root {
+  --face-bg: #0d1217;
+  --face-panel: #151b21;
+  --face-panel-2: #1b232b;
+  --face-line: #34404a;
+  --face-text: #f4f7f9;
+  --face-muted: #9da9b4;
+  --face-accent: #d58a12;
+  --face-success: #22a96b;
+  --face-danger: #e25555;
+}
+
+.face-command-modal {
+  background: rgba(6, 10, 14, .82) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 22px !important;
+  overflow-y: auto !important;
+  z-index: 3000 !important;
+}
+
+.face-command-card {
+  position: relative;
+  width: min(1080px, calc(100vw - 44px)) !important;
+  max-width: 1080px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  margin: auto;
+  padding: 0 !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--face-line) !important;
+  background: var(--face-bg) !important;
+  color: var(--face-text) !important;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .46) !important;
+  text-align: left !important;
+}
+
+.face-command-close {
+  top: 18px !important;
+  right: 18px !important;
+  width: 38px !important;
+  height: 38px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid var(--face-line) !important;
+  border-radius: 10px !important;
+  background: var(--face-panel-2) !important;
+  color: var(--face-text) !important;
+  box-shadow: none !important;
+}
+
+.face-command-close:hover {
+  background: #252f38 !important;
+  color: #fff !important;
+}
+
+.face-command-topbar {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 72px 16px 20px;
+  border-bottom: 1px solid var(--face-line);
+  background: #11171d;
+  border-radius: 14px 14px 0 0;
+}
+
+.face-command-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+}
+
+.face-command-brand-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--face-line);
+  border-radius: 10px;
+  background: var(--face-panel-2);
+  color: var(--face-accent);
+  font-size: 19px;
+}
+
+.face-command-brand > span:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.face-command-brand strong {
+  color: var(--face-text) !important;
+  font-size: 17px;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -.2px;
+}
+
+.face-command-brand small {
+  color: #7f8d99 !important;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.face-command-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #4a3c22;
+  border-radius: 9px;
+  background: rgba(213, 138, 18, .08);
+  color: #e5ad52;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.face-command-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(290px, .8fr);
+  gap: 18px;
+  padding: 18px;
+}
+
+.face-camera-console,
+.face-validation-console {
+  min-width: 0;
+  border: 1px solid var(--face-line);
+  border-radius: 10px;
+  background: var(--face-panel);
+}
+
+.face-camera-console {
+  padding: 18px;
+}
+
+.face-validation-console {
+  padding: 18px;
+}
+
+.face-command-heading,
+.face-command-card .face-flutter-header.face-command-heading {
+  padding: 0 !important;
+  margin: 0 0 14px !important;
+  text-align: left !important;
+}
+
+.face-command-heading .face-flutter-kicker {
+  margin: 0 0 7px !important;
+  color: var(--face-accent) !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: .12em !important;
+}
+
+.face-command-heading h2,
+.face-command-card .face-command-heading h2 {
+  margin: 0 !important;
+  color: var(--face-text) !important;
+  font-size: clamp(21px, 2.5vw, 27px) !important;
+  line-height: 1.12 !important;
+  font-weight: 740 !important;
+  letter-spacing: -.35px !important;
+}
+
+.face-command-heading p,
+.face-command-card .face-command-heading p {
+  max-width: 680px !important;
+  margin: 6px 0 0 !important;
+  color: var(--face-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+.face-command-camera-shell,
+.face-command-card .face-command-camera-shell {
+  display: block !important;
+  padding: 0 !important;
+}
+
+.face-command-card .camera-container.face-tech-camera,
+.face-enroll-card .camera-container.face-tech-camera {
+  position: relative;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 16 / 10 !important;
+  overflow: hidden;
+  border: 1px solid #495763 !important;
+  border-radius: 10px !important;
+  background: #090e13 !important;
+  box-shadow: none !important;
+}
+
+.face-command-card .camera-container.face-tech-camera #faceVideo,
+.face-enroll-card .camera-container.face-tech-camera #faceVideo {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transform: scaleX(-1) !important;
+}
+
+.face-command-card .camera-container.face-tech-camera #faceOverlay,
+.face-enroll-card .camera-container.face-tech-camera #faceOverlay {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 4 !important;
+  pointer-events: none !important;
+}
+
+.face-tech-guide {
+  position: absolute;
+  inset: 12% 25%;
+  z-index: 6;
+  pointer-events: none;
+  border: 1px solid rgba(213, 138, 18, .18);
+  border-radius: 48% 48% 42% 42% / 40% 40% 55% 55%;
+}
+
+.face-tech-corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-color: #e0a43f;
+  border-style: solid;
+  opacity: .95;
+}
+
+.face-tech-corner.c1 { left: -10px; top: -10px; border-width: 2px 0 0 2px; }
+.face-tech-corner.c2 { right: -10px; top: -10px; border-width: 2px 2px 0 0; }
+.face-tech-corner.c3 { left: -10px; bottom: -10px; border-width: 0 0 2px 2px; }
+.face-tech-corner.c4 { right: -10px; bottom: -10px; border-width: 0 2px 2px 0; }
+
+.face-scan-line {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 18%;
+  height: 2px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #e0a43f, transparent);
+  box-shadow: 0 0 12px rgba(224, 164, 63, .45);
+  animation: faceTechScan 2.1s ease-in-out infinite alternate;
+}
+
+@keyframes faceTechScan {
+  from { transform: translateY(0); opacity: .55; }
+  to { transform: translateY(210px); opacity: 1; }
+}
+
+.face-tech-badge {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 7px;
+  background: rgba(10, 15, 20, .78);
+  color: #dbe3e9;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  backdrop-filter: blur(7px);
+}
+
+.face-tech-badge-camera { left: 12px; }
+.face-tech-badge-camera i { color: var(--face-success); }
+.face-tech-badge-mode { right: 12px; color: #e8b159; }
+
+.face-command-card .camera-loading,
+.face-enroll-card .camera-loading {
+  background: #0b1015 !important;
+  color: var(--face-text) !important;
+  border-radius: 9px !important;
+}
+
+.face-command-card .camera-loading i,
+.face-enroll-card .camera-loading i {
+  color: var(--face-accent) !important;
+}
+
+.face-command-status,
+.face-command-card .face-status.face-status-flutter,
+.face-enroll-card .camera-status.face-command-status {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 12px 0 0 !important;
+  padding: 12px 13px !important;
+  border: 1px solid var(--face-line) !important;
+  border-radius: 9px !important;
+  background: #12191f !important;
+  color: var(--face-text) !important;
+  text-align: left !important;
+}
+
+.face-command-status strong,
+.face-command-card .face-command-status strong,
+.face-enroll-card .face-command-status strong {
+  display: block !important;
+  margin: 0 0 2px !important;
+  color: var(--face-text) !important;
+  font-size: 12px !important;
+  font-weight: 760 !important;
+}
+
+.face-command-status span,
+.face-command-card .face-command-status span,
+.face-enroll-card .face-command-status span {
+  display: block !important;
+  color: var(--face-muted) !important;
+  font-size: 10.5px !important;
+}
+
+.face-command-status .status-indicator,
+.face-command-status .indicator {
+  width: 9px !important;
+  height: 9px !important;
+  flex: 0 0 9px !important;
+  border-radius: 50% !important;
+  background: var(--face-accent) !important;
+  box-shadow: 0 0 0 4px rgba(213, 138, 18, .10);
+}
+
+.face-command-status.sucesso .status-indicator,
+.face-command-status.sucesso .indicator {
+  background: var(--face-success) !important;
+  box-shadow: 0 0 0 4px rgba(34, 169, 107, .10);
+}
+
+.face-command-status.erro .status-indicator,
+.face-command-status.erro .indicator {
+  background: var(--face-danger) !important;
+  box-shadow: 0 0 0 4px rgba(226, 85, 85, .10);
+}
+
+.face-command-progress {
+  height: 4px;
+  margin-top: 11px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #27313a;
+}
+
+.face-command-progress > span {
+  display: block;
+  width: 18%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b86d09, #e1a03d);
+  transition: width .28s ease, background .28s ease;
+}
+
+.face-validation-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-bottom: 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--face-line);
+}
+
+.face-validation-title > i {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(213, 138, 18, .10);
+  color: var(--face-accent);
+}
+
+.face-validation-title > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.face-validation-title strong {
+  color: var(--face-text) !important;
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.face-validation-title span {
+  color: var(--face-muted) !important;
+  font-size: 10px;
+}
+
+.face-validation-steps {
+  display: grid;
+  gap: 8px;
+}
+
+.face-validation-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 10px;
+  border: 1px solid #303b44;
+  border-radius: 9px;
+  background: #192027;
+  opacity: .72;
+  transition: border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+
+.face-validation-step.active {
+  opacity: 1;
+  border-color: #73521d;
+  background: rgba(213, 138, 18, .07);
+}
+
+.face-validation-step.complete {
+  opacity: 1;
+  border-color: rgba(34, 169, 107, .34);
+  background: rgba(34, 169, 107, .06);
+}
+
+.face-validation-step-icon {
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #232c34;
+  color: #83919d;
+}
+
+.face-validation-step.active .face-validation-step-icon { color: var(--face-accent); background: rgba(213, 138, 18, .10); }
+.face-validation-step.complete .face-validation-step-icon { color: var(--face-success); background: rgba(34, 169, 107, .10); }
+
+.face-validation-step > span:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.face-validation-step strong {
+  color: var(--face-text) !important;
+  font-size: 11.5px;
+  font-weight: 740;
+}
+
+.face-validation-step small {
+  color: var(--face-muted) !important;
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.face-command-security,
+.face-command-card .face-security.face-command-security {
+  max-width: none !important;
+  margin: 14px 0 0 !important;
+  padding: 11px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  border: 1px solid #303b44 !important;
+  border-radius: 9px !important;
+  background: #12191f !important;
+  color: var(--face-muted) !important;
+  font-size: 10px !important;
+  line-height: 1.4 !important;
+}
+
+.face-command-security i { color: #8996a1 !important; margin-top: 1px; }
+
+/* Cadastro facial em Minha Empresa */
+.face-enroll-card .face-enroll-layout {
+  grid-template-columns: minmax(0, 1.5fr) minmax(330px, .9fr);
+}
+
+.face-command-field {
+  margin: 0 0 12px !important;
+}
+
+.face-command-field label {
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 6px !important;
+  color: #dfe6eb !important;
+  font-size: 10.5px !important;
+  font-weight: 740 !important;
+}
+
+.face-command-field label i { color: var(--face-accent); }
+
+.face-command-field input {
+  width: 100%;
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid var(--face-line) !important;
+  border-radius: 8px !important;
+  outline: none;
+  background: #11181e !important;
+  color: var(--face-text) !important;
+  font-size: 11.5px;
+}
+
+.face-command-field input:focus {
+  border-color: #7b5b24 !important;
+  box-shadow: 0 0 0 3px rgba(213, 138, 18, .08) !important;
+}
+
+.face-command-field small {
+  display: block;
+  margin-top: 5px;
+  color: #7f8d99 !important;
+  font-size: 9.5px !important;
+}
+
+.face-command-consent {
+  display: flex !important;
+  gap: 9px !important;
+  align-items: flex-start !important;
+  margin: 0 0 12px !important;
+  padding: 11px !important;
+  border: 1px solid #303b44 !important;
+  border-radius: 8px !important;
+  background: #12191f !important;
+}
+
+.face-command-consent input { accent-color: var(--face-accent) !important; margin-top: 2px !important; }
+.face-command-consent span { color: var(--face-muted) !important; font-size: 9.8px !important; line-height: 1.45 !important; }
+
+.face-command-enroll-progress {
+  margin-top: 10px !important;
+  padding: 0 !important;
+}
+
+.face-command-enroll-progress .progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--face-muted) !important;
+  font-size: 9.5px !important;
+}
+
+.face-command-enroll-progress .progress-info strong { color: var(--face-text) !important; }
+.face-command-enroll-progress .progress-bar { height: 4px !important; margin-top: 6px !important; background: #27313a !important; border-radius: 99px !important; overflow: hidden; }
+.face-command-enroll-progress .progress-value { height: 100% !important; background: linear-gradient(90deg, #b86d09, #e1a03d) !important; border-radius: inherit; transition: width .25s ease; }
+
+.face-command-help {
+  margin: 12px 0 0 !important;
+  padding: 10px !important;
+  border: 1px solid #303b44 !important;
+  border-radius: 8px !important;
+  background: #12191f !important;
+  color: var(--face-muted) !important;
+  font-size: 9.7px !important;
+  line-height: 1.4 !important;
+}
+
+@media (max-width: 900px) {
+  .face-command-layout,
+  .face-enroll-card .face-enroll-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .face-validation-console {
+    padding: 15px;
+  }
+
+  .face-validation-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .face-command-modal { padding: 10px !important; }
+  .face-command-card { width: calc(100vw - 20px) !important; border-radius: 11px !important; }
+  .face-command-topbar { min-height: 68px; padding: 12px 58px 12px 12px; }
+  .face-command-state { display: none; }
+  .face-command-layout { padding: 10px; gap: 10px; }
+  .face-camera-console, .face-validation-console { padding: 12px; }
+  .face-validation-steps { grid-template-columns: 1fr; }
+  .face-command-card .camera-container.face-tech-camera,
+  .face-enroll-card .camera-container.face-tech-camera { aspect-ratio: 4 / 5 !important; }
+  .face-tech-guide { inset: 11% 18%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .face-scan-line { animation: none; top: 50%; }
+}
+
+
+/* Retry explicito quando a prova de vida expira sem movimento */
+.registration-face-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(184, 109, 9, .42);
+  border-radius: 8px;
+  background: rgba(184, 109, 9, .08);
+  color: #8a5208;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 740;
+  cursor: pointer;
+}
+
+.registration-face-retry:hover {
+  background: rgba(184, 109, 9, .14);
+  border-color: rgba(184, 109, 9, .62);
+}
+
+html[data-theme="escuro"] .registration-face-retry {
+  color: #f0b65e;
+  background: rgba(213, 138, 18, .10);
+  border-color: rgba(213, 138, 18, .34);
+}
+
+.registration-face-retry[hidden] { display: none !important; }
+
+
+/* =========================================================
+   CADASTRO FACIAL V10 — EMPLOYEE ENROLL COMPACT
+   Corrige herança do grid legado de presentation.css e
+   deixa o fluxo de cadastro com hierarquia mais profissional.
+   ========================================================= */
+.face-enroll-card.face-command-card {
+  display: block !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  grid-template-areas: none !important;
+  gap: 0 !important;
+  align-items: stretch !important;
+  width: min(980px, calc(100vw - 40px)) !important;
+  max-width: 980px !important;
+  max-height: calc(100dvh - 28px) !important;
+  overflow: hidden !important;
+}
+
+.face-enroll-card > .face-command-topbar,
+.face-enroll-card > .face-command-layout {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.face-enroll-card .face-command-topbar {
+  min-height: 66px;
+  padding: 12px 64px 12px 16px;
+}
+
+.face-enroll-card .face-command-brand-icon {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  font-size: 16px;
+}
+
+.face-enroll-card .face-command-brand strong {
+  font-size: 15px;
+}
+
+.face-enroll-card .face-command-brand small {
+  font-size: 8px;
+}
+
+.face-enroll-card .face-enroll-layout {
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, .85fr) !important;
+  gap: 14px !important;
+  padding: 14px !important;
+  max-height: calc(100dvh - 94px);
+  overflow-y: auto;
+}
+
+.face-enroll-card .face-camera-console,
+.face-enroll-card .face-validation-console {
+  padding: 14px;
+  border-radius: 9px;
+}
+
+.face-enroll-card .face-command-heading {
+  margin-bottom: 10px !important;
+}
+
+.face-enroll-card .face-command-heading h2 {
+  font-size: clamp(20px, 2vw, 24px) !important;
+}
+
+.face-enroll-card .face-command-heading p {
+  margin-top: 4px !important;
+  font-size: 11px !important;
+}
+
+.face-enroll-card .camera-container.face-tech-camera {
+  aspect-ratio: 16 / 9 !important;
+  max-width: none !important;
+  max-height: 390px !important;
+  margin: 0 !important;
+  border-radius: 9px !important;
+}
+
+.face-enroll-card .face-tech-guide {
+  inset: 10% 29%;
+}
+
+.face-enroll-card .face-command-status {
+  min-height: 54px;
+  margin-top: 10px !important;
+  padding: 10px 12px !important;
+}
+
+.face-enroll-card .face-command-status.erro {
+  border-color: rgba(226, 85, 85, .46) !important;
+  background: rgba(226, 85, 85, .08) !important;
+}
+
+.face-enroll-card .face-command-status.sucesso {
+  border-color: rgba(34, 169, 107, .38) !important;
+  background: rgba(34, 169, 107, .07) !important;
+}
+
+.face-enroll-card .face-command-status.erro strong {
+  color: #ffb6b6 !important;
+}
+
+.face-enroll-card .face-command-status.erro span {
+  color: #d8a6a6 !important;
+}
+
+.face-enroll-card .face-command-status.sucesso strong {
+  color: #9fe1bf !important;
+}
+
+.face-enroll-card .face-command-enroll-progress {
+  margin-top: 8px !important;
+}
+
+.face-enroll-card .face-validation-title {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.face-enroll-card .face-command-field,
+.face-enroll-card .face-command-consent {
+  margin-bottom: 9px !important;
+}
+
+.face-enroll-card .face-command-field input {
+  height: 38px;
+}
+
+.face-enroll-card .face-validation-steps {
+  gap: 7px;
+}
+
+.face-enroll-card .face-validation-step {
+  min-height: 54px;
+  padding: 8px 9px;
+}
+
+.face-enroll-card .face-validation-step-icon {
+  width: 31px;
+  height: 31px;
+  flex-basis: 31px;
+}
+
+.face-enroll-card .face-command-help {
+  margin-top: 9px !important;
+  padding: 8px 9px !important;
+}
+
+/* O modal de cadastro é sempre um console escuro e consistente,
+   independente do tema da tela Minha Empresa. */
+html:not([data-theme="escuro"]) .face-enroll-card.face-command-card,
+html:not([data-theme="escuro"]) .face-enroll-card .face-camera-console,
+html:not([data-theme="escuro"]) .face-enroll-card .face-validation-console {
+  color-scheme: dark;
+}
+
+@media (max-width: 900px) {
+  .face-enroll-card.face-command-card {
+    width: min(760px, calc(100vw - 24px)) !important;
+    max-height: calc(100dvh - 18px) !important;
+  }
+
+  .face-enroll-card .face-enroll-layout {
+    grid-template-columns: 1fr !important;
+    max-height: calc(100dvh - 82px);
+  }
+
+  .face-enroll-card .camera-container.face-tech-camera {
+    max-height: 360px !important;
+  }
+
+  .face-enroll-card .face-validation-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .face-enroll-card.face-command-card {
+    width: calc(100vw - 16px) !important;
+  }
+
+  .face-enroll-card .face-command-topbar {
+    min-height: 60px;
+    padding: 10px 52px 10px 10px;
+  }
+
+  .face-enroll-card .face-enroll-layout {
+    padding: 8px !important;
+    gap: 8px !important;
+  }
+
+  .face-enroll-card .face-camera-console,
+  .face-enroll-card .face-validation-console {
+    padding: 10px;
+  }
+
+  .face-enroll-card .camera-container.face-tech-camera {
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .face-enroll-card .face-tech-guide {
+    inset: 10% 22%;
+  }
+
+  .face-enroll-card .face-validation-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   CADASTRO FACIAL V11 — REMOVE LEGADO CLARO DO ENROLL
+   O modal biometrico e sempre um console escuro, inclusive
+   quando a tela Minha Empresa estiver no tema claro.
+   ========================================================= */
+.face-enroll-card.face-command-card {
+  background: #0d1217 !important;
+  border-color: #34404a !important;
+}
+
+.face-enroll-card .face-enroll-layout {
+  background: #0d1217 !important;
+}
+
+.face-enroll-card .face-camera-console,
+.face-enroll-card .face-validation-console {
+  background: #151b21 !important;
+  border: 1px solid #303b44 !important;
+  color: #f4f7f9 !important;
+}
+
+/* Neutraliza o card claro legado de empresa.css */
+.face-enroll-card .face-sample-name-field.face-command-field {
+  margin: 0 0 9px !important;
+  padding: 10px !important;
+  border: 1px solid #303b44 !important;
+  border-radius: 9px !important;
+  background: #12191f !important;
+  color: #f4f7f9 !important;
+  box-shadow: none !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field label {
+  margin: 0 0 7px !important;
+  color: #dfe6eb !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field label i {
+  color: #d58a12 !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field input {
+  height: 40px !important;
+  border: 1px solid #34404a !important;
+  border-radius: 8px !important;
+  background: #0f161c !important;
+  color: #f4f7f9 !important;
+  box-shadow: none !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field input::placeholder {
+  color: #687681 !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field input:focus {
+  border-color: #8d6422 !important;
+  box-shadow: 0 0 0 3px rgba(213, 138, 18, .08) !important;
+}
+
+.face-enroll-card .face-sample-name-field.face-command-field small {
+  margin-top: 6px !important;
+  color: #7f8d99 !important;
+}
+
+.face-enroll-card .face-command-consent {
+  background: #12191f !important;
+  border-color: #303b44 !important;
+}
+
+/* Protege contra regras de tema claro mais especificas em empresa.css. */
+html:not([data-theme="escuro"]) .face-enroll-card .face-sample-name-field,
+html:not([data-theme="escuro"]) .face-enroll-card .face-sample-name-field input,
+html:not([data-theme="escuro"]) .face-enroll-card .face-command-consent {
+  color-scheme: dark !important;
+}
+
+html:not([data-theme="escuro"]) .face-enroll-card .face-sample-name-field {
+  background: #12191f !important;
+  border-color: #303b44 !important;
+}
+
+html:not([data-theme="escuro"]) .face-enroll-card .face-sample-name-field input {
+  background: #0f161c !important;
+  border-color: #34404a !important;
+  color: #f4f7f9 !important;
+}

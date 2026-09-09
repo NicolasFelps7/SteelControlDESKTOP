@@ -9,11 +9,14 @@
   </title>
 <meta content="Acesse sua empresa no SteelControl e gerencie máquinas, equipes, manutenção, alertas e segurança industrial." name="description"/>
 <link href="assets/css/base.css?v=20260901_OPAQUE_DIALOGS" rel="stylesheet"/>
-<link href="assets/css/login.css?v=20260901_LOGIN_BRAND_DARK_WELCOME" rel="stylesheet"/>
+<link href="assets/css/login.css?v=20260908_FACE_MULTI_TEMPLATE_2FA_V13" rel="stylesheet"/>
 <link href="assets/vendor/steel-icons/steel-icons.css?v=1" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
 
   <link rel="stylesheet" href="assets/css/industrial-branding.css?v=20260907_MODAL_PRO_V5">
+
+  <link rel="stylesheet" href="assets/css/industrial-command-center.css?v=20260907_COMMAND_CENTER_FINAL">
+  <link rel="stylesheet" href="assets/css/facial-command-center.css?v=20260908_FACE_DESKTOP_V2">
 
 </head>
 <body class="login-shell" data-i18n-page-title="loginPageTitle">
@@ -327,6 +330,10 @@
       para cadastrar o rosto do administrador.
     </p>
   </div>
+  <button class="registration-face-retry" id="btnRefazerFaceCadastro" type="button" hidden>
+    <i class="fa-solid fa-rotate-right"></i>
+    <span data-i18n="retryFacialBiometric">Refazer biometria facial</span>
+  </button>
 </div>
 
 <!-- VERIFICAÇÃO DE E-MAIL: fica dentro do formulário e NÃO cria overlay -->
@@ -455,54 +462,109 @@
 </section>
 </main>
 <!-- =====================================================
-       MODAL FACIAL
+       MODAL FACIAL — BIOMETRIC COMMAND CENTER
   ====================================================== -->
-<div aria-hidden="true" class="face-modal" id="faceModal">
-<div class="face-card face-card-flutter">
-<button aria-label="Fechar reconhecimento facial" class="close-modal" data-i18n-aria-label="fecharReconhecimentoFacial" onclick="fecharFaceId()" type="button">
-<i class="fa-solid fa-xmark"></i>
-</button>
-<div class="face-flutter-header">
-<span class="face-flutter-kicker" data-i18n="reconhecimentoFacial">Reconhecimento facial</span>
-<h2 data-i18n="facePrepareTitulo">Prepare-se para o reconhecimento facial</h2>
-<p data-i18n="facePrepareTexto">
-        Centralize seu rosto dentro do oval. O reconhecimento acontece automaticamente.
-      </p>
-</div>
-<div class="face-oval-shell">
-<div class="camera-container face-oval-camera">
-<video autoplay="" id="faceVideo" muted="" playsinline=""></video>
-<canvas id="faceOverlay"></canvas>
-<div class="camera-loading" id="cameraLoading">
-<i class="fa-solid fa-spinner fa-spin"></i>
-<span data-i18n="iniciandoCamera">Iniciando câmera...</span>
-</div>
-<div aria-hidden="true" class="face-oval-guide"></div>
-</div>
-</div>
-<div class="face-status analisando face-status-flutter" id="faceStatus">
-<div class="status-indicator"></div>
-<div>
-<strong data-i18n="procurandoRosto" id="faceStatusTitulo">Procurando rosto...</strong>
-<span data-i18n="olharCamera" id="faceStatusTexto">Olhe diretamente para a câmera</span>
-</div>
-</div>
-<div class="face-auto-note">
-<i class="fa-solid fa-wand-magic-sparkles"></i>
-<span data-i18n="faceAutomatico">Reconhecimento automático — não é necessário apertar nenhum botão.</span>
-</div>
-<div class="face-security">
-<i class="fa-solid fa-shield-halved"></i>
-<span data-i18n="cameraSomenteAutenticacao">
-        A câmera é utilizada somente durante a autenticação.
+<div aria-hidden="true" class="face-modal face-command-modal" id="faceModal">
+  <div class="face-card face-card-flutter face-command-card">
+    <button aria-label="Fechar reconhecimento facial" class="close-modal face-command-close" data-i18n-aria-label="fecharReconhecimentoFacial" onclick="fecharFaceId()" type="button">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="face-command-topbar">
+      <div class="face-command-brand">
+        <span class="face-command-brand-icon"><i class="fa-solid fa-face-viewfinder"></i></span>
+        <span>
+          <strong data-i18n="reconhecimentoFacial">Reconhecimento facial</strong>
+          <small>STEELCONTROL • BIOMETRIC SECURITY CORE</small>
+        </span>
+      </div>
+      <span class="face-command-state" id="faceCommandState">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span data-i18n="faceAutomatico">Validação automática</span>
       </span>
-</div>
-</div>
+    </div>
+
+    <div class="face-command-layout">
+      <section class="face-camera-console">
+        <div class="face-flutter-header face-command-heading">
+          <span class="face-flutter-kicker" data-i18n="reconhecimentoFacial">Reconhecimento facial</span>
+          <h2 data-i18n="facePrepareTitulo">Prepare-se para o reconhecimento facial</h2>
+          <p data-i18n="facePrepareTexto">Centralize seu rosto no enquadramento. A validação acontece automaticamente.</p>
+        </div>
+
+        <div class="face-oval-shell face-command-camera-shell">
+          <div class="camera-container face-oval-camera face-tech-camera">
+            <video autoplay id="faceVideo" muted playsinline></video>
+            <canvas id="faceOverlay"></canvas>
+            <div class="camera-loading" id="cameraLoading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span data-i18n="iniciandoCamera">Iniciando câmera...</span>
+            </div>
+            <div aria-hidden="true" class="face-tech-guide">
+              <span class="face-tech-corner c1"></span>
+              <span class="face-tech-corner c2"></span>
+              <span class="face-tech-corner c3"></span>
+              <span class="face-tech-corner c4"></span>
+              <span class="face-scan-line"></span>
+            </div>
+            <span class="face-tech-badge face-tech-badge-camera"><i class="fa-solid fa-video"></i> CAM 01</span>
+            <span class="face-tech-badge face-tech-badge-mode"><i class="fa-solid fa-shield-halved"></i> VERIFY</span>
+          </div>
+        </div>
+
+        <div class="face-status analisando face-status-flutter face-command-status" id="faceStatus">
+          <div class="status-indicator"></div>
+          <div>
+            <strong data-i18n="procurandoRosto" id="faceStatusTitulo">Procurando rosto...</strong>
+            <span data-i18n="olharCamera" id="faceStatusTexto">Olhe diretamente para a câmera</span>
+          </div>
+        </div>
+
+        <div class="face-command-progress" aria-hidden="true">
+          <span id="faceCommandProgress"></span>
+        </div>
+      </section>
+
+      <aside class="face-validation-console">
+        <div class="face-validation-title">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <strong data-i18n="faceValidationAutomatic">Validação automática</strong>
+            <span data-i18n="faceFlowSupervised">Fluxo biométrico supervisionado</span>
+          </div>
+        </div>
+
+        <div class="face-validation-steps">
+          <div class="face-validation-step active" data-face-step="frontal">
+            <span class="face-validation-step-icon"><i class="fa-solid fa-crosshairs"></i></span>
+            <span><strong data-i18n="faceStepPositionTitle">Posição inicial</strong><small data-i18n="faceStepPositionText">Centralize o rosto e mantenha o enquadramento.</small></span>
+          </div>
+          <div class="face-validation-step" data-face-step="movimento">
+            <span class="face-validation-step-icon"><i class="fa-solid fa-arrows-left-right"></i></span>
+            <span><strong data-i18n="faceStepLivenessTitle">Prova de vida</strong><small data-i18n="faceStepLivenessText">Movimente levemente a cabeça quando solicitado.</small></span>
+          </div>
+          <div class="face-validation-step" data-face-step="retorno">
+            <span class="face-validation-step-icon"><i class="fa-solid fa-face-smile"></i></span>
+            <span><strong data-i18n="faceStepReturnTitle">Retorno ao centro</strong><small data-i18n="faceStepReturnText">Olhe novamente para a câmera.</small></span>
+          </div>
+          <div class="face-validation-step" data-face-step="verificacao">
+            <span class="face-validation-step-icon"><i class="fa-solid fa-user-shield"></i></span>
+            <span><strong data-i18n="faceStepVerifyTitle">Validando identidade</strong><small data-i18n="faceStepVerifyText">O backend confirma a identidade com segurança.</small></span>
+          </div>
+        </div>
+
+        <div class="face-security face-command-security">
+          <i class="fa-solid fa-lock"></i>
+          <span data-i18n="cameraSomenteAutenticacao">A câmera é utilizada somente durante a autenticação.</span>
+        </div>
+      </aside>
+    </div>
+  </div>
 </div>
 <!-- CANVAS -->
 <canvas id="captureCanvas" style="display:none"></canvas>
 <!-- SCRIPTS -->
-<script src="assets/js/config.js?v=20260907_REQUIRED_FACE_V7"></script>
-<script src="assets/js/login.js?v=20260907_REQUIRED_FACE_V7"></script>
+<script src="assets/js/config.js?v=20260907_LOGO_DARK_FIX"></script>
+<script src="assets/js/login.js?v=20260908_FACE_MULTI_TEMPLATE_2FA_V13"></script>
 </body>
 </html>

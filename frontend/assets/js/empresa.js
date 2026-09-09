@@ -325,6 +325,14 @@ let cadastrando = false;
 
 let framesCorretos = 0;
 
+// Cadastro facial protegido: frontal -> movimento -> retorno -> gravação.
+let etapaCadastroFacial = "frontal";
+let livenessCadastroBlob = null;
+let frontalCadastroBlob = null;
+let timeoutMovimentoCadastro = null;
+const FACE_ENROLL_MOVEMENT_TIMEOUT_MS = 8000;
+const FRAMES_RETORNO_NECESSARIOS = 2;
+
 // =====================================================
 // NAVEGAÇÃO / LOGO DA EMPRESA
 // =====================================================
@@ -3971,6 +3979,42 @@ formFuncionario
   );
 
 
+function limparTimeoutCadastroFacial() {
+  if (timeoutMovimentoCadastro) {
+    clearTimeout(timeoutMovimentoCadastro);
+    timeoutMovimentoCadastro = null;
+  }
+}
+
+function falharMovimentoCadastroFacial() {
+  if (
+    etapaCadastroFacial !== "movimento" ||
+    cadastrando ||
+    !faceModal?.classList.contains("ativo")
+  ) {
+    return;
+  }
+
+  limparTimeoutCadastroFacial();
+  pararCamera();
+  faceModal?.classList.remove("ativo");
+  usuarioFacialSelecionado = null;
+
+  notificarEmpresa(
+    "Prova de vida não detectada. O funcionário não movimentou a cabeça a tempo. Faça o cadastro facial novamente.",
+    "warning",
+    "Refaça a biometria"
+  );
+}
+
+function iniciarTimeoutCadastroFacial() {
+  limparTimeoutCadastroFacial();
+  timeoutMovimentoCadastro = setTimeout(
+    falharMovimentoCadastroFacial,
+    FACE_ENROLL_MOVEMENT_TIMEOUT_MS
+  );
+}
+
 // =====================================================
 // ABRIR FACIAL
 // =====================================================
@@ -4031,6 +4075,10 @@ async function abrirCadastroFacialFuncionario(
 
 
   framesCorretos = 0;
+  etapaCadastroFacial = "frontal";
+  livenessCadastroBlob = null;
+  frontalCadastroBlob = null;
+  limparTimeoutCadastroFacial();
 
   cadastrando = false;
 
@@ -4365,7 +4413,8 @@ async function analisarFrame() {
 
 
     processarAnalise(
-      dados
+      dados,
+      blob
     );
 
 
@@ -4398,105 +4447,121 @@ async function analisarFrame() {
 // =====================================================
 
 function processarAnalise(
-  dados
+  dados,
+  blobAtual = null
 ) {
 
   if (
     dados.detectado &&
     dados.bbox
   ) {
-
     desenharQuadrado(
       dados.bbox,
       dados.larguraImagem,
       dados.alturaImagem
     );
-
   } else {
-
     limparQuadrado();
-
   }
 
-
-  if (
-    dados.multiplosRostos
-  ) {
-
+  if (dados.multiplosRostos) {
     framesCorretos = 0;
-
     atualizarProgresso();
-
-
     alterarStatusCamera(
       "erro",
       "Mais de uma pessoa detectada",
       "Apenas o funcionário deve aparecer."
     );
-
-
     return;
-
   }
 
+  const yaw = Number(dados?.pose?.yaw);
 
-  if (
-    !dados.pronto
-  ) {
+  if (etapaCadastroFacial === "movimento") {
+    if (
+      dados.detectado &&
+      dados.quantidadeRostos === 1 &&
+      Number.isFinite(yaw) &&
+      Math.abs(yaw) >= 12 &&
+      blobAtual
+    ) {
+      limparTimeoutCadastroFacial();
+      livenessCadastroBlob = blobAtual;
+      etapaCadastroFacial = "retorno";
+      framesCorretos = 0;
+      atualizarProgresso();
+      alterarStatusCamera(
+        "sucesso",
+        "Movimento confirmado",
+        "Volte a olhar diretamente para a câmera."
+      );
+    } else {
+      alterarStatusCamera(
+        "analisando",
+        "Prova de vida",
+        "Vire levemente a cabeça. Você tem até 8 segundos."
+      );
+    }
+    return;
+  }
 
+  if (!dados.pronto) {
     framesCorretos = 0;
-
     atualizarProgresso();
-
-
     alterarStatusCamera(
-
-      dados.tipoOrientacao ===
-      "erro"
-
+      dados.tipoOrientacao === "erro"
         ? "erro"
-
         : "analisando",
-
       dados.detectado
-
         ? "Ajuste o rosto"
-
         : "Procurando rosto...",
-
       dados.orientacao ||
-      "Posicione o rosto corretamente."
-
+        "Posicione o rosto corretamente."
     );
-
-
     return;
-
   }
-
 
   framesCorretos++;
-
-
   atualizarProgresso();
 
+  if (etapaCadastroFacial === "frontal") {
+    alterarStatusCamera(
+      "sucesso",
+      "Posição correta",
+      `Mantenha-se parado (${framesCorretos}/${FRAMES_NECESSARIOS}).`
+    );
 
-  alterarStatusCamera(
-    "sucesso",
-    "Posição correta",
-    `Mantenha-se parado (${framesCorretos}/${FRAMES_NECESSARIOS}).`
-  );
-
-
-  if (
-    framesCorretos >=
-    FRAMES_NECESSARIOS
-  ) {
-
-    cadastrarEmbeddingFuncionario();
-
+    if (framesCorretos >= FRAMES_NECESSARIOS) {
+      if (blobAtual) {
+        frontalCadastroBlob = blobAtual;
+      }
+      etapaCadastroFacial = "movimento";
+      framesCorretos = 0;
+      atualizarProgresso();
+      iniciarTimeoutCadastroFacial();
+      alterarStatusCamera(
+        "analisando",
+        "Prova de vida",
+        "Vire levemente a cabeça. Você tem até 8 segundos."
+      );
+    }
+    return;
   }
 
+  if (etapaCadastroFacial === "retorno") {
+    alterarStatusCamera(
+      "sucesso",
+      "Prova de vida confirmada",
+      `Olhe para a câmera (${framesCorretos}/${FRAMES_RETORNO_NECESSARIOS}).`
+    );
+
+    if (
+      livenessCadastroBlob &&
+      framesCorretos >= FRAMES_RETORNO_NECESSARIOS
+    ) {
+      cadastrarEmbeddingFuncionario();
+    }
+  }
 }
 
 
@@ -4585,6 +4650,25 @@ async function cadastrarEmbeddingFuncionario() {
       "cadastro.jpg"
     );
 
+    if (!livenessCadastroBlob) {
+      throw new Error(
+        "A prova de vida é obrigatória. Refaça o cadastro facial."
+      );
+    }
+
+    if (frontalCadastroBlob) {
+      form.append(
+        "inicial",
+        frontalCadastroBlob,
+        "inicial.jpg"
+      );
+    }
+
+    form.append(
+      "liveness",
+      livenessCadastroBlob,
+      "liveness.jpg"
+    );
 
     form.append(
       "nomeFacial",
@@ -4616,15 +4700,37 @@ async function cadastrarEmbeddingFuncionario() {
       );
 
 
-    if (
-      !respostaNode.ok
-    ) {
+    if (!respostaNode.ok) {
+      const codigo = String(resultado?.codigo || "");
+
+      if (
+        codigo === "FACE_ALREADY_LINKED" ||
+        codigo === "FACE_PROFILE_ALREADY_REGISTERED"
+      ) {
+        const mensagemDuplicidade =
+          resultado.mensagem ||
+          "Este rosto já está cadastrado no SteelControl.";
+
+        fecharCameraFacial();
+
+        notificarEmpresa(
+          mensagemDuplicidade,
+          "error",
+          "Biometria já cadastrada"
+        );
+
+        if (mensagemEmpresa) {
+          mensagemEmpresa.textContent = mensagemDuplicidade;
+          mensagemEmpresa.className = "message error";
+        }
+
+        return;
+      }
 
       throw new Error(
         resultado.mensagem ||
         "Não foi possível salvar a facial."
       );
-
     }
 
 
@@ -5034,6 +5140,27 @@ function atualizarProgresso() {
 
   }
 
+  atualizarEtapasCadastroFacial(percentual);
+
+}
+
+
+function atualizarEtapasCadastroFacial(percentual = 0, forcarSeguro = false) {
+  const etapas = Array.from(document.querySelectorAll("[data-enroll-step]"));
+  if (!etapas.length) return;
+
+  const indiceAtual = forcarSeguro
+    ? 2
+    : percentual >= 100
+      ? 2
+      : percentual > 0
+        ? 1
+        : 0;
+
+  etapas.forEach((item, indice) => {
+    item.classList.toggle("complete", indice < indiceAtual);
+    item.classList.toggle("active", indice === indiceAtual);
+  });
 }
 
 
@@ -5358,7 +5485,7 @@ function alterarStatusCamera(
   ) {
 
     cameraStatus.className =
-      `camera-status ${tipo}`;
+      `camera-status ${tipo} face-command-status`;
 
   }
 
@@ -5380,6 +5507,10 @@ function alterarStatusCamera(
     cameraStatusTexto.textContent =
       texto;
 
+  }
+
+  if (cadastrando || /registrando|salvando|protegendo/i.test(`${titulo} ${texto}`)) {
+    atualizarEtapasCadastroFacial(100, true);
   }
 
 }
@@ -5458,7 +5589,10 @@ function pararCamera() {
   cadastrando = false;
 
   framesCorretos = 0;
-
+  etapaCadastroFacial = "frontal";
+  livenessCadastroBlob = null;
+  frontalCadastroBlob = null;
+  limparTimeoutCadastroFacial();
 
   atualizarProgresso();
 

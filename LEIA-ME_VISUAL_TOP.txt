@@ -1,0 +1,40 @@
+STEELCONTROL — VISUAL INDUSTRIAL COMMAND CENTER
+Data: 2026-09-07
+
+O QUE FOI ALTERADO
+- Nova camada: frontend/assets/css/industrial-command-center.css
+- Carregada por último em Home, Login, Máquinas, Dashboard e Minha Empresa.
+- Dashboard com linguagem de centro de operação industrial: sidebar grafite, KPIs em faixa, instrumentos compactos, painéis planos e hierarquia mais técnica.
+- Menos sombras, gradientes, cards arredondados e cores decorativas.
+- Âmbar reservado a ação/destaque; verde/amarelo/vermelho a estados operacionais.
+- Tema escuro e responsividade mantidos.
+
+O QUE NÃO FOI ALTERADO
+- Backend / Express
+- Prisma / PostgreSQL
+- Reconhecimento facial
+- E-mail
+- IHM
+- Telemetria
+- Device Key
+- Rotas
+- Segurança e permissões
+
+VALIDAÇÃO EXECUTADA
+- check-production: OK
+- validar-estatico: OK
+- controller panels / IHM: OK
+- Dobot: OK
+- secret scan: OK
+- Docker hardening: OK
+- platform hardening: OK
+- code freeze: OK (131 arquivos)
+
+OBSERVAÇÃO DE TESTES NODE
+A suíte funcional já havia sido validada na mesma base. Nesta execução isolada, 47 testes rodaram e passaram; discovery-network não iniciou porque o node_modules reutilizado no ambiente de auditoria não continha dotenv/config. O pacote do projeto declara dotenv normalmente no package.json/package-lock. Isso não foi causado pela camada visual.
+
+COMO USAR
+1. Faça backup da pasta atual.
+2. Extraia o ZIP por cima da versão TOP atual, aceitando substituir os arquivos.
+3. Inicie normalmente com INICIAR_STEELCONTROL.ps1.
+4. Se o navegador mantiver CSS antigo, use Ctrl+F5 uma única vez.
