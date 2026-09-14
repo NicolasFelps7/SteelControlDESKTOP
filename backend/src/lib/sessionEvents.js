@@ -37,7 +37,15 @@ export function streamSessionEvents(req, res) {
 
   res.write("retry: 3000\n");
   res.write("event: ready\n");
-  res.write(`data: ${JSON.stringify({ conectado: true })}\n\n`);
+  res.write(`data: ${JSON.stringify({
+    conectado: true,
+    usuario: {
+      id: req.auth.usuarioId,
+      nome: req.auth.nome,
+      email: req.auth.email,
+      cargo: req.auth.cargo
+    }
+  })}\n\n`);
 
   const heartbeat = setInterval(() => {
     if (!res.writableEnded) {
@@ -85,5 +93,39 @@ export function revogarSessoesUsuario(usuarioId, motivo = "Seu acesso ao SteelCo
   }
 
   clientesPorUsuario.delete(id);
+  return enviados;
+}
+
+export function atualizarPerfilSessaoUsuario(usuario) {
+  const id = Number(usuario?.id);
+  const clientes = clientesPorUsuario.get(id);
+
+  if (!Number.isInteger(id) || !clientes?.size) {
+    return 0;
+  }
+
+  const payload = JSON.stringify({
+    usuario: {
+      id,
+      nome: usuario?.nome || "",
+      email: usuario?.email || "",
+      cargo: usuario?.cargo || ""
+    },
+    atualizadoEm: new Date().toISOString()
+  });
+
+  let enviados = 0;
+  for (const res of [...clientes]) {
+    try {
+      if (!res.writableEnded) {
+        res.write("event: profile\n");
+        res.write(`data: ${payload}\n\n`);
+        enviados += 1;
+      }
+    } catch {
+      // O cliente tentará reconectar e receberá o perfil atual no evento ready.
+    }
+  }
+
   return enviados;
 }

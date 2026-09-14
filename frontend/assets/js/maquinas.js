@@ -330,8 +330,10 @@ function formatarProtocoloLista(protocolo) {
   const mapa = {
     HTTP_REST: "HTTP / REST",
     USB_SERIAL: "USB / Serial",
+    SERIAL_JSON: "Serial genérica / JSON",
     MQTT: "MQTT",
     MODBUS_TCP: "Modbus TCP",
+    MODBUS_RTU: "Modbus RTU",
     OPC_UA: "OPC UA",
     TCP_IP: "TCP/IP",
     OUTRO: "Outro"
@@ -419,7 +421,7 @@ async function copiarTextoSeguro(valor) {
   }
 }
 
-function mostrarDeviceKey(chave, titulo = "Chave do equipamento") {
+function mostrarDeviceKey(chave, titulo = "Chave do equipamento", maquinaId = null) {
   if (!chave) {
     return;
   }
@@ -439,12 +441,18 @@ function mostrarDeviceKey(chave, titulo = "Chave do equipamento") {
         O SteelControl salva somente o hash da credencial.
       </p>
 
+      ${maquinaId ? `<div class="device-key-machine-id">ID da máquina: <strong>${escaparHtml(maquinaId)}</strong></div>` : ""}
       <code class="device-key-code">${escaparHtml(chave)}</code>
 
       <div class="device-key-actions">
+        <button type="button" class="device-key-edge-copy" ${maquinaId ? "" : "disabled"}>
+          <i class="fa-solid fa-plug-circle-check"></i>
+          Copiar para SteelControl Edge
+        </button>
+
         <button type="button" class="device-key-copy">
           <i class="fa-regular fa-copy"></i>
-          Copiar chave
+          Copiar só a chave
         </button>
 
         <button type="button" class="device-key-close">
@@ -455,6 +463,26 @@ function mostrarDeviceKey(chave, titulo = "Chave do equipamento") {
   `;
 
   document.body.appendChild(overlay);
+
+  overlay
+    .querySelector(".device-key-edge-copy")
+    ?.addEventListener("click", async () => {
+      if (!maquinaId) return;
+      const pacote = JSON.stringify({
+        steelControlEdge: 1,
+        server: String(API_URL || window.STEELCONTROL_API_URL || window.location.origin).replace(/\/$/, ""),
+        machineId: Number(maquinaId),
+        deviceKey: chave
+      });
+      const ok = await copiarTextoSeguro(pacote);
+      window.SteelUI?.toast?.({
+        tipo: ok ? "success" : "error",
+        titulo: ok ? "Pacote do Edge copiado" : "Não foi possível copiar",
+        mensagem: ok
+          ? "Abra o SteelControl Edge e clique em Importar do clipboard."
+          : "Copie a Device Key e o ID da máquina manualmente."
+      });
+    });
 
   overlay
     .querySelector(".device-key-copy")
@@ -510,7 +538,7 @@ async function renovarChaveMaquina(maquina) {
       throw new Error(dados.mensagem || "Não foi possível gerar a nova chave.");
     }
 
-    mostrarDeviceKey(dados.deviceKey, `Nova chave — ${maquina.nome}`);
+    mostrarDeviceKey(dados.deviceKey, `Nova chave — ${maquina.nome}`, maquina.id);
     window.SteelUI?.toast?.({
       tipo: "success",
       titulo: "Nova chave gerada",
@@ -947,7 +975,7 @@ function renderDispositivosDescobertos() {
   if (!dispositivosDescobertos.length) {
     grid.innerHTML = `
       <div class="discovery-empty">
-        Nenhum equipamento SteelControl respondeu ainda. Use “Procurar novamente”, confira o diagnóstico abaixo ou detecte pelo IP quando o broadcast estiver bloqueado.
+        Nenhum equipamento respondeu ainda. Abra o SteelControl Edge para detectar USB/Serial ou use “Procurar novamente” para equipamentos de rede.
       </div>`;
     return;
   }
@@ -994,7 +1022,7 @@ async function carregarDispositivosDescobertos({ silencioso = false } = {}) {
     dispositivosDescobertos = Array.isArray(dados) ? dados : [];
     renderDispositivosDescobertos();
     if (!silencioso && dispositivosDescobertos.length) {
-      discoveryMessage(`${dispositivosDescobertos.length} equipamento(s) compatível(is) visível(is) na rede.`, "sucesso");
+      discoveryMessage(`${dispositivosDescobertos.length} equipamento(s) compatível(is) encontrado(s) na rede/Edge.`, "sucesso");
     }
   } catch (erro) {
     if (!silencioso) discoveryMessage(erro?.message || "Erro ao consultar equipamentos da rede.", "erro");
@@ -1053,7 +1081,7 @@ async function aprovarDispositivoDescoberto(encodedId) {
 
     discoveryMessage(dados.mensagem || "Equipamento adicionado.", "sucesso");
     if (dados.deviceKey) {
-      mostrarDeviceKey(dados.deviceKey, "Chave do equipamento — configuração manual necessária");
+      mostrarDeviceKey(dados.deviceKey, "Chave do equipamento — configuração manual necessária", dados.maquinaId);
     }
     await Promise.all([carregarMaquinas(), carregarDispositivosDescobertos({ silencioso: true })]);
   } catch (erro) {
@@ -2796,7 +2824,8 @@ formMaquina
             dados.deviceKey,
             editando
               ? "Chave gerada para o equipamento"
-              : "Chave do novo equipamento"
+              : "Chave do novo equipamento",
+            dados.maquina?.id || maquinaEditandoId
           );
         }
 

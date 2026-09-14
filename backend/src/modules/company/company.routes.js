@@ -108,7 +108,10 @@ const uploadFace =
       const tiposPermitidos = [
         "image/jpeg",
         "image/png",
-        "image/webp"
+        "image/webp",
+        // Flutter/Android pode não fornecer MIME no MultipartFile.
+        // A assinatura real dos bytes é validada em faceApi.js.
+        "application/octet-stream"
       ];
 
       if (

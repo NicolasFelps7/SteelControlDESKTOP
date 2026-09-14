@@ -1,0 +1,12 @@
+SteelControl Edge 2.1.1 — correção do cadastro local
+
+Correções:
+- + Adicionar agora cria um rascunho e NÃO o perde ao atualizar a lista.
+- Nova máquina só entra em “Máquinas configuradas” depois de “Salvar máquina”.
+- Botão “Cancelar” descarta o rascunho com confirmação.
+- “Importar” explica corretamente que é necessário copiar um pacote pelo Desktop/Mobile.
+- Importar cancela qualquer rascunho pendente e salva a máquina provisionada.
+
+IMPORTANTE:
+Para salvar uma máquina manualmente, ID da máquina e Device Key precisam vir de uma máquina cadastrada no SteelControl.
+O Edge não cria uma segunda máquina no servidor; ele vincula a integração física à máquina já cadastrada.

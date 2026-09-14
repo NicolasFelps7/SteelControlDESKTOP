@@ -8945,6 +8945,37 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
               limparSessao(dados?.motivo || "Sua sessão foi encerrada pelo administrador.");
               return;
             }
+
+            if (eventoAtual === "ready" || eventoAtual === "profile") {
+              const usuario = dados?.usuario;
+              if (usuario && Number(usuario.id) > 0) {
+                const cargoAnterior = String(localStorage.getItem("cargoUsuario") || "").toUpperCase();
+                const cargoNovo = String(usuario.cargo || "").toUpperCase();
+
+                localStorage.setItem("usuarioId", String(usuario.id));
+                localStorage.setItem("nomeUsuario", usuario.nome || "");
+                localStorage.setItem("cargoUsuario", usuario.cargo || "");
+                localStorage.setItem("cargo", usuario.cargo || "");
+
+                try {
+                  const atual = JSON.parse(localStorage.getItem("usuarioLogado") || "{}");
+                  localStorage.setItem("usuarioLogado", JSON.stringify({
+                    ...atual,
+                    id: usuario.id,
+                    nome: usuario.nome || atual.nome || "",
+                    email: usuario.email || atual.email || "",
+                    cargo: usuario.cargo || atual.cargo || ""
+                  }));
+                } catch (_) {}
+
+                // Se o cargo mudou, recarrega apenas a tela atual. A sessão permanece aberta.
+                // Assim menus/botões passam a refletir a nova permissão imediatamente.
+                if (eventoAtual === "profile" && cargoNovo && cargoNovo !== cargoAnterior) {
+                  window.location.reload();
+                  return;
+                }
+              }
+            }
           }
         }
       } catch (erro) {

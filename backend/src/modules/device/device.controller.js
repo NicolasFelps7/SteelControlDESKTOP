@@ -81,6 +81,11 @@ export async function configuracaoDevice(req, res) {
     nome: maquina.nome,
     controlador: maquina.controlador,
     protocolo: maquina.protocolo,
+    host: maquina.host,
+    porta: maquina.porta,
+    unitId: maquina.unitId,
+    endpoint: maquina.endpoint,
+    topico: maquina.topico,
     intervaloLeitura: maquina.intervaloLeitura,
     integracaoMeta: maquina.integracaoMeta ?? null,
     limites: {

@@ -315,6 +315,10 @@ let empresaAtual = null;
 
 let usuarioFacialSelecionado = null;
 
+// Funcionário recém-criado só é mantido ativo após concluir a facial.
+let cadastroFacialObrigatorioUsuarioId = null;
+let cadastroFacialConcluido = false;
+
 let stream = null;
 
 let intervaloAnalise = null;
@@ -3963,6 +3967,15 @@ formFuncionario
 
         fecharNovoFuncionario();
 
+        // SteelControl 1.0: cadastro de funcionário e biometria formam
+        // um único fluxo. Se a facial for cancelada/falhar, a conta
+        // recém-criada é desativada automaticamente.
+        if (resultado.usuario?.id) {
+          cadastroFacialObrigatorioUsuarioId = Number(resultado.usuario.id);
+          cadastroFacialConcluido = false;
+          await abrirCadastroFacialFuncionario(resultado.usuario.id);
+        }
+
 
       } catch (erro) {
 
@@ -4767,6 +4780,11 @@ async function cadastrarEmbeddingFuncionario() {
       facialCadastrada: true
     };
 
+    if (Number(cadastroFacialObrigatorioUsuarioId) === Number(usuarioFacialSelecionado.id)) {
+      cadastroFacialConcluido = true;
+      cadastroFacialObrigatorioUsuarioId = null;
+    }
+
     fecharCameraFacial();
 
     atualizarFuncionarioLocal(
@@ -5522,16 +5540,43 @@ function alterarStatusCamera(
 
 function fecharCameraFacial() {
 
-  pararCamera();
+  const usuarioPendente = cadastroFacialObrigatorioUsuarioId;
+  const deveReverter =
+    usuarioPendente &&
+    !cadastroFacialConcluido;
 
+  pararCamera();
 
   faceModal?.classList.remove(
     "ativo"
   );
 
+  usuarioFacialSelecionado = null;
 
-  usuarioFacialSelecionado =
-    null;
+  if (deveReverter) {
+    cadastroFacialObrigatorioUsuarioId = null;
+    cadastroFacialConcluido = false;
+
+    // DELETE preserva a auditoria, mas revoga imediatamente acesso e
+    // biometria. Uma nova contratação pode reativar o mesmo cadastro.
+    api(`/empresa/usuarios/${usuarioPendente}`, { method: "DELETE" })
+      .then(() => {
+        removerFuncionarioLocal(usuarioPendente);
+        notificarEmpresa(
+          "Cadastro cancelado porque a biometria facial não foi concluída.",
+          "warning",
+          "Funcionário não ativado"
+        );
+      })
+      .catch(() => {
+        carregarFuncionarios({ silencioso: true }).catch(() => {});
+        notificarEmpresa(
+          "A facial não foi concluída e não foi possível reverter a conta automaticamente. Revise o funcionário antes de continuar.",
+          "error",
+          "Atenção"
+        );
+      });
+  }
 
 }
 

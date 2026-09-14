@@ -1,0 +1,23 @@
+STEELCONTROL EDGE 2.1 — DESCOBERTA UNIFICADA
+
+O que mudou:
+- A descoberta do Desktop/Mobile continua procurando equipamentos na rede.
+- O SteelControl Edge agora também anuncia hardware USB/Serial conectado ao PC industrial.
+- Dobot/portas COM encontrados pelo Edge aparecem na mesma lista de descoberta com origem EDGE.
+- Ao aprovar um equipamento EDGE, o backend cria a máquina, gera a Device Key e entrega a credencial automaticamente ao Edge.
+- O Edge cria/atualiza o perfil local e mantém comandos físicos BLOQUEADOS por padrão.
+- Não é necessário copiar Device Key nem editar .env nesse fluxo.
+
+Fluxo:
+1. Abra o backend SteelControl e o SteelControl Edge no PC industrial.
+2. Conecte o Dobot/equipamento serial ao PC do Edge.
+3. No Desktop OU Mobile, abra Máquinas > Descoberta automática > Procurar novamente.
+4. O item aparecerá com origem EDGE.
+5. Clique Adicionar/Aprovar.
+6. A máquina será cadastrada e provisionada no Edge automaticamente.
+7. No Edge, confira a porta/driver e teste em modo seguro antes de liberar comandos.
+
+Rede:
+- UDP 4210: descoberta.
+- TCP 4211: provisionamento local do Edge.
+- O Firewall do Windows pode solicitar permissão na primeira execução.

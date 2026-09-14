@@ -1,0 +1,14 @@
+SteelControl — atualização imediata de permissões em sessão
+
+Correção:
+- cargo/nome/e-mail alterados por um administrador são enviados em tempo real para sessões já abertas;
+- a sessão NÃO exige logout/login quando apenas o cargo/perfil muda;
+- o Desktop atualiza o armazenamento local e recarrega a tela atual automaticamente quando o cargo muda;
+- o backend continua sendo a fonte de verdade e consulta o cargo atual no banco a cada requisição protegida;
+- alteração de senha ou desativação continua revogando a sessão por segurança.
+
+Teste esperado:
+1. entrar como SUPERVISOR em um navegador;
+2. em outro dispositivo, alterar o cargo para OPERADOR;
+3. sem fazer logout, a tela do Supervisor recarrega;
+4. HOME/Ventosa/Garra/PTP ficam bloqueados e PARAR continua permitido.

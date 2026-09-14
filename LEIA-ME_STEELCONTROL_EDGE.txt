@@ -1,0 +1,20 @@
+STEELCONTROL EDGE 2.0
+=====================
+
+O Edge agora aceita várias máquinas no mesmo computador e possui drivers para:
+Dobot, Modbus TCP/RTU, OPC UA, MQTT, HTTP/REST, TCP/IP JSON e Serial JSON.
+
+INSTALAÇÃO:
+1) Execute INSTALAR_STEELCONTROL_EDGE.ps1 uma vez.
+2) Use o atalho SteelControl Edge criado na Área de Trabalho.
+3) Cadastre a máquina no SteelControl e gere a Device Key.
+4) Clique em "Copiar para SteelControl Edge" no Desktop ou preencha Servidor + ID + Device Key.
+5) No Edge, clique em Importar, Testar credencial e Salvar.
+6) Driver AUTO é o recomendado: ele usa controlador/protocolo do cadastro da máquina.
+7) Clique Iniciar esta máquina ou Iniciar todas.
+
+SEGURANÇA:
+- Device Key protegida com DPAPI do Windows.
+- Comandos físicos bloqueados por padrão.
+- Para liberar comandos é necessário digitar LIBERAR.
+- O Edge não substitui E-stop, Safety PLC, relés ou intertravamentos físicos.

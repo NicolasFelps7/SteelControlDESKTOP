@@ -1,0 +1,19 @@
+SteelControl DESKTOP — Estabilização 1.0 (13/09/2026)
+
+Correções desta rodada:
+- Backend facial aceita upload móvel sem MIME específico (application/octet-stream), mas valida a assinatura real dos bytes antes de encaminhar à Face API.
+- JPEG, PNG e WEBP são normalizados para o MIME correto no Node -> Python.
+- Cadastro de funcionário no Desktop agora abre imediatamente o cadastro facial.
+- Se a biometria obrigatória do funcionário recém-criado for cancelada/não concluída, a conta é desativada automaticamente e o acesso/biometria são revogados, preservando auditoria.
+- Cadastro facial concluído mantém o funcionário ativo normalmente.
+
+Arquivos alterados:
+backend/src/lib/faceApi.js
+backend/src/modules/company/company.routes.js
+frontend/assets/js/empresa.js
+
+Validação feita neste pacote:
+- node --check nos 3 arquivos alterados: OK.
+- O pacote recebido não continha backend/node_modules, portanto a suíte npm não foi executada neste ambiente.
+
+Depois de extrair/substituir, instale dependências se necessário e inicie o SteelControl normalmente.

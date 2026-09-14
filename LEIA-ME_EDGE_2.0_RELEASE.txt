@@ -1,0 +1,25 @@
+STEELCONTROL EDGE 2.0 — RELEASE MULTI-MÁQUINA
+=============================================
+
+O que mudou:
+- Edge agora administra várias máquinas no mesmo computador.
+- Driver AUTO escolhe o adaptador conforme o cadastro da máquina.
+- Drivers: Dobot Magician, Modbus TCP, Modbus RTU, OPC UA, MQTT,
+  HTTP/REST, TCP/IP JSON, Serial JSON e MOCK.
+- Device Key individual por máquina protegida com Windows DPAPI.
+- Comandos físicos bloqueados por padrão e liberados somente com confirmação LIBERAR.
+- O backend entrega ao Edge host, porta, Unit ID, endpoint e tópico cadastrados.
+- Desktop e Mobile passam a permitir Modbus RTU e Serial JSON.
+- Mobile pode copiar o pacote de provisionamento do Edge diretamente na tela da Device Key.
+
+Instalação do Edge:
+1. Na raiz do Desktop execute INSTALAR_STEELCONTROL_EDGE.ps1.
+2. Abra o atalho SteelControl Edge.
+3. Cadastre uma máquina real e gere a Device Key.
+4. Importe o pacote no Edge e clique em Testar credencial.
+5. Deixe Driver=AUTO, salvo necessidade específica.
+6. Salve e inicie a máquina. Para várias máquinas use Iniciar todas.
+
+IMPORTANTE:
+O Edge não substitui E-stop físico, Safety PLC, relé de segurança,
+contatores, cortina de luz ou intertravamentos da máquina.

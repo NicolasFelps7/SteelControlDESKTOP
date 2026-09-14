@@ -64,7 +64,8 @@ import {
 } from "../../lib/realtime.js";
 
 import {
-  revogarSessoesUsuario
+  revogarSessoesUsuario,
+  atualizarPerfilSessaoUsuario
 } from "../../lib/sessionEvents.js";
 
 
@@ -2017,6 +2018,12 @@ export async function atualizarUsuario(
           ? "Seu acesso ao SteelControl foi encerrado pelo administrador."
           : "Sua senha foi alterada. Entre novamente para continuar."
       );
+    }
+
+    // Cargo/nome/e-mail passam a valer imediatamente nas sessões já abertas.
+    // Alterações de senha/desativação continuam revogando a sessão por segurança.
+    if (!revogarPorDesativacao && !revogarPorSenha) {
+      atualizarPerfilSessaoUsuario(atualizado);
     }
 
 

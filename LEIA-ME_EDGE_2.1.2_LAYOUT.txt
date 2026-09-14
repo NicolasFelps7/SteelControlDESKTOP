@@ -1,0 +1,14 @@
+SteelControl Edge 2.1.2 — correção de layout
+
+Correções:
+- Botões "Salvar máquina" e "Cancelar" agora ficam em um rodapé fixo, sempre visível.
+- A área de configuração ganhou rolagem vertical para resoluções menores.
+- O rodapé também mantém "Testar credencial", "Iniciar esta máquina" e "Parar" acessíveis.
+- Mantido o fluxo de rascunho da versão 2.1.1: nova máquina só entra na lista após Salvar.
+
+Instalação do patch:
+1. Feche o SteelControl Edge.
+2. Extraia o ZIP na raiz do SteelControlDESKTOP e substitua os arquivos.
+3. Abra novamente pelo atalho SteelControl Edge.
+
+Não é necessário reinstalar dependências.

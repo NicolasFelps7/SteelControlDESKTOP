@@ -611,10 +611,12 @@
               <select id="protocoloInput">
                 <option value="">Configurar depois</option>
                 <option value="MODBUS_TCP">Modbus TCP</option>
+                <option value="MODBUS_RTU">Modbus RTU</option>
                 <option value="OPC_UA">OPC UA</option>
                 <option value="MQTT">MQTT</option>
                 <option value="HTTP_REST">HTTP / REST</option>
                 <option value="USB_SERIAL">USB / Serial (Dobot)</option>
+                <option value="SERIAL_JSON">Serial genérica / JSON</option>
                 <option value="TCP_IP">TCP/IP</option>
                 <option value="OUTRO">Outro</option>
               </select>
@@ -899,8 +901,8 @@
       <div class="device-discovery-header">
         <div>
           <span class="section-label">DESCOBERTA AUTOMÁTICA</span>
-          <h2>Equipamentos encontrados na rede</h2>
-          <p>Identifique equipamentos compatíveis na rede local, revise os dados encontrados e aprove o cadastro com segurança.</p>
+          <h2>Equipamentos encontrados na rede e no Edge</h2>
+          <p>Descubra equipamentos na rede local e hardware USB/Serial detectado pelo SteelControl Edge. Revise a origem e aprove o cadastro com segurança.</p>
         </div>
         <button type="button" class="discovery-scan-btn" id="discoveryScanBtn" onclick="varrerDispositivos()">
           <i class="fa-solid fa-rotate"></i>
