@@ -100,6 +100,25 @@ Usuário seed:
 - `admin@steelcontrol.com`
 - `Steel123!`
 
+
+## Backup e restauração
+
+O projeto inclui backup local validado do PostgreSQL e das configurações essenciais:
+
+```powershell
+.\BACKUP_STEELCONTROL.ps1
+```
+
+Os backups são gravados em `backups/`, possuem manifesto SHA-256 e não são versionados no Git. A configuração `backend/.env` é armazenada no backup protegida por Windows DPAPI, nunca em texto puro.
+
+Para restaurar, feche o SteelControl e use:
+
+```powershell
+.\RESTAURAR_STEELCONTROL.ps1 -Backup ".\backups\SteelControl_YYYYMMDD_HHMMSS_manual"
+```
+
+O restore cria um backup de segurança do estado atual antes de alterar o banco. Consulte `docs/BACKUP_RESTAURACAO.md`.
+
 ## Integração de dispositivo
 
 Ao cadastrar uma máquina, o SteelControl gera uma chave única. O dispositivo envia para:
@@ -208,3 +227,25 @@ Documentação:
 
 O arquivo `CODE_FREEZE.sha256` comprova a integridade dos arquivos funcionais congelados.
 
+
+## Restore interativo 1.0.2
+
+Para restaurar, feche o SteelControl/backend e execute:
+
+```powershell
+.\RESTAURAR_STEELCONTROL.ps1
+```
+
+O script lista os backups validos em `backups/` e permite escolher pelo numero. Antes de alterar o banco, ele valida os checksums, mostra o resumo do snapshot, cria automaticamente um backup `pre_restore` do estado atual e exige a confirmacao `RESTAURAR`.
+
+Para selecionar automaticamente o backup mais recente:
+
+```powershell
+.\RESTAURAR_STEELCONTROL.ps1 -Latest
+```
+
+Ainda e possivel informar um backup especifico:
+
+```powershell
+.\RESTAURAR_STEELCONTROL.ps1 -Backup ".\backups\SteelControl_YYYYMMDD_HHMMSS_manual"
+```

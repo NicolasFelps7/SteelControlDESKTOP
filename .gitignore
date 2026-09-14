@@ -43,3 +43,7 @@ backend-e2e.log
 # Pacotes locais
 *.zip
 *.rar
+
+# Backups locais do SteelControl (dados sensiveis)
+backups/*
+!backups/.gitkeep

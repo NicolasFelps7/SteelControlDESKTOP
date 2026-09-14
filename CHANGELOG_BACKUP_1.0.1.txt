@@ -1,0 +1,6 @@
+SteelControl Backup/Restore 1.0.1 - 2026-09-14
+
+Correcoes:
+- Compatibilidade com PostgreSQL instalado em pasta de versao inteira, ex.: PostgreSQL\\18.
+- Busca de pg_dump/pg_restore nao falha mais ao converter "18" para System.Version.
+- Mesma correcao aplicada ao backup e a restauracao.

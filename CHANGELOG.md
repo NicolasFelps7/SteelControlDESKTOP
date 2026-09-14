@@ -110,3 +110,12 @@ Mudanças somente na camada de engenharia/entrega:
 - Melhorada legibilidade do título e status do controlador.
 - IHM supervisória recebeu superfícies mais técnicas, menos arredondamento e maior contraste.
 - Tema escuro da IHM refinado sem alterar comandos, telemetria ou regras de segurança.
+
+## 2026-09-14 — Backup/Restore 1.0 e organização
+
+- backup PostgreSQL com `pg_dump` e manifesto SHA-256;
+- `backend/.env` protegido por DPAPI dentro do backup;
+- restauração com backup de segurança prévio e confirmação explícita;
+- perfis do SteelControl Edge incluídos opcionalmente;
+- `backups/` ignorado pelo Git;
+- manifesto `CODE_FREEZE.sha256` atualizado após correções validadas de sessão/Edge, corrigindo o Quality Gate do GitHub.

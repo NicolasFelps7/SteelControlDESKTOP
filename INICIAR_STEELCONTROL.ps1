@@ -64,15 +64,17 @@ if (-not (Test-Path $EnvFile)) {
   exit 1
 }
 
-# PostgreSQL do ambiente utilizado durante o desenvolvimento do TCC.
+# Detecta automaticamente o servico PostgreSQL instalado (14, 15, 16, 17, 18...).
 try {
-  $Pg = Get-Service -Name "postgresql-x64-18" -ErrorAction SilentlyContinue
+  $Pg = Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^postgresql' } | Sort-Object Name -Descending | Select-Object -First 1
   if ($Pg -and $Pg.Status -ne "Running") {
-    Write-Host "Tentando iniciar PostgreSQL..." -ForegroundColor Yellow
-    Start-Service "postgresql-x64-18"
+    Write-Host "Tentando iniciar PostgreSQL ($($Pg.Name))..." -ForegroundColor Yellow
+    Start-Service $Pg.Name
   }
   if ($Pg) {
-    Write-Host "PostgreSQL: OK" -ForegroundColor Green
+    Write-Host "PostgreSQL: OK ($($Pg.Name))" -ForegroundColor Green
+  } else {
+    Write-Host "Servico PostgreSQL nao encontrado." -ForegroundColor Yellow
   }
 } catch {
   Write-Host "Nao foi possivel iniciar o PostgreSQL automaticamente. Se necessario, abra o PowerShell como administrador." -ForegroundColor Yellow

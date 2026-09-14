@@ -1,0 +1,16 @@
+SteelControl - Instalador Final 1.0 - 2026-09-14
+
+- Novo INSTALAR_STEELCONTROL.bat para instalacao guiada no Windows.
+- Instalador PowerShell com elevacao administrativa, log e verificacao de pre-requisitos.
+- Suporte a Node.js 20-22, Python 3.11 x64 e PostgreSQL.
+- Criacao automatica do banco steelcontrol_enterprise quando necessario.
+- Geracao automatica de JWT_SECRET e FACE_API_KEY locais.
+- Instalacao do backend, Prisma, migrations e seed.
+- Instalacao isolada da Face API.
+- Integracao com instalador SteelControl Edge.
+- Atalhos de iniciar, parar, backup e restauracao.
+- Novo launcher de producao sem hot reload.
+- Novo script PARAR_STEELCONTROL.ps1 com controle de PID.
+- Novo VERIFICAR_INSTALACAO.ps1.
+- Launcher legado agora detecta a versao do PostgreSQL automaticamente.
+- Documentacao docs/INSTALACAO_WINDOWS.md.
