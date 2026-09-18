@@ -1397,6 +1397,46 @@ function configurarSelects() {
 // BUSCAR DADOS DA MÁQUINA
 // ======================================================
 
+function obterDestinoDashboardMaquina(maquina) {
+  const controlador = String(maquina?.controlador || "").trim().toUpperCase();
+  const tipo = String(maquina?.tipo || "").trim().toUpperCase();
+
+  if (controlador === "DOBOT_MAGICIAN") {
+    return "/app/dashboard?view=dobot";
+  }
+
+  const impressora3D =
+    controlador === "IMPRESSORA_3D" ||
+    ((controlador === "" || controlador === "OUTRO") &&
+      (tipo.includes("IMPRESSORA 3D") || tipo.includes("3D PRINTER")));
+
+  return impressora3D
+    ? "/app/dashboard?view=printer3d"
+    : "/app/dashboard?view=controller";
+}
+
+function sincronizarContextoERotaDaMaquina(maquina) {
+  if (!maquina) return false;
+
+  localStorage.setItem("maquinaSelecionada", String(maquina.nome || "Máquina selecionada"));
+  localStorage.setItem("setorSelecionado", String(maquina.setor || "Monitoramento em tempo real"));
+  localStorage.setItem("controladorSelecionado", String(maquina.controlador || "OUTRO"));
+
+  const destino = obterDestinoDashboardMaquina(maquina);
+  localStorage.setItem("dashboardMaquinaDestino", destino);
+
+  const painelEsperado = new URL(destino, window.location.origin).searchParams.get("view");
+  const painelAtual = new URLSearchParams(window.location.search).get("view");
+
+  if (painelAtual !== painelEsperado) {
+    document.body.classList.add("dashboard-machine-loading");
+    window.location.replace(destino);
+    return true;
+  }
+
+  return false;
+}
+
 async function buscarDados() {
 
   try {
@@ -1431,6 +1471,12 @@ async function buscarDados() {
     const maquina =
       await resposta.json();
 
+    // Nome, setor, tipo e controlador vêm sempre do mesmo backend usado pelo
+    // mobile. Se o tipo mudou, abre imediatamente a IHM correspondente.
+    if (sincronizarContextoERotaDaMaquina(maquina)) {
+      return;
+    }
+
     maquinaAtual =
       maquina;
 
@@ -1441,6 +1487,19 @@ async function buscarDados() {
     atualizarGrafico(
       maquina
     );
+
+    // Para impressora 3D, a própria IHM dedicada libera a tela depois de
+    // substituir o conteúdo genérico. Nos demais painéis, pode liberar agora.
+    const controladorAtual = String(maquina?.controlador || "").toUpperCase();
+    const tipoAtual = String(maquina?.tipo || "").toUpperCase();
+    const impressora3D =
+      controladorAtual === "IMPRESSORA_3D" ||
+      ((controladorAtual === "" || controladorAtual === "OUTRO") &&
+        (tipoAtual.includes("IMPRESSORA 3D") || tipoAtual.includes("3D PRINTER")));
+
+    if (!impressora3D) {
+      document.body.classList.remove("dashboard-machine-loading");
+    }
 
   } catch (erro) {
 
@@ -1471,8 +1530,31 @@ async function buscarDados() {
             )
           : "Não foi possível conectar ao servidor.";
     }
+
+    // Em falha de rede, mantém a tela utilizável com o estado offline.
+    document.body.classList.remove("dashboard-machine-loading");
   }
 }
+
+function atualizarDashboardAposEdicao(evento) {
+  const maquinaId = String(localStorage.getItem("maquinaId") || "");
+  let alteradaId = "";
+
+  if (evento?.detail?.id) {
+    alteradaId = String(evento.detail.id);
+  } else if (evento?.key === "steelcontrolMachineUpdated" && evento.newValue) {
+    try {
+      alteradaId = String(JSON.parse(evento.newValue)?.id || "");
+    } catch (_) {
+      alteradaId = "";
+    }
+  }
+
+  if (maquinaId && alteradaId === maquinaId) buscarDados();
+}
+
+window.addEventListener("steelcontrol:machine-updated", atualizarDashboardAposEdicao);
+window.addEventListener("storage", atualizarDashboardAposEdicao);
 
 
 // ======================================================
@@ -3987,6 +4069,8 @@ function abrirMinhaEmpresa() {
   const destinoAtual =
     painelAtual === "dobot"
       ? "/app/dashboard?view=dobot"
+      : painelAtual === "printer3d"
+        ? "/app/dashboard?view=printer3d"
       : painelAtual === "controller"
         ? "/app/dashboard?view=controller"
         : localStorage.getItem(
@@ -4001,6 +4085,8 @@ function abrirMinhaEmpresa() {
   if (
     destinoAtual ===
       "/app/dashboard?view=dobot" ||
+    destinoAtual ===
+      "/app/dashboard?view=printer3d" ||
     destinoAtual ===
       "/app/dashboard?view=controller"
   ) {

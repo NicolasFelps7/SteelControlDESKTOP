@@ -180,19 +180,21 @@
       ? machine.integracaoMeta.hmi
       : {};
     const simulation = diagnostic.modoSimulacao === true;
+    const connection = String(diagnostic.estadoConexao?.codigo || "OFFLINE").toUpperCase();
+    const connected = simulation || connection === "CONECTADA" || connection === "ONLINE";
+    const awaitingRealConnection = !simulation && !connected;
     const running = simulation
       ? (typeof metaHmi.running === "boolean" ? metaHmi.running : Boolean(hmi.running))
-      : (typeof teleHmi.running === "boolean" ? teleHmi.running : Boolean(hmi.running));
+      : connected && teleHmi.running === true;
     // Na simulação, integracaoMeta.hmi é o estado persistido pelo comando.
     // Em equipamento real, a telemetria continua sendo a fonte autoritativa.
-    const mode = String(simulation
+    const mode = awaitingRealConnection ? "--" : String(simulation
       ? (metaHmi.mode || hmi.mode || teleHmi.mode || "AUTO")
       : (teleHmi.mode || hmi.mode || metaHmi.mode || "AUTO")
     ).toUpperCase();
     const alarm = Boolean(machine.paradaSeguranca || teleHmi.alarm || hmi.alarm);
-    const sensors = simulation ? (hmi.sensors || teleHmi.sensors || {}) : (teleHmi.sensors || hmi.sensors || {});
-    const interlocks = simulation ? (hmi.interlocks || teleHmi.interlocks || {}) : (teleHmi.interlocks || hmi.interlocks || {});
-    const connection = String(diagnostic.estadoConexao?.codigo || "OFFLINE").toUpperCase();
+    const sensors = awaitingRealConnection ? {} : simulation ? (hmi.sensors || teleHmi.sensors || {}) : (teleHmi.sensors || {});
+    const interlocks = awaitingRealConnection ? {} : simulation ? (hmi.interlocks || teleHmi.interlocks || {}) : (teleHmi.interlocks || {});
     const remoteEnabled = simulation || diagnostic.hmi?.remoteControlEnabled === true;
     const startAllowed = simulation
       ? diagnostic.hmi?.startPolicy?.permitido !== false
@@ -200,25 +202,27 @@
 
     if (dom.hmiMode) dom.hmiMode.textContent = mode;
     if (dom.hmiRun) {
-      dom.hmiRun.className = `hmi-pill ${running && !alarm ? "running" : "stopped"}`;
+      dom.hmiRun.className = `hmi-pill ${awaitingRealConnection ? "waiting" : running && !alarm ? "running" : "stopped"}`;
       const strong = dom.hmiRun.querySelector("strong");
-      if (strong) strong.textContent = alarm ? "BLOQUEADA" : running ? "EM CICLO" : "PARADA";
+      if (strong) strong.textContent = awaitingRealConnection ? "AGUARDANDO CONEXÃO REAL" : alarm ? "BLOQUEADA" : running ? "EM CICLO" : "PARADA";
     }
     dom.hmiProcess?.classList.toggle("running", running && !alarm);
     if (dom.hmiFlow) {
       dom.hmiFlow.className = `hmi-flow-status${alarm ? " alarm" : running ? " running" : ""}`;
-      dom.hmiFlow.innerHTML = alarm
+      dom.hmiFlow.innerHTML = awaitingRealConnection
+        ? '<i class="fa-solid fa-cloud-arrow-down"></i> Aguardando conexão real'
+        : alarm
         ? '<i class="fa-solid fa-triangle-exclamation"></i> Processo bloqueado'
         : running
           ? '<i class="fa-solid fa-circle-play"></i> Processo em operação'
           : '<i class="fa-solid fa-circle-pause"></i> Processo parado';
     }
-    if (dom.hmiMachineState) dom.hmiMachineState.textContent = alarm ? "BLOQUEADA" : running ? "OPERANDO" : "AGUARDANDO";
+    if (dom.hmiMachineState) dom.hmiMachineState.textContent = awaitingRealConnection ? "AGUARDANDO CONEXÃO" : alarm ? "BLOQUEADA" : running ? "OPERANDO" : "AGUARDANDO";
 
-    if (dom.hmiProduction) dom.hmiProduction.textContent = show(machine.producao, "un.");
-    if (dom.hmiCycles) dom.hmiCycles.textContent = show(machine.ciclos, "ciclos");
-    if (dom.hmiTemp) dom.hmiTemp.textContent = show(machine.temperatura, "°C");
-    if (dom.hmiVibration) dom.hmiVibration.textContent = show(machine.vibracao, "mm/s");
+    if (dom.hmiProduction) dom.hmiProduction.textContent = awaitingRealConnection ? "--" : show(machine.producao, "un.");
+    if (dom.hmiCycles) dom.hmiCycles.textContent = awaitingRealConnection ? "--" : show(machine.ciclos, "ciclos");
+    if (dom.hmiTemp) dom.hmiTemp.textContent = awaitingRealConnection ? "--" : show(machine.temperatura, "°C");
+    if (dom.hmiVibration) dom.hmiVibration.textContent = awaitingRealConnection ? "--" : show(machine.vibracao, "mm/s");
 
     dom.hmiSensorEntry?.classList.toggle("active", sensors.entry === true);
     dom.hmiSensorMiddle?.classList.toggle("active", sensors.middle === true);
@@ -231,9 +235,9 @@
 
     document.querySelectorAll("[data-hmi-command]").forEach(button => {
       const command = button.dataset.hmiCommand;
-      let disabled = commandBusy;
+      let disabled = commandBusy || awaitingRealConnection;
       if (command === "IHM_START") disabled ||= !startAllowed || running || alarm;
-      if (command === "IHM_STOP") disabled ||= !remoteEnabled || (!simulation && !machine.controlador);
+      if (command === "IHM_STOP") disabled ||= !remoteEnabled || (!simulation && !connected);
       if (!["IHM_START", "IHM_STOP"].includes(command)) {
         disabled ||= !remoteEnabled || (!simulation && connection !== "CONECTADA");
       }
@@ -245,15 +249,15 @@
     if (dom.hmiCommandState && !commandBusy) {
       dom.hmiCommandState.className = "hmi-command-state";
       const span = dom.hmiCommandState.querySelector("span");
-      if (!remoteEnabled) {
+      if (awaitingRealConnection) {
+        dom.hmiCommandState.classList.add("blocked");
+        if (span) span.textContent = "Aguardando conexão real. Todos os comandos permanecem bloqueados até chegar telemetria recente.";
+      } else if (!remoteEnabled) {
         dom.hmiCommandState.classList.add("blocked");
         if (span) span.textContent = "Controle remoto real desativado no cadastro desta máquina.";
       } else if (alarm) {
         dom.hmiCommandState.classList.add("blocked");
         if (span) span.textContent = "START bloqueado por condição de segurança. RESET não libera a parada de segurança.";
-      } else if (!simulation && connection !== "CONECTADA") {
-        dom.hmiCommandState.classList.add("blocked");
-        if (span) span.textContent = "Sem telemetria recente. START, RESET e troca de modo permanecem bloqueados.";
       } else if (!simulation && diagnostic.hmi?.startPolicy?.permitido !== true) {
         dom.hmiCommandState.classList.add("blocked");
         if (span) span.textContent = diagnostic.hmi?.startPolicy?.motivo || "Aguardando confirmação dos intertravamentos físicos.";
@@ -271,7 +275,11 @@
     if (!profile) return;
 
     const extras = diagnostic.dadosExtras || machine.dadosExtrasAtuais || {};
-    const hasReading = Boolean(diagnostic.ultimaTelemetriaEm) || diagnostic.modoSimulacao === true;
+    const stateCode = String(diagnostic.estadoConexao?.codigo || "OFFLINE").toUpperCase();
+    const online = stateCode === "CONECTADA" || stateCode === "ONLINE";
+    const unstable = stateCode === "INSTAVEL";
+    const simulation = stateCode === "SIMULACAO" || diagnostic.modoSimulacao === true;
+    const hasReading = simulation || online;
     dom.root?.style.setProperty("--controller-accent", profile.accent);
     dom.root?.style.setProperty("--controller-dark", profile.dark);
     if (dom.icon) dom.icon.className = `fa-solid ${profile.icon}`;
@@ -279,10 +287,6 @@
     if (dom.title) dom.title.textContent = machine.nome || profile.panel;
     if (dom.description) dom.description.textContent = profile.description;
 
-    const stateCode = String(diagnostic.estadoConexao?.codigo || "OFFLINE").toUpperCase();
-    const online = stateCode === "CONECTADA";
-    const unstable = stateCode === "INSTAVEL";
-    const simulation = stateCode === "SIMULACAO" || diagnostic.modoSimulacao === true;
     if (dom.state) {
       dom.state.className = `controller-state ${online || simulation ? "online" : unstable ? "unstable" : "offline"}`;
       const strong = dom.state.querySelector("strong");

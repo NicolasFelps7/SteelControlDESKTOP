@@ -1536,6 +1536,42 @@ document.getElementById("controladorInput")?.addEventListener("change", atualiza
 document.getElementById("modoOperacaoInput")?.addEventListener("change", atualizarPainelIhm);
 atualizarPainelIhm();
 
+let sincronizandoTipoControlador = false;
+
+function sincronizarTipoComControlador(origem) {
+  if (sincronizandoTipoControlador) return;
+  const tipo = document.getElementById("tipoInput");
+  const controlador = document.getElementById("controladorInput");
+  const protocolo = document.getElementById("protocoloInput");
+  if (!tipo || !controlador) return;
+
+  sincronizandoTipoControlador = true;
+  try {
+    if (origem === "tipo") {
+      if (tipo.value === "Impressora 3D") {
+        controlador.value = "IMPRESSORA_3D";
+        if (protocolo) protocolo.value = "HTTP_REST";
+      } else if (controlador.value === "IMPRESSORA_3D") {
+        controlador.value = "";
+        if (protocolo) protocolo.value = "";
+      }
+      controlador.dispatchEvent(new Event("change"));
+      return;
+    }
+
+    if (controlador.value === "IMPRESSORA_3D") {
+      tipo.value = "Impressora 3D";
+    } else if (tipo.value === "Impressora 3D") {
+      tipo.value = "Outro";
+    }
+  } finally {
+    sincronizandoTipoControlador = false;
+  }
+}
+
+document.getElementById("tipoInput")?.addEventListener("change", () => sincronizarTipoComControlador("tipo"));
+document.getElementById("controladorInput")?.addEventListener("change", () => sincronizarTipoComControlador("controlador"));
+
 function criarCardMaquina(
   maquina
 ) {
@@ -1552,6 +1588,11 @@ function criarCardMaquina(
 
   const perfilControlador = obterPerfilControlador(maquina.controlador);
   const temPainelControlador = Boolean(perfilControlador);
+  const tipoInformado = String(maquina.tipo || "").trim();
+  const categoriaCard =
+    perfilControlador && (!tipoInformado || tipoInformado.toUpperCase() === "OUTRO")
+      ? perfilControlador.nome
+      : tipoInformado || "Equipamento industrial";
 
 
   article.className =
@@ -1629,8 +1670,7 @@ function criarCardMaquina(
     <span class="machine-category">
 
       ${escaparHtml(
-        maquina.tipo ||
-        "Equipamento industrial"
+        categoriaCard
       )}
 
     </span>
@@ -2815,6 +2855,25 @@ formMaquina
           );
         }
 
+        const maquinaAlteradaId = Number(dados.maquina?.id || maquinaEditandoId || 0);
+        if (editando && maquinaAlteradaId > 0) {
+          const avisoAtualizacao = JSON.stringify({
+            id: maquinaAlteradaId,
+            atualizadoEm: Date.now()
+          });
+          localStorage.setItem("steelcontrolMachineUpdated", avisoAtualizacao);
+          window.dispatchEvent(new CustomEvent("steelcontrol:machine-updated", {
+            detail: { id: maquinaAlteradaId }
+          }));
+
+          if (String(localStorage.getItem("maquinaId") || "") === String(maquinaAlteradaId)) {
+            const atualizada = dados.maquina || {};
+            localStorage.setItem("maquinaSelecionada", atualizada.nome || nome);
+            localStorage.setItem("setorSelecionado", atualizada.setor || setor);
+            localStorage.setItem("controladorSelecionado", String(atualizada.controlador || controlador || "OUTRO"));
+          }
+        }
+
 
         formMaquina.reset();
         atualizarPainelDobot();
@@ -2898,6 +2957,21 @@ function abrirDashboard(
     String(maquina.controlador || "")
       .toUpperCase() === "DOBOT_MAGICIAN";
 
+  const controlador =
+    String(maquina.controlador || "")
+      .trim()
+      .toUpperCase();
+
+  const tipo =
+    String(maquina.tipo || "")
+      .trim()
+      .toUpperCase();
+
+  const ehImpressora3D =
+    controlador === "IMPRESSORA_3D" ||
+    ((controlador === "" || controlador === "OUTRO") &&
+      (tipo.includes("IMPRESSORA 3D") || tipo.includes("3D PRINTER")));
+
   const temPainelControlador =
     Boolean(obterPerfilControlador(maquina.controlador));
 
@@ -2905,6 +2979,8 @@ function abrirDashboard(
   const destinoDashboard =
     ehDobot
       ? "/app/dashboard?view=dobot"
+      : ehImpressora3D
+        ? "/app/dashboard?view=printer3d"
       : temPainelControlador
         ? "/app/dashboard?view=controller"
         : "/app/dashboard?view=controller";

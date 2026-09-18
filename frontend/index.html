@@ -30,8 +30,8 @@
   <script src="assets/vendor/steel-charts/steel-charts.js?v=1"></script>
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
   <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DARK_COMPLETE">
-  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260903_IHM_SUPERVISIONADA">
-  <link rel="stylesheet" href="assets/css/printer3d-runtime.css?v=20260914_PRINTER3D_HMI_V3_EXCLUSIVE">
+  <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260918_IHM_CONEXAO_REAL_V2">
+  <link rel="stylesheet" href="assets/css/printer3d-runtime.css?v=20260918_COMPACT_NO_FLASH_V9">
   <link rel="stylesheet" href="assets/css/runtime-typography.css?v=20260902_PRO_TYPOGRAPHY">
   <link rel="stylesheet" href="assets/css/professional-ui.css?v=20260903_DESKTOP_POLISH">
 
@@ -40,13 +40,13 @@
   <link rel="stylesheet" href="assets/css/industrial-command-center.css?v=20260914_ONLINE_CONTRAST_V5">
   <link rel="stylesheet" href="assets/css/brand-contrast.css?v=20260907_LOGO_DARK_FIX">
   <link rel="stylesheet" href="assets/css/industrial-theme.css?v=20260907_COLOR_TYPO_V3">
-  <link rel="stylesheet" href="assets/css/sidebar.css?v=20260908_SIDEBAR_CLEAN_V5">
+  <link rel="stylesheet" href="assets/css/sidebar.css?v=20260918_MOBILE_DARK_PARITY_V8">
 
 
 </head>
 
 
-<body class="dashboard-shell" data-i18n-page-title="dashboardPageTitle">
+<body class="dashboard-shell dashboard-machine-loading" data-i18n-page-title="dashboardPageTitle">
 
 
   <!-- ==================================================
@@ -382,68 +382,6 @@
         =================================================== -->
 
         <div class="factory-kpis">
-
-
-          <!-- EQUIPAMENTOS -->
-
-          <article class="factory-kpi-card">
-
-            <div class="factory-kpi-icon blue">
-
-              <i class="fa-solid fa-industry"></i>
-
-            </div>
-
-
-            <div class="factory-kpi-info">
-
-              <span>
-                Equipamentos
-              </span>
-
-              <strong id="totalMaquinasEmpresa">
-                --
-              </strong>
-
-              <small>
-                Cadastrados na empresa
-              </small>
-
-            </div>
-
-          </article>
-
-
-
-          <!-- EM OPERAÇÃO -->
-
-          <article class="factory-kpi-card">
-
-            <div class="factory-kpi-icon green">
-
-              <i class="fa-solid fa-circle-check"></i>
-
-            </div>
-
-
-            <div class="factory-kpi-info">
-
-              <span>
-                Em operação
-              </span>
-
-              <strong id="totalMaquinasOperacao">
-                --
-              </strong>
-
-              <small>
-                Funcionando normalmente
-              </small>
-
-            </div>
-
-          </article>
-
 
 
           <!-- ALERTAS -->
@@ -1136,6 +1074,7 @@
                   <div><dt>Firmware</dt><dd id="printer3dFirmware">--</dd></div>
                   <div><dt>Host / IP</dt><dd id="printer3dHost">--</dd></div>
                   <div><dt>Última leitura</dt><dd id="printer3dLastUpdate">--</dd></div>
+                  <div><dt>Material usado</dt><dd id="printer3dMaterialUsed">--</dd></div>
                 </dl>
               </section>
 
@@ -2634,11 +2573,11 @@
 
   <script src="assets/js/config.js?v=20260907_LOGO_DARK_FIX"></script>
 
-  <script src="assets/js/dashboard.js?v=20260914_ONLINE_STATE_V5"></script>
+  <script src="assets/js/dashboard.js?v=20260918_INSTANT_MACHINE_CONFIG_V10"></script>
 
-  <script src="assets/js/industrial-runtime.js?v=20260914_ONLINE_HEARTBEAT_V9"></script>
-  <script src="assets/js/controller-runtime.js?v=20260914_PRINTER3D_REDIRECT_V3"></script>
-  <script src="assets/js/printer3d-runtime.js?v=20260914_PRINTER3D_HMI_V3_EXCLUSIVE"></script>
+  <script src="assets/js/industrial-runtime.js?v=20260918_INSTANT_MACHINE_CONFIG_V10"></script>
+  <script src="assets/js/controller-runtime.js?v=20260918_IHM_CONEXAO_REAL_V2"></script>
+  <script src="assets/js/printer3d-runtime.js?v=20260918_COMPACT_NO_FLASH_V9"></script>
   <script src="assets/js/dobot-runtime.js?v=20260907_INSTANT_STATE_V8"></script>
 
 </body>

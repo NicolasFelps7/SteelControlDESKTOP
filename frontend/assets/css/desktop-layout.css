@@ -217,3 +217,85 @@ html[data-theme="escuro"] .home-page .header-actions .steel-language-switcher se
   color: #fff !important;
   box-shadow: none !important;
 }
+
+/* Lista desktop compacta: mantém só o que ajuda a identificar e operar. */
+@media (min-width: 721px) {
+  .page-machines .maquinas-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 390px)) !important;
+    justify-content: start !important;
+    align-items: start !important;
+    gap: 12px !important;
+  }
+
+  .page-machines .maquina-card {
+    width: 100% !important;
+    max-width: 390px !important;
+    padding: 14px !important;
+  }
+
+  .page-machines .card-top {
+    margin-bottom: 8px !important;
+  }
+
+  .page-machines .machine-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+  }
+
+  .page-machines .dobot-dashboard-badge {
+    margin: 4px 0 7px !important;
+    padding: 5px 8px !important;
+    font-size: 8px !important;
+  }
+
+  .page-machines .maquina-card h3 {
+    margin-top: 3px !important;
+    font-size: 17px !important;
+  }
+
+  /* Descrição e métricas instantâneas pertencem ao dashboard, não à lista. */
+  .page-machines .machine-description,
+  .page-machines .machine-metrics {
+    display: none !important;
+  }
+
+  .page-machines .machine-identification {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 7px !important;
+    margin-top: 11px !important;
+  }
+
+  /* Fabricante e setor já aparecem no contexto do card; evita repetição. */
+  .page-machines .machine-identification > div:first-child,
+  .page-machines .machine-identification > div:nth-child(4) {
+    display: none !important;
+  }
+
+  .page-machines .machine-identification > div {
+    min-height: 52px !important;
+    padding: 9px 10px !important;
+  }
+
+  .page-machines .machine-connection,
+  .page-machines .machine-maintenance {
+    margin-top: 9px !important;
+    padding: 9px 10px !important;
+    border-radius: 9px !important;
+  }
+
+  .page-machines .machine-card-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+  }
+
+  .page-machines .machine-card-actions > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding: 8px 10px !important;
+    border-radius: 9px !important;
+  }
+}

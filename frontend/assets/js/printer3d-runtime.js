@@ -16,7 +16,7 @@
     speed: $("printer3dSpeed"), fan: $("printer3dFanValue"), flowLabel: $("printer3dFlowLabel"), flow: $("printer3dFlow"), processLabel: $("printer3dProcessLabel"), processValue: $("printer3dProcessValue"),
     material: $("printer3dMaterial"), materialDetail: $("printer3dMaterialDetail"), materialRemaining: $("printer3dMaterialRemaining"),
     axisX: $("printer3dAxisX"), axisY: $("printer3dAxisY"), axisZ: $("printer3dAxisZ"), axisE: $("printer3dAxisE"),
-    ecosystem: $("printer3dEcosystem"), source: $("printer3dSource"), firmware: $("printer3dFirmware"), host: $("printer3dHost"), lastUpdate: $("printer3dLastUpdate"),
+    ecosystem: $("printer3dEcosystem"), source: $("printer3dSource"), firmware: $("printer3dFirmware"), host: $("printer3dHost"), lastUpdate: $("printer3dLastUpdate"), materialUsed: $("printer3dMaterialUsed"),
     machineVisual: $("printer3dMachineVisual"), machineState: $("printer3dMachineState"), modeLabel: $("printer3dModeLabel"), safetyPanel: $("printer3dSafetyPanel"), safetyState: $("printer3dSafetyState"), alarm: $("printer3dAlarm"),
     trendNozzle: $("printer3dTrendNozzle"), trendBed: $("printer3dTrendBed"), trendChamber: $("printer3dTrendChamber"), trendMax: $("printer3dTrendMax"), trendMin: $("printer3dTrendMin"),
     cameraState: $("printer3dCameraState"), cameraImage: $("printer3dCameraImage"), cameraPlaceholder: $("printer3dCameraPlaceholder"), cameraRefresh: $("printer3dCameraRefresh"), cameraOpen: $("printer3dCameraOpen"), controlMode: $("printer3dControlMode"), controlNote: $("printer3dControlNote")
@@ -158,7 +158,7 @@
   }
 
   function formatLastUpdate(value) {
-    if (!value) return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    if (!value) return "--";
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return compact(value);
     return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -188,7 +188,8 @@
 
   function isPrinter(machine) {
     const c = String(machine?.controlador || "").toUpperCase(), type = String(machine?.tipo || "").toUpperCase();
-    return c === "IMPRESSORA_3D" || type.includes("IMPRESSORA 3D") || type.includes("3D PRINTER");
+    if (c && c !== "OUTRO") return c === "IMPRESSORA_3D";
+    return type.includes("IMPRESSORA 3D") || type.includes("3D PRINTER");
   }
 
   function safeCameraUrl(value) {
@@ -250,8 +251,16 @@
     if (genericController && visible) genericController.classList.remove("ativa");
     if (!visible) return;
 
+    // Só revela o dashboard depois que a IHM correta já substituiu o painel
+    // genérico, eliminando o flash visual exclusivo da impressora 3D.
+    document.body?.classList.remove("dashboard-machine-loading");
+
     activeMachineId = machine?.id ?? machine?.maquinaId ?? localStorage.getItem("maquinaId");
-    const p = extract(machine), labels = labelsForMode(p.mode), progress = pctNumber(p.progress) ?? 0, rawState = normalizeState(p.state), lower = rawState.toLowerCase();
+    const p = extract(machine), labels = labelsForMode(p.mode), progress = pctNumber(p.progress) ?? 0;
+    // O estado cadastral (ex.: "Ligada") não prova conexão. Sem telemetria
+    // real, desktop e mobile devem informar que ainda estão aguardando dados.
+    const rawState = p.online ? normalizeState(p.state) : "Aguardando telemetria";
+    const lower = rawState.toLowerCase();
     const printing = /print|imprim|working|running|process|fabricando/.test(lower), error = /error|falha|alarm|erro|emerg|fault/.test(lower), paused = /pause|paus/.test(lower);
     root.dataset.printerMode = p.mode;
     dom.subtitle.textContent = `${p.technology || "Universal"} • ${p.ecosystem || "Integração universal"} • IHM dedicada`;
@@ -271,7 +280,7 @@
     const flow = flowDescriptor(p), process = processDescriptor(p); dom.flowLabel.textContent = flow.label; dom.flow.textContent = flow.value; dom.processLabel.textContent = process.label; dom.processValue.textContent = process.value;
     dom.material.textContent = compact(p.material); dom.materialDetail.textContent = `Consumo: ${compact(p.materialUsed)}`; dom.materialRemaining.textContent = compact(p.materialRemaining);
     dom.axisX.textContent = axis(p.x); dom.axisY.textContent = axis(p.y); dom.axisZ.textContent = axis(p.z); dom.axisE.textContent = axis(p.e);
-    dom.ecosystem.textContent = compact(p.ecosystem); dom.source.textContent = compact(p.source); dom.firmware.textContent = compact(p.firmware); dom.host.textContent = compact(p.host); dom.lastUpdate.textContent = formatLastUpdate(p.lastUpdate);
+    dom.ecosystem.textContent = compact(p.ecosystem); dom.source.textContent = compact(p.source); dom.firmware.textContent = compact(p.firmware); dom.host.textContent = compact(p.host); dom.lastUpdate.textContent = formatLastUpdate(p.lastUpdate); dom.materialUsed.textContent = compact(p.materialUsed);
     dom.machineVisual.className = `printer3d-machine-visual ${printing ? "printing" : ""}`; dom.machineState.textContent = paused ? "Pausada" : rawState;
 
     const doorOpen = p.door === true || String(p.door).toLowerCase() === "open" || String(p.door).toLowerCase() === "aberta";

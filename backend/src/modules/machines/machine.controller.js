@@ -130,10 +130,21 @@ function metaIhmComPatch(maquina, patch = {}) {
   };
 }
 
-function estadoHmiAtual(maquina, dadosExtras = null) {
+function estadoHmiAtual(maquina, dadosExtras = null, estadoConexao = null) {
   const hmiTelemetria = dadosExtras?.hmi || {};
   const hmiMeta = maquina?.integracaoMeta?.hmi || {};
   const simulation = maquina?.modoSimulacao !== false;
+  const conexaoRealAtiva = simulation || String(estadoConexao?.codigo || "").toUpperCase() === "CONECTADA";
+  if (!conexaoRealAtiva && estadoConexao) {
+    return {
+      running: false,
+      mode: "--",
+      alarm: Boolean(maquina?.paradaSeguranca),
+      interlocks: null,
+      sensors: null,
+      aguardandoConexaoReal: true
+    };
+  }
   const running = simulation && typeof hmiMeta.running === "boolean"
     ? hmiMeta.running
     : typeof hmiTelemetria.running === "boolean"
@@ -947,7 +958,7 @@ export async function diagnostico(req, res, next) {
         .filter(item => String(item.comando || "").startsWith("IHM_"))
         .map(item => ({ id: item.id, comando: item.comando, status: item.status, criadoEm: item.criadoEm })),
       hmi: {
-        ...estadoHmiAtual(maquina, ultimaLeitura?.dadosExtras),
+        ...estadoHmiAtual(maquina, ultimaLeitura?.dadosExtras, estadoConexao),
         remoteControlEnabled: controleRemotoIhmHabilitado(maquina),
         startPolicy: avaliarPermissaoStartIhm({ maquina, estadoConexao, dadosExtras: ultimaLeitura?.dadosExtras })
       },

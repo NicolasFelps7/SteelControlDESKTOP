@@ -289,3 +289,302 @@ html[data-theme="escuro"] .printer3d-safety-panel span,
 html[data-theme="escuro"] .printer3d-safety-panel p,
 html[data-theme="dark"] .printer3d-safety-panel span,
 html[data-theme="dark"] .printer3d-safety-panel p { color:#b7c4bc !important; }
+
+/* V5 — acabamento profissional e escala tipográfica confortável. */
+.printer3d-dashboard,
+.printer3d-console,
+.printer3d-console button,
+.printer3d-console input,
+.printer3d-console select {
+  font-family: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif !important;
+}
+.printer3d-console {
+  border-radius: 20px !important;
+  letter-spacing: normal;
+}
+.printer3d-topbar {
+  padding: 22px 24px !important;
+  gap: 24px !important;
+}
+.printer3d-brand { gap: 15px !important; }
+.printer3d-brand-icon {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 13px !important;
+  font-size: 22px !important;
+}
+.printer3d-eyebrow {
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+  font-weight: 750 !important;
+  letter-spacing: .12em !important;
+}
+.printer3d-brand h3 {
+  margin: 4px 0 3px !important;
+  font-size: 22px !important;
+  line-height: 1.15 !important;
+  font-weight: 720 !important;
+}
+.printer3d-brand p {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+.printer3d-top-actions { gap: 10px !important; flex-wrap: wrap; justify-content: flex-end; }
+.printer3d-exclusive-badge,
+.printer3d-readonly {
+  min-height: 34px;
+  padding: 8px 11px !important;
+  border-radius: 9px !important;
+  font-size: 10px !important;
+}
+.printer3d-state {
+  min-height: 34px;
+  padding: 8px 12px !important;
+  border-radius: 9px !important;
+  font-size: 12.5px !important;
+}
+.printer3d-hmi-grid { gap: 14px !important; padding: 14px !important; }
+.printer3d-main-column,
+.printer3d-side-column { gap: 14px !important; }
+.printer3d-panel {
+  padding: 17px !important;
+  border-radius: 14px !important;
+}
+.printer3d-panel-head span,
+.printer3d-section-head span {
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+  letter-spacing: .085em !important;
+}
+.printer3d-panel-head strong {
+  margin-top: 5px !important;
+  font-size: 17px !important;
+  line-height: 1.3 !important;
+}
+.printer3d-section-head h4 {
+  margin-top: 4px !important;
+  font-size: 17px !important;
+  line-height: 1.25 !important;
+}
+.printer3d-progress-number { font-size: 30px !important; font-weight: 730 !important; }
+.printer3d-job-strip,
+.printer3d-thermal-grid,
+.printer3d-process-grid { gap: 10px !important; margin-top: 13px !important; }
+.printer3d-job-strip > div { min-height: 70px !important; padding: 11px 12px !important; border-radius: 10px !important; }
+.printer3d-job-strip span,
+.printer3d-job-strip small,
+.printer3d-thermal-copy span,
+.printer3d-thermal-copy small,
+.printer3d-process-grid span,
+.printer3d-process-grid small { font-size: 11px !important; line-height: 1.4 !important; }
+.printer3d-job-strip strong { margin-top: 5px !important; font-size: 15px !important; }
+.printer3d-thermal-card { min-height: 112px !important; padding: 13px !important; border-radius: 11px !important; }
+.printer3d-thermal-icon { width: 40px !important; height: 40px !important; border-radius: 9px !important; }
+.printer3d-thermal-copy strong { margin: 4px 0 !important; font-size: 20px !important; }
+.printer3d-process-grid article { min-height: 88px !important; padding: 13px 12px 11px 46px !important; border-radius: 10px !important; }
+.printer3d-process-grid i { left: 13px !important; top: 15px !important; font-size: 17px !important; }
+.printer3d-process-grid strong { margin-top: 5px !important; font-size: 15px !important; }
+.printer3d-axis-grid { gap: 8px !important; margin-top: 12px !important; }
+.printer3d-axis-grid > div { padding: 10px 5px !important; border-radius: 9px !important; }
+.printer3d-axis-grid span { font-size: 10.5px !important; }
+.printer3d-axis-grid strong { font-size: 15px !important; }
+.printer3d-axis-grid small { font-size: 9.5px !important; }
+.printer3d-info-list { margin-top: 11px !important; }
+.printer3d-info-list > div { padding: 9px 0 !important; }
+.printer3d-info-list dt { font-size: 11.5px !important; line-height: 1.4 !important; }
+.printer3d-info-list dd { font-size: 12.5px !important; line-height: 1.4 !important; }
+.printer3d-camera-state { font-size: 11px !important; }
+.printer3d-camera-placeholder strong { font-size: 14px !important; }
+.printer3d-camera-placeholder span { font-size: 11.5px !important; line-height: 1.5 !important; }
+.printer3d-camera-actions button,
+.printer3d-command-grid button {
+  min-height: 42px !important;
+  border-radius: 9px !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+.printer3d-control-note,
+.printer3d-footer-note,
+.printer3d-safety-panel p { font-size: 11.5px !important; line-height: 1.5 !important; }
+.printer3d-safety-panel strong { font-size: 13px !important; }
+.printer3d-machine-status strong { font-size: 14px !important; }
+.printer3d-machine-status span { font-size: 11.5px !important; }
+
+@media(max-width:820px) {
+  .printer3d-topbar { padding: 18px !important; }
+  .printer3d-top-actions { justify-content: flex-start !important; }
+}
+@media(max-width:560px) {
+  .printer3d-dashboard { margin: 12px 0 18px !important; }
+  .printer3d-console { border-radius: 15px !important; }
+  .printer3d-topbar { padding: 16px !important; gap: 15px !important; }
+  .printer3d-brand-icon { width: 46px !important; height: 46px !important; }
+  .printer3d-brand h3 { font-size: 20px !important; }
+  .printer3d-top-actions { display:grid !important; grid-template-columns:1fr 1fr; width:100%; }
+  .printer3d-state { grid-column:1/-1; }
+  .printer3d-hmi-grid { padding: 9px !important; gap: 9px !important; }
+  .printer3d-main-column,
+  .printer3d-side-column { gap: 9px !important; }
+  .printer3d-panel { padding: 14px !important; }
+  .printer3d-thermal-grid,
+  .printer3d-process-grid { grid-template-columns: 1fr 1fr !important; }
+  .printer3d-command-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* V6 — escala desktop compatível com os demais dashboards SteelControl. */
+@media (min-width: 821px) {
+  .printer3d-dashboard {
+    margin: 10px 0 18px !important;
+  }
+
+  .printer3d-console {
+    border-radius: 14px !important;
+  }
+
+  .printer3d-topbar {
+    padding: 14px 16px !important;
+    gap: 16px !important;
+  }
+
+  .printer3d-brand {
+    gap: 11px !important;
+  }
+
+  .printer3d-brand-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+    font-size: 18px !important;
+  }
+
+  .printer3d-eyebrow {
+    font-size: 9px !important;
+  }
+
+  .printer3d-brand h3 {
+    font-size: 19px !important;
+  }
+
+  .printer3d-brand p {
+    font-size: 11px !important;
+  }
+
+  .printer3d-exclusive-badge,
+  .printer3d-readonly,
+  .printer3d-state {
+    min-height: 30px !important;
+    padding: 6px 9px !important;
+    font-size: 10px !important;
+  }
+
+  .printer3d-hmi-grid {
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+
+  .printer3d-main-column,
+  .printer3d-side-column {
+    gap: 10px !important;
+  }
+
+  .printer3d-panel {
+    padding: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .printer3d-panel-head span,
+  .printer3d-section-head span,
+  .printer3d-job-strip span,
+  .printer3d-job-strip small,
+  .printer3d-thermal-copy span,
+  .printer3d-thermal-copy small,
+  .printer3d-process-grid span,
+  .printer3d-process-grid small {
+    font-size: 9px !important;
+  }
+
+  .printer3d-panel-head strong,
+  .printer3d-section-head h4 {
+    font-size: 14px !important;
+  }
+
+  .printer3d-progress-number {
+    font-size: 24px !important;
+  }
+
+  .printer3d-job-strip,
+  .printer3d-thermal-grid,
+  .printer3d-process-grid {
+    gap: 7px !important;
+    margin-top: 9px !important;
+  }
+
+  .printer3d-job-strip > div {
+    min-height: 56px !important;
+    padding: 8px 9px !important;
+  }
+
+  .printer3d-job-strip strong,
+  .printer3d-process-grid strong {
+    font-size: 13px !important;
+  }
+
+  .printer3d-thermal-card {
+    min-height: 88px !important;
+    padding: 9px !important;
+  }
+
+  .printer3d-thermal-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .printer3d-thermal-copy strong {
+    font-size: 17px !important;
+  }
+
+  .printer3d-process-grid article {
+    min-height: 68px !important;
+    padding: 9px 9px 8px 38px !important;
+  }
+
+  .printer3d-process-grid i {
+    left: 10px !important;
+    top: 11px !important;
+    font-size: 15px !important;
+  }
+
+  .printer3d-camera-view,
+  .printer3d-camera-view img {
+    min-height: 180px !important;
+    max-height: 260px !important;
+  }
+
+  .printer3d-trend-chart {
+    height: 130px !important;
+  }
+
+  .printer3d-frame {
+    height: 132px !important;
+  }
+
+  .printer3d-command-grid button,
+  .printer3d-camera-actions button {
+    min-height: 34px !important;
+    font-size: 10px !important;
+  }
+
+  .printer3d-info-list > div {
+    padding: 6px 0 !important;
+  }
+
+  .printer3d-info-list dt,
+  .printer3d-info-list dd,
+  .printer3d-control-note,
+  .printer3d-footer-note,
+  .printer3d-safety-panel p,
+  .printer3d-machine-status span {
+    font-size: 9.5px !important;
+  }
+}
