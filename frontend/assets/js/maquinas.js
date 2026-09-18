@@ -51,6 +51,28 @@ let maquinaEditandoId = null;
 let dispositivosDescobertos = [];
 let discoveryRefreshTimer = null;
 let discoveryDiagnostics = null;
+let carregarMaquinasPromise = null;
+
+const MAQUINAS_CACHE_KEY = "steelcontrol.maquinas.cache.v2";
+const MAQUINAS_FETCH_TIMEOUT_MS = 8000;
+
+function lerCacheMaquinas() {
+  try {
+    const cache = JSON.parse(sessionStorage.getItem(MAQUINAS_CACHE_KEY) || "null");
+    if (!cache || !Array.isArray(cache.itens)) return [];
+    // Cache curto apenas para evitar tela vazia enquanto a API responde.
+    if (Date.now() - Number(cache.salvoEm || 0) > 5 * 60 * 1000) return [];
+    return cache.itens;
+  } catch (_) {
+    return [];
+  }
+}
+
+function salvarCacheMaquinas(itens) {
+  try {
+    sessionStorage.setItem(MAQUINAS_CACHE_KEY, JSON.stringify({ salvoEm: Date.now(), itens }));
+  } catch (_) {}
+}
 
 
 // =========================================================
@@ -318,6 +340,7 @@ function formatarControladorLista(controlador) {
     CLP_PLC: "CLP / PLC",
     CONTROLADOR_ROBOTICO: "Controlador robótico",
     CNC: "CNC",
+    IMPRESSORA_3D: "Impressora 3D",
     GATEWAY_INDUSTRIAL: "Gateway industrial",
     OUTRO: "Outro"
   };
@@ -354,7 +377,7 @@ function statusConexaoLista(maquina) {
   ).toUpperCase();
 
   if (codigo === "CONECTADA") {
-    return { texto: traduzirLiteralMaquinas("Conectada"), classe: "connected" };
+    return { texto: traduzirLiteralMaquinas("Online"), classe: "connected" };
   }
 
   if (codigo === "INSTAVEL") {
@@ -1106,132 +1129,81 @@ function iniciarDescobertaAutomatica() {
 // CARREGAR
 // =========================================================
 
-async function carregarMaquinas() {
+async function carregarMaquinas({ silencioso = false } = {}) {
+  // Evita várias chamadas concorrentes (SSE, config, botão e carga inicial)
+  // disputando a mesma lista e deixando o spinner reaparecer sem necessidade.
+  if (carregarMaquinasPromise) return carregarMaquinasPromise;
 
-  maquinasGrid.innerHTML = `
-
-    <div class="carregando">
-
-      <i class="fa-solid fa-spinner fa-spin"></i>
-
-      Carregando equipamentos...
-
-    </div>
-
-  `;
-
-
-  try {
-
-    const resposta =
-      await fetchAutenticado(
-        `${API_URL}/maquinas`
-      );
-
-
-    if (
-      resposta.status === 401
-    ) {
-
-      localStorage.removeItem(
-        "autenticado"
-      );
-
-      localStorage.removeItem(
-        "token"
-      );
-
-      window.location.href =
-        "/app/login";
-
-      return;
-
-    }
-
-
-    if (
-      !resposta.ok
-    ) {
-
-      let mensagem =
-        "Erro ao buscar equipamentos.";
-
-      try {
-
-        const erroApi =
-          await resposta.json();
-
-        mensagem =
-          erroApi.mensagem ||
-          mensagem;
-
-      } catch (_) {}
-
-      throw new Error(
-        mensagem
-      );
-
-    }
-
-
-    const dados =
-      await resposta.json();
-
-
-    maquinas =
-      Array.isArray(dados)
-        ? dados
-        : [];
-
-
-    atualizarResumo();
-
-
-    aplicarFiltros();
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro:",
-      erro
-    );
-
-
-    const detalhe =
-      escaparHtml(
-        erro?.message ||
-        "Não foi possível comunicar com a API."
-      );
-
-
+  if (!silencioso && maquinas.length === 0) {
     maquinasGrid.innerHTML = `
-
-      <div class="erro-api">
-
-        <h3>
-          Não foi possível carregar os equipamentos
-        </h3>
-
-        <p>
-          ${detalhe}
-        </p>
-
-        <button
-          type="button"
-          class="machine-card-btn"
-          onclick="carregarMaquinas()"
-        >
-          <i class="fa-solid fa-rotate-right"></i>
-          Tentar novamente
-        </button>
-
+      <div class="carregando">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Carregando equipamentos...
       </div>
-
     `;
-
   }
 
+  carregarMaquinasPromise = (async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), MAQUINAS_FETCH_TIMEOUT_MS);
+
+    try {
+      const resposta = await fetchAutenticado(`${API_URL}/maquinas`, {
+        signal: controller.signal
+      });
+
+      if (resposta.status === 401) {
+        localStorage.removeItem("autenticado");
+        localStorage.removeItem("token");
+        window.location.href = "/app/login";
+        return;
+      }
+
+      if (!resposta.ok) {
+        let mensagem = "Erro ao buscar equipamentos.";
+        try {
+          const erroApi = await resposta.json();
+          mensagem = erroApi.mensagem || mensagem;
+        } catch (_) {}
+        throw new Error(mensagem);
+      }
+
+      const dados = await resposta.json();
+      maquinas = Array.isArray(dados) ? dados : [];
+      salvarCacheMaquinas(maquinas);
+      atualizarResumo();
+      aplicarFiltros();
+    } catch (erro) {
+      console.error("Erro:", erro);
+
+      // Se já há cache/cards visíveis, uma oscilação da API não apaga a tela.
+      if (maquinas.length > 0) return;
+
+      const mensagem = erro?.name === "AbortError"
+        ? "A API demorou mais de 8 segundos para responder. Tente novamente."
+        : (erro?.message || "Não foi possível comunicar com a API.");
+      const detalhe = escaparHtml(mensagem);
+
+      maquinasGrid.innerHTML = `
+        <div class="erro-api">
+          <h3>Não foi possível carregar os equipamentos</h3>
+          <p>${detalhe}</p>
+          <button type="button" class="machine-card-btn" onclick="carregarMaquinas()">
+            <i class="fa-solid fa-rotate-right"></i>
+            Tentar novamente
+          </button>
+        </div>
+      `;
+    } finally {
+      clearTimeout(timeout);
+    }
+  })();
+
+  try {
+    await carregarMaquinasPromise;
+  } finally {
+    carregarMaquinasPromise = null;
+  }
 }
 
 
@@ -1351,6 +1323,11 @@ function escolherIcone(
   const texto =
     `${maquina.nome || ""} ${maquina.tipo || ""}`
       .toLowerCase();
+
+
+  if (texto.includes("impressora 3d") || texto.includes("3d printer")) {
+    return "fa-cube";
+  }
 
 
   if (
@@ -1504,6 +1481,7 @@ const PERFIS_CONTROLADOR = Object.freeze({
   CLP_PLC: { nome: "CLP / PLC", painel: "PLC", icone: "fa-server", descricao: "Painel de automação para entradas, saídas, registradores, ciclo de varredura, processo e alarmes.", recursos: ["Entradas e saídas", "Registradores", "Scan", "Processo", "Alarmes"], protocolo: "MODBUS_TCP" },
   CONTROLADOR_ROBOTICO: { nome: "Controlador robótico", painel: "Robótica", icone: "fa-robot", descricao: "Painel de célula robótica para eixos, ferramenta, ciclos, modo de operação e segurança.", recursos: ["Eixos", "Ferramenta", "Ciclos", "Modo", "Segurança"], protocolo: "OPC_UA" },
   CNC: { nome: "Controlador CNC", painel: "CNC", icone: "fa-gears", descricao: "Painel de usinagem para spindle, avanço, ferramenta, programa, peças e tempo de ciclo.", recursos: ["Spindle", "Avanço", "Ferramenta", "Programa", "Produção"], protocolo: "TCP_IP" },
+  IMPRESSORA_3D: { nome: "Impressora 3D universal", painel: "IHM Impressora 3D", icone: "fa-cube", descricao: "IHM dedicada para FDM/FFF, SLA/MSLA/DLP, SLS e impressoras proprietárias. Exibe apenas os dados realmente enviados pelo equipamento.", recursos: ["Bico / mesa / câmara", "Progresso", "Camadas", "Tempo", "Material", "Estado"], protocolo: "HTTP_REST" },
   GATEWAY_INDUSTRIAL: { nome: "Gateway industrial", painel: "Gateway", icone: "fa-network-wired", descricao: "Painel de conectividade para dispositivos, protocolos, tráfego, latência e integridade do gateway.", recursos: ["Dispositivos", "Protocolos", "Tráfego", "Latência", "Saúde"], protocolo: "MQTT" },
   OUTRO: { nome: "Equipamento genérico", painel: "Genérico", icone: "fa-microchip", descricao: "Painel industrial flexível para telemetria, comunicação e campos adicionais enviados pelo equipamento.", recursos: ["Telemetria", "Comunicação", "Alertas", "Produção", "Dados extras"], protocolo: "" }
 });
@@ -1546,7 +1524,7 @@ function atualizarPainelIhm() {
   const painel = document.getElementById("hmiConfigPanel");
   const check = document.getElementById("hmiRemoteEnabledInput");
   if (!painel) return;
-  const visivel = Boolean(controlador) && controlador !== "DOBOT_MAGICIAN";
+  const visivel = Boolean(controlador) && !["DOBOT_MAGICIAN", "IMPRESSORA_3D"].includes(controlador);
   painel.hidden = !visivel;
   if (check) {
     check.disabled = !visivel || modo !== "real";
@@ -2652,14 +2630,22 @@ formMaquina
             allowMotion: Boolean(document.getElementById("dobotAllowMotionInput")?.checked),
             externalSensors: { temperature: false, vibration: false, current: false }
           }}
-        : controlador
-          ? { hmi: {
+        : controlador === "IMPRESSORA_3D"
+          ? { impressora3d: {
               enabled: true,
-              remoteControlEnabled: modoSimulacao
-                ? false
-                : Boolean(document.getElementById("hmiRemoteEnabledInput")?.checked)
+              schema: "steelcontrol-printer3d-v1",
+              technology: "AUTO",
+              ecosystem: "AUTO",
+              readOnly: true
             }}
-          : null;
+          : controlador
+            ? { hmi: {
+                enabled: true,
+                remoteControlEnabled: modoSimulacao
+                  ? false
+                  : Boolean(document.getElementById("hmiRemoteEnabledInput")?.checked)
+              }}
+            : null;
 
 
       if (
@@ -2986,6 +2972,8 @@ async function sair(confirmar = true) {
     "setorSelecionado"
   );
 
+  try { sessionStorage.removeItem(MAQUINAS_CACHE_KEY); } catch (_) {}
+
 
   window.location.href =
     "/app/login";
@@ -3004,7 +2992,7 @@ window.addEventListener(
     aplicarTemaSalvo();
 
 
-    carregarMaquinas();
+    carregarMaquinas({ silencioso: maquinas.length > 0 });
 
   }
 );
@@ -3014,7 +3002,14 @@ window.addEventListener(
 // INICIAR
 // =========================================================
 
-carregarMaquinas();
+const maquinasEmCache = lerCacheMaquinas();
+if (maquinasEmCache.length) {
+  maquinas = maquinasEmCache;
+  atualizarResumo();
+  aplicarFiltros();
+}
+
+const primeiraCargaMaquinas = carregarMaquinas({ silencioso: maquinas.length > 0 });
 
 // =========================================================
 // PERMISSÕES DE GESTÃO
@@ -3035,7 +3030,9 @@ function aplicarPermissoesDeGestao() {
 }
 
 aplicarPermissoesDeGestao();
-iniciarDescobertaAutomatica();
+// Prioriza a lista cadastrada. Descoberta UDP/Edge começa logo depois e não
+// compete com a primeira pintura dos cards.
+primeiraCargaMaquinas.finally(() => iniciarDescobertaAutomatica());
 
 // =====================================================
 // SINCRONIZAÇÃO MULTI-DISPOSITIVO — LISTA DE MÁQUINAS
@@ -3052,7 +3049,7 @@ window.addEventListener(
 
     clearTimeout(steelMaquinasRealtimeTimer);
     steelMaquinasRealtimeTimer = setTimeout(() => {
-      carregarMaquinas();
+      carregarMaquinas({ silencioso: true });
     }, 120);
   }
 );

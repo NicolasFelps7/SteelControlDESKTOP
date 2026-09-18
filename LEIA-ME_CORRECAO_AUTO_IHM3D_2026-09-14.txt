@@ -1,0 +1,11 @@
+SteelControl - correção final 2026-09-14
+
+- Ciclo automático do Dobot agora acompanha o status real de cada comando no backend/Edge antes de avançar para a próxima etapa.
+- PTP automático só é considerado concluído depois que o Edge confirma e a pose recebida confirma o alvo.
+- Falhas do Edge passam a aparecer claramente na IHM automática.
+- INICIAR CICLO fica bloqueado enquanto P0-P4 não estiverem ensinados.
+- Tipografia do automático alinhada ao restante do SteelControl.
+- Seleção Manual/Automático no tema escuro segue o padrão discreto do menu lateral.
+- Linha divisória da sidebar ficou mais sutil.
+- IHM exclusiva da impressora 3D recebeu câmera remota, controles universais condicionais, trabalho, temperaturas, material, eixos, segurança, conexão e tendência térmica.
+- Edge normaliza camera.streamUrl / snapshotUrl e capabilities quando o bridge da impressora fornecer esses dados.

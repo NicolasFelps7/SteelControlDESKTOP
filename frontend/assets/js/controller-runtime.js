@@ -49,6 +49,16 @@
         ["Ferramenta", (_, __, e) => e?.cnc?.tool, ""], ["Peças produzidas", m => m.producao, "un."]
       ]
     },
+    IMPRESSORA_3D: {
+      panel: "IHM Impressora 3D", icon: "fa-cube", accent: BRAND_ACCENT, dark: BRAND_DARK,
+      description: "IHM dedicada de produção aditiva para FDM/FFF, resina, SLS e outras tecnologias.",
+      capabilities: ["Bico / mesa / câmara", "Progresso", "Camadas", "Tempo", "Material", "Monitoramento remoto"],
+      dataFields: ["impressora3d.nozzle.current", "impressora3d.bed.current", "impressora3d.progress", "impressora3d.layer.current"],
+      metrics: [
+        ["Progresso", (_, __, e) => e?.impressora3d?.progress, "%"], ["Bico", (_, __, e) => e?.impressora3d?.nozzle?.current, "°C"],
+        ["Mesa", (_, __, e) => e?.impressora3d?.bed?.current, "°C"], ["Camada", (_, __, e) => e?.impressora3d?.layer?.current, ""]
+      ]
+    },
     GATEWAY_INDUSTRIAL: {
       panel: "Gateway industrial", icon: "fa-network-wired", accent: BRAND_ACCENT, dark: BRAND_DARK,
       description: "Dispositivos conectados, protocolos, tráfego, latência e integridade do gateway de integração.",
@@ -149,6 +159,12 @@
     const code = String(machine.controlador || "").toUpperCase();
     if (code === "DOBOT_MAGICIAN") {
       window.location.replace("/app/dashboard?view=dobot");
+      return;
+    }
+    if (code === "IMPRESSORA_3D") {
+      // Impressoras 3D possuem IHM exclusiva (câmera, trabalho, térmica, material e comandos).
+      // Nunca renderize a IHM industrial genérica para este controlador.
+      window.location.replace("/app/dashboard?view=printer3d");
       return;
     }
     if (!profiles[code]) {

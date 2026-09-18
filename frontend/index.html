@@ -31,12 +31,13 @@
   <link rel="stylesheet" href="assets/css/presentation.css?v=20260831_PRESENTACAO_FINAL">
   <link rel="stylesheet" href="assets/css/dobot-runtime.css?v=20260901_DARK_COMPLETE">
   <link rel="stylesheet" href="assets/css/controller-runtime.css?v=20260903_IHM_SUPERVISIONADA">
+  <link rel="stylesheet" href="assets/css/printer3d-runtime.css?v=20260914_PRINTER3D_HMI_V3_EXCLUSIVE">
   <link rel="stylesheet" href="assets/css/runtime-typography.css?v=20260902_PRO_TYPOGRAPHY">
   <link rel="stylesheet" href="assets/css/professional-ui.css?v=20260903_DESKTOP_POLISH">
 
   <link rel="stylesheet" href="assets/css/industrial-branding.css?v=20260907_COMPANY_CONTROLLER_V6">
 
-  <link rel="stylesheet" href="assets/css/industrial-command-center.css?v=20260907_COMMAND_CENTER_FINAL">
+  <link rel="stylesheet" href="assets/css/industrial-command-center.css?v=20260914_ONLINE_CONTRAST_V5">
   <link rel="stylesheet" href="assets/css/brand-contrast.css?v=20260907_LOGO_DARK_FIX">
   <link rel="stylesheet" href="assets/css/industrial-theme.css?v=20260907_COLOR_TYPO_V3">
   <link rel="stylesheet" href="assets/css/sidebar.css?v=20260908_SIDEBAR_CLEAN_V5">
@@ -319,12 +320,12 @@
 
           <div>
 
-            <strong>
-              Sistema online
+            <strong id="overviewConnectionTitle">
+              Verificando conexão
             </strong>
 
-            <small>
-              Atualização automática
+            <small id="overviewConnectionDetail">
+              Aguardando status da máquina
             </small>
 
           </div>
@@ -971,6 +972,186 @@
       </section>
 
 
+
+
+
+      <!-- ==================================================
+           IMPRESSORA 3D — IHM DEDICADA
+      =================================================== -->
+      <section class="printer3d-dashboard" id="printer3dDashboard" hidden>
+        <div class="printer3d-console">
+          <header class="printer3d-topbar">
+            <div class="printer3d-brand">
+              <div class="printer3d-brand-icon"><i class="fa-solid fa-cube"></i></div>
+              <div>
+                <span class="printer3d-eyebrow">IHM • PRODUÇÃO ADITIVA</span>
+                <h3>Impressora 3D</h3>
+                <p id="printer3dSubtitle">Painel dedicado • aguardando telemetria da impressora.</p>
+              </div>
+            </div>
+            <div class="printer3d-top-actions">
+              <span class="printer3d-exclusive-badge"><i class="fa-solid fa-cube"></i> IHM EXCLUSIVA 3D</span>
+              <span class="printer3d-readonly"><i class="fa-solid fa-eye"></i> IHM REMOTA</span>
+              <div class="printer3d-state" id="printer3dState">
+                <span class="printer3d-state-dot"></span><strong>Aguardando dados</strong>
+              </div>
+            </div>
+          </header>
+
+          <div class="printer3d-hmi-grid">
+            <div class="printer3d-main-column">
+              <section class="printer3d-panel printer3d-job-panel">
+                <div class="printer3d-panel-head">
+                  <div><span>TRABALHO ATUAL</span><strong id="printer3dFile">Sem arquivo</strong></div>
+                  <div class="printer3d-progress-number" id="printer3dProgressText">--%</div>
+                </div>
+                <div class="printer3d-progress"><span id="printer3dProgressBar"></span></div>
+                <div class="printer3d-job-strip">
+                  <div><span>Camada</span><strong id="printer3dLayer">--</strong><small id="printer3dLayerDetail">de --</small></div>
+                  <div><span>Decorrido</span><strong id="printer3dElapsed">--</strong></div>
+                  <div><span>Restante</span><strong id="printer3dRemainingValue">--</strong></div>
+                  <div><span>Conclusão</span><strong id="printer3dEta">--</strong></div>
+                </div>
+              </section>
+
+              <section class="printer3d-panel printer3d-camera-panel">
+                <div class="printer3d-section-head">
+                  <div><span>VISÃO REMOTA</span><h4>Câmera da impressão</h4></div>
+                  <div class="printer3d-camera-state" id="printer3dCameraState"><i class="fa-solid fa-video-slash"></i><span>Sem câmera</span></div>
+                </div>
+                <div class="printer3d-camera-view" id="printer3dCameraView">
+                  <img id="printer3dCameraImage" alt="Câmera ao vivo da impressora 3D" hidden>
+                  <div class="printer3d-camera-placeholder" id="printer3dCameraPlaceholder">
+                    <i class="fa-solid fa-video"></i>
+                    <strong>Câmera não informada</strong>
+                    <span>Quando o Edge receber streamUrl ou snapshotUrl, a imagem aparecerá aqui.</span>
+                  </div>
+                </div>
+                <div class="printer3d-camera-actions">
+                  <button type="button" id="printer3dCameraRefresh"><i class="fa-solid fa-rotate"></i> Atualizar imagem</button>
+                  <button type="button" id="printer3dCameraOpen"><i class="fa-solid fa-up-right-from-square"></i> Abrir câmera</button>
+                </div>
+              </section>
+
+              <section class="printer3d-panel">
+                <div class="printer3d-section-head">
+                  <div><span>PROCESSO TÉRMICO</span><h4>Temperaturas da máquina</h4></div>
+                  <div class="printer3d-tech-badge" id="printer3dTechnology">Tecnologia: --</div>
+                </div>
+                <div class="printer3d-thermal-grid">
+                  <article class="printer3d-thermal-card">
+                    <div class="printer3d-thermal-icon"><i class="fa-solid fa-temperature-high"></i></div>
+                    <div class="printer3d-thermal-copy"><span id="printer3dNozzleLabel">Bico / extrusor</span><strong id="printer3dNozzle">--</strong><small id="printer3dNozzleTarget">Alvo: --</small></div>
+                    <div class="printer3d-thermal-meter"><span id="printer3dNozzleBar"></span></div>
+                  </article>
+                  <article class="printer3d-thermal-card">
+                    <div class="printer3d-thermal-icon"><i class="fa-solid fa-border-all"></i></div>
+                    <div class="printer3d-thermal-copy"><span id="printer3dBedLabel">Mesa</span><strong id="printer3dBed">--</strong><small id="printer3dBedTarget">Alvo: --</small></div>
+                    <div class="printer3d-thermal-meter"><span id="printer3dBedBar"></span></div>
+                  </article>
+                  <article class="printer3d-thermal-card">
+                    <div class="printer3d-thermal-icon"><i class="fa-solid fa-box"></i></div>
+                    <div class="printer3d-thermal-copy"><span id="printer3dChamberLabel">Câmara / resina</span><strong id="printer3dChamber">--</strong><small id="printer3dChamberTarget">Alvo: --</small></div>
+                    <div class="printer3d-thermal-meter"><span id="printer3dChamberBar"></span></div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="printer3d-panel">
+                <div class="printer3d-section-head">
+                  <div><span>PARÂMETROS DE IMPRESSÃO</span><h4>Processo em tempo real</h4></div>
+                </div>
+                <div class="printer3d-process-grid">
+                  <article><i class="fa-solid fa-gauge-high"></i><span>Velocidade</span><strong id="printer3dSpeed">--</strong></article>
+                  <article><i class="fa-solid fa-fan"></i><span>Ventoinha</span><strong id="printer3dFanValue">--</strong></article>
+                  <article><i class="fa-solid fa-droplet"></i><span id="printer3dFlowLabel">Fluxo</span><strong id="printer3dFlow">--</strong></article>
+                  <article><i class="fa-solid fa-bolt"></i><span id="printer3dProcessLabel">Potência / exposição</span><strong id="printer3dProcessValue">--</strong></article>
+                  <article><i class="fa-solid fa-cube"></i><span>Material</span><strong id="printer3dMaterial">--</strong><small id="printer3dMaterialDetail">Consumo: --</small></article>
+                  <article><i class="fa-solid fa-box-open"></i><span>Material restante</span><strong id="printer3dMaterialRemaining">--</strong></article>
+                </div>
+              </section>
+
+              <section class="printer3d-panel printer3d-trend-panel">
+                <div class="printer3d-section-head">
+                  <div><span>HISTÓRICO LOCAL</span><h4>Tendência térmica</h4></div>
+                  <div class="printer3d-trend-legend"><span class="nozzle">Bico/Processo</span><span class="bed">Mesa/Plataforma</span><span class="chamber">Câmara</span></div>
+                </div>
+                <div class="printer3d-trend-chart">
+                  <div class="printer3d-trend-scale"><span id="printer3dTrendMax">-- °C</span><span id="printer3dTrendMin">-- °C</span></div>
+                  <svg viewBox="0 0 640 170" preserveAspectRatio="none" role="img" aria-label="Tendência das temperaturas">
+                    <g class="printer3d-grid-lines"><line x1="0" y1="25" x2="640" y2="25"/><line x1="0" y1="85" x2="640" y2="85"/><line x1="0" y1="145" x2="640" y2="145"/></g>
+                    <polyline id="printer3dTrendNozzle" class="trend-nozzle" points=""/>
+                    <polyline id="printer3dTrendBed" class="trend-bed" points=""/>
+                    <polyline id="printer3dTrendChamber" class="trend-chamber" points=""/>
+                  </svg>
+                </div>
+              </section>
+            </div>
+
+            <aside class="printer3d-side-column">
+              <section class="printer3d-panel printer3d-machine-panel">
+                <div class="printer3d-section-head"><div><span>IHM DA MÁQUINA</span><h4>Estado físico</h4></div></div>
+                <div class="printer3d-machine-visual" id="printer3dMachineVisual">
+                  <div class="printer3d-frame">
+                    <div class="printer3d-gantry"><span></span></div>
+                    <div class="printer3d-printhead"><i class="fa-solid fa-caret-down"></i></div>
+                    <div class="printer3d-part"><span></span><span></span><span></span></div>
+                    <div class="printer3d-bed-visual"></div>
+                  </div>
+                  <div class="printer3d-machine-status">
+                    <strong id="printer3dMachineState">Aguardando</strong>
+                    <span id="printer3dModeLabel">Modo universal</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="printer3d-panel">
+                <div class="printer3d-section-head"><div><span>MOVIMENTO</span><h4>Posição dos eixos</h4></div></div>
+                <div class="printer3d-axis-grid">
+                  <div><span>X</span><strong id="printer3dAxisX">--</strong><small>mm</small></div>
+                  <div><span>Y</span><strong id="printer3dAxisY">--</strong><small>mm</small></div>
+                  <div><span>Z</span><strong id="printer3dAxisZ">--</strong><small>mm</small></div>
+                  <div><span>E</span><strong id="printer3dAxisE">--</strong><small>mm</small></div>
+                </div>
+              </section>
+
+              <section class="printer3d-panel printer3d-control-panel">
+                <div class="printer3d-section-head"><div><span>CONTROLE DO TRABALHO</span><h4>Operação remota</h4></div><span class="printer3d-control-mode" id="printer3dControlMode">Somente monitoramento</span></div>
+                <div class="printer3d-command-grid">
+                  <button type="button" data-printer3d-command="PRINTER3D_PAUSE"><i class="fa-solid fa-pause"></i><span>Pausar</span></button>
+                  <button type="button" data-printer3d-command="PRINTER3D_RESUME"><i class="fa-solid fa-play"></i><span>Continuar</span></button>
+                  <button type="button" data-printer3d-command="PRINTER3D_HOME"><i class="fa-solid fa-house"></i><span>Home</span></button>
+                  <button type="button" data-printer3d-command="PRINTER3D_LIGHT_ON"><i class="fa-solid fa-lightbulb"></i><span>Luz ON</span></button>
+                  <button type="button" data-printer3d-command="PRINTER3D_LIGHT_OFF"><i class="fa-regular fa-lightbulb"></i><span>Luz OFF</span></button>
+                  <button type="button" class="danger" data-printer3d-command="PRINTER3D_CANCEL"><i class="fa-solid fa-ban"></i><span>Cancelar</span></button>
+                </div>
+                <p class="printer3d-control-note" id="printer3dControlNote">Os comandos só são liberados quando o cadastro habilita controle remoto e o bridge da impressora declara suporte.</p>
+              </section>
+
+              <section class="printer3d-panel">
+                <div class="printer3d-section-head"><div><span>CONEXÃO</span><h4>Integração da impressora</h4></div></div>
+                <dl class="printer3d-info-list">
+                  <div><dt>Ecossistema</dt><dd id="printer3dEcosystem">Universal</dd></div>
+                  <div><dt>Fonte</dt><dd id="printer3dSource">--</dd></div>
+                  <div><dt>Firmware</dt><dd id="printer3dFirmware">--</dd></div>
+                  <div><dt>Host / IP</dt><dd id="printer3dHost">--</dd></div>
+                  <div><dt>Última leitura</dt><dd id="printer3dLastUpdate">--</dd></div>
+                </dl>
+              </section>
+
+              <section class="printer3d-panel printer3d-safety-panel" id="printer3dSafetyPanel">
+                <div class="printer3d-safety-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div><span>SEGURANÇA / INTERTRAVAMENTO</span><strong id="printer3dSafetyState">Monitoramento remoto</strong><p id="printer3dAlarm">Nenhum alarme informado pela impressora.</p></div>
+              </section>
+            </aside>
+          </div>
+
+          <div class="printer3d-footer-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Esta IHM é exclusiva para impressoras 3D. Ela se adapta a FDM/FFF, SLA/MSLA/DLP, SLS e equipamentos proprietários, exibindo somente sinais realmente recebidos.</span>
+          </div>
+        </div>
+      </section>
 
       <!-- ==================================================
            PRODUÇÃO + CONDIÇÃO OPERACIONAL
@@ -2101,10 +2282,47 @@
         <article class="dobot-panel"><div class="dobot-panel-head"><div><span>EFETOR</span><h3>Ferramenta e estado</h3></div><i class="fa-solid fa-hand"></i></div><div class="dobot-effector-grid"><div><span>Ventosa</span><strong id="dobotSuction">--</strong></div><div><span>Garra</span><strong id="dobotGripper">--</strong></div><div><span>Fila</span><strong id="dobotQueue">--</strong></div><div><span>Modo</span><strong id="dobotMode">--</strong></div></div></article>
       </div>
       <article class="dobot-panel dobot-control-panel">
-        <div class="dobot-panel-head"><div><span>CONTROLE SUPERVISIONADO</span><h3>Comandos do robô</h3><p>Comandos passam pelo backend, PostgreSQL e fila autenticada do equipamento.</p></div><div id="dobotMotionLock" class="motion-lock"><i class="fa-solid fa-lock"></i> Movimento protegido</div></div>
-        <div class="dobot-control-actions"><button type="button" data-dobot-command="DOBOT_HOME"><i class="fa-solid fa-house"></i> HOME</button><button type="button" class="danger" data-dobot-command="DOBOT_STOP"><i class="fa-solid fa-stop"></i> PARAR</button><button type="button" data-dobot-command="DOBOT_CLEAR_ALARMS"><i class="fa-solid fa-broom"></i> Limpar alarmes</button><button type="button" data-dobot-command="DOBOT_SUCTION_ON">Ventosa ON</button><button type="button" data-dobot-command="DOBOT_SUCTION_OFF">Ventosa OFF</button><button type="button" data-dobot-command="DOBOT_GRIPPER_OPEN">Abrir garra</button><button type="button" data-dobot-command="DOBOT_GRIPPER_CLOSE">Fechar garra</button></div>
-        <form id="dobotPtpForm" class="dobot-ptp-form"><div><label>X (mm)</label><input name="x" type="number" step="0.1" required></div><div><label>Y (mm)</label><input name="y" type="number" step="0.1" required></div><div><label>Z (mm)</label><input name="z" type="number" step="0.1" required></div><div><label>R (°)</label><input name="r" type="number" step="0.1" required></div><div><label>Velocidade (%)</label><input name="velocidade" type="number" min="1" max="100" value="40"></div><button type="submit"><i class="fa-solid fa-location-arrow"></i> Enviar PTP</button></form>
-        <p class="dobot-safety-copy"><i class="fa-solid fa-shield-halved"></i> No equipamento real, o gateway inicia com <code>DOBOT_ALLOW_MOTION=false</code>. STOP permanece disponível; movimentos só são executados após liberação consciente no computador do robô.</p>
+        <div class="dobot-panel-head"><div><span>CONTROLE SUPERVISIONADO</span><h3>Operação do robô</h3><p>Escolha operação manual ou ciclo automático de pick-and-place.</p></div><div id="dobotMotionLock" class="motion-lock"><i class="fa-solid fa-lock"></i> Movimento protegido</div></div>
+
+        <div class="dobot-operation-switch" role="group" aria-label="Modo de operação do Dobot">
+          <button id="dobotManualMode" type="button" class="active"><i class="fa-solid fa-hand"></i><span>MANUAL</span><small>PTP, HOME e efetuador</small></button>
+          <button id="dobotAutomaticMode" type="button"><i class="fa-solid fa-arrows-rotate"></i><span>AUTOMÁTICO</span><small>Ciclo industrial pick-and-place</small></button>
+          <div id="dobotCycleInterlock" class="dobot-cycle-interlock"><i class="fa-solid fa-circle-check"></i> Manual liberado</div>
+        </div>
+
+        <div id="dobotManualControls" class="dobot-operation-pane">
+          <div class="dobot-control-actions"><button type="button" data-dobot-command="DOBOT_HOME"><i class="fa-solid fa-house"></i> HOME</button><button type="button" class="danger" data-dobot-command="DOBOT_STOP"><i class="fa-solid fa-stop"></i> PARAR</button><button type="button" data-dobot-command="DOBOT_CLEAR_ALARMS"><i class="fa-solid fa-broom"></i> Limpar alarmes</button><button type="button" data-dobot-command="DOBOT_SUCTION_ON">Ventosa ON</button><button type="button" data-dobot-command="DOBOT_SUCTION_OFF">Ventosa OFF</button><button type="button" data-dobot-command="DOBOT_GRIPPER_OPEN">Abrir garra</button><button type="button" data-dobot-command="DOBOT_GRIPPER_CLOSE">Fechar garra</button></div>
+          <form id="dobotPtpForm" class="dobot-ptp-form"><div><label>X (mm)</label><input name="x" type="number" step="0.1" required></div><div><label>Y (mm)</label><input name="y" type="number" step="0.1" required></div><div><label>Z (mm)</label><input name="z" type="number" step="0.1" required></div><div><label>R (°)</label><input name="r" type="number" step="0.1" required></div><div><label>Velocidade (%)</label><input name="velocidade" type="number" min="1" max="100" value="20"></div><button type="submit"><i class="fa-solid fa-location-arrow"></i> Enviar PTP</button></form>
+          <p class="dobot-safety-copy"><i class="fa-solid fa-shield-halved"></i> Modo manual: use movimentos curtos e mantenha a área do robô livre. PARAR continua disponível durante toda a operação.</p>
+        </div>
+
+        <div id="dobotAutomaticControls" class="dobot-operation-pane" hidden>
+          <div class="dobot-auto-header">
+            <div><span>AUTOMAÇÃO INDUSTRIAL</span><h4>Pick-and-place com 5 pontos ensinados</h4><p>Posicione o Dobot manualmente e capture P0 a P4. O ciclo usa as posições reais da célula.</p></div>
+            <div class="dobot-auto-status"><small>Estado</small><strong id="dobotAutoStatus">Pronto para ensinar</strong></div>
+          </div>
+
+          <div class="dobot-teach-grid">
+            <article data-dobot-point="P0"><div><strong>P0</strong><span>Espera</span></div><code data-dobot-point-value="P0">Não ensinado</code><button type="button" data-dobot-capture="P0"><i class="fa-solid fa-crosshairs"></i> Capturar atual</button></article>
+            <article data-dobot-point="P1"><div><strong>P1</strong><span>Acima da peça</span></div><code data-dobot-point-value="P1">Não ensinado</code><button type="button" data-dobot-capture="P1"><i class="fa-solid fa-crosshairs"></i> Capturar atual</button></article>
+            <article data-dobot-point="P2"><div><strong>P2</strong><span>Coleta</span></div><code data-dobot-point-value="P2">Não ensinado</code><button type="button" data-dobot-capture="P2"><i class="fa-solid fa-crosshairs"></i> Capturar atual</button></article>
+            <article data-dobot-point="P3"><div><strong>P3</strong><span>Acima do destino</span></div><code data-dobot-point-value="P3">Não ensinado</code><button type="button" data-dobot-capture="P3"><i class="fa-solid fa-crosshairs"></i> Capturar atual</button></article>
+            <article data-dobot-point="P4"><div><strong>P4</strong><span>Entrega</span></div><code data-dobot-point-value="P4">Não ensinado</code><button type="button" data-dobot-capture="P4"><i class="fa-solid fa-crosshairs"></i> Capturar atual</button></article>
+          </div>
+
+          <div class="dobot-auto-config">
+            <label>Repetições<input id="dobotAutoCycles" type="number" min="1" max="20" value="1"></label>
+            <label>Velocidade automática (%)<input id="dobotAutoSpeed" type="number" min="1" max="40" value="15"></label>
+            <div class="dobot-auto-progress-wrap"><div><span id="dobotAutoStep">Aguardando início</span><strong id="dobotAutoCounter">0 / 1</strong></div><div class="dobot-auto-progress"><span id="dobotAutoProgress" style="width:0%"></span></div></div>
+          </div>
+
+          <div class="dobot-auto-actions">
+            <button id="dobotAutoStart" type="button" class="start"><i class="fa-solid fa-play"></i> INICIAR CICLO</button>
+            <button id="dobotAutoPause" type="button" disabled><i class="fa-solid fa-pause"></i> PAUSAR</button>
+            <button id="dobotAutoStop" type="button" class="danger" disabled><i class="fa-solid fa-stop"></i> PARAR</button>
+          </div>
+          <p class="dobot-safety-copy"><i class="fa-solid fa-triangle-exclamation"></i> O modo automático bloqueia os comandos manuais enquanto o ciclo está ativo. PAUSAR atua entre etapas; PARAR envia DOBOT_STOP imediatamente. Use somente após ensinar pontos sem colisão.</p>
+        </div>
       </article>
     </section>
 
@@ -2416,10 +2634,11 @@
 
   <script src="assets/js/config.js?v=20260907_LOGO_DARK_FIX"></script>
 
-  <script src="assets/js/dashboard.js?v=20260908_SIDEBAR_CLEAN_V5"></script>
+  <script src="assets/js/dashboard.js?v=20260914_ONLINE_STATE_V5"></script>
 
-  <script src="assets/js/industrial-runtime.js?v=20260907_INSTANT_STATE_V8"></script>
-  <script src="assets/js/controller-runtime.js?v=20260903_IHM_MODE_SYNC1"></script>
+  <script src="assets/js/industrial-runtime.js?v=20260914_ONLINE_HEARTBEAT_V9"></script>
+  <script src="assets/js/controller-runtime.js?v=20260914_PRINTER3D_REDIRECT_V3"></script>
+  <script src="assets/js/printer3d-runtime.js?v=20260914_PRINTER3D_HMI_V3_EXCLUSIVE"></script>
   <script src="assets/js/dobot-runtime.js?v=20260907_INSTANT_STATE_V8"></script>
 
 </body>

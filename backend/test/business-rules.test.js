@@ -631,6 +631,49 @@ test("heartbeat recente mantém conexão real ativa", () => {
   assert.equal(estado.codigo, "CONECTADA");
 });
 
+
+test("heartbeat do Edge dentro do ciclo de 10s mantém máquina online", () => {
+  const agora = Date.now();
+  const estado = calcularEstadoConexao(
+    {
+      modoSimulacao: false,
+      intervaloLeitura: 2000,
+      ultimoHeartbeatEm: new Date(agora - 9000),
+      telemetria: []
+    },
+    agora
+  );
+
+  assert.equal(estado.codigo, "CONECTADA");
+  assert.equal(estado.texto, "Máquina online");
+});
+
+
+test("heartbeat atrasado diferencia instável de offline", () => {
+  const agora = Date.now();
+  const instavel = calcularEstadoConexao(
+    {
+      modoSimulacao: false,
+      intervaloLeitura: 2000,
+      ultimoHeartbeatEm: new Date(agora - 20_000),
+      telemetria: []
+    },
+    agora
+  );
+  const offline = calcularEstadoConexao(
+    {
+      modoSimulacao: false,
+      intervaloLeitura: 2000,
+      ultimoHeartbeatEm: new Date(agora - 45_000),
+      telemetria: []
+    },
+    agora
+  );
+
+  assert.equal(instavel.codigo, "INSTAVEL");
+  assert.equal(offline.codigo, "OFFLINE");
+});
+
 import {
   calcularCiclosDesdeManutencao,
   dataLimiteReentrega,

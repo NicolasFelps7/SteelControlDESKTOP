@@ -27,7 +27,7 @@
     gap: 10px !important;
     background: transparent !important;
     border: 0 !important;
-    border-bottom: 1px solid #30393e !important;
+    border-bottom: 1px solid rgba(129, 145, 154, .12) !important;
     border-radius: 0 !important;
   }
 

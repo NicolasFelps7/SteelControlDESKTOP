@@ -16,7 +16,9 @@ import {
   liberarSeguranca,
   streamMaquina,
   criarComandoIhm,
-  criarComandoDobot
+  criarComandoDobot,
+  statusComandoDobot,
+  criarComandoImpressora3D
 } from "./machine.controller.js";
 
 export const machineRoutes = Router();
@@ -33,6 +35,8 @@ machineRoutes.post("/:id/device-key/regenerar", regenerarDeviceKey);
 machineRoutes.post("/:id/liberar-seguranca", liberarSeguranca);
 machineRoutes.post("/:id/ihm/comandos", criarComandoIhm);
 machineRoutes.post("/:id/comandos", criarComandoDobot);
+machineRoutes.get("/:id/comandos/:comandoId", statusComandoDobot);
+machineRoutes.post("/:id/impressora3d/comandos", criarComandoImpressora3D);
 machineRoutes.post("/:id/demonstracao", demonstracao);
 
 machineRoutes.post("/:id/simular", simular);

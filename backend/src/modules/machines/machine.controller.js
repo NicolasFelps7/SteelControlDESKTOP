@@ -81,6 +81,15 @@ const DOBOT_COMMANDS = new Set([
   "DOBOT_GRIPPER_CLOSE"
 ]);
 
+const PRINTER3D_COMMANDS = new Set([
+  "PRINTER3D_PAUSE",
+  "PRINTER3D_RESUME",
+  "PRINTER3D_CANCEL",
+  "PRINTER3D_HOME",
+  "PRINTER3D_LIGHT_ON",
+  "PRINTER3D_LIGHT_OFF"
+]);
+
 function validarPayloadDobot(comando, payload = {}) {
   if (comando !== "DOBOT_PTP") return {};
   const resultado = {};
@@ -256,18 +265,15 @@ function limitesDoBody(body, atual = {}) {
 
 export async function listar(req, res, next) {
   try {
+    // A listagem usa os campos de presença já materializados na própria máquina
+    // (ultimaTelemetriaEm / ultimoHeartbeatEm). Evita um JOIN/subquery na tabela
+    // de telemetria para cada card e deixa /maquinas imediato mesmo com histórico grande.
     const maquinas = await prisma.maquina.findMany({
       where: {
         empresaId: req.auth.empresaId,
         ativo: true
       },
-      orderBy: { id: "desc" },
-      include: {
-        telemetria: {
-          orderBy: { criadoEm: "desc" },
-          take: 1
-        }
-      }
+      orderBy: { id: "desc" }
     });
 
     res.json(
@@ -286,18 +292,15 @@ export async function listar(req, res, next) {
 
 export async function sincronizar(req, res, next) {
   try {
+    // A listagem usa os campos de presença já materializados na própria máquina
+    // (ultimaTelemetriaEm / ultimoHeartbeatEm). Evita um JOIN/subquery na tabela
+    // de telemetria para cada card e deixa /maquinas imediato mesmo com histórico grande.
     const maquinas = await prisma.maquina.findMany({
       where: {
         empresaId: req.auth.empresaId,
         ativo: true
       },
-      orderBy: { id: "desc" },
-      include: {
-        telemetria: {
-          orderBy: { criadoEm: "desc" },
-          take: 1
-        }
-      }
+      orderBy: { id: "desc" }
     });
 
     const itens = maquinas.map(maquina => {
@@ -1162,6 +1165,79 @@ export async function criarComandoDobot(req, res, next) {
       mensagem: "Comando enviado para a fila segura do equipamento.",
       comando: { id: criado.id, comando: criado.comando, status: criado.status, criadoEm: criado.criadoEm }
     });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+
+export async function criarComandoImpressora3D(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const maquina = await prisma.maquina.findFirst({ where: whereEmpresa(req, id) });
+    if (!maquina) return res.status(404).json({ mensagem: "Máquina não encontrada." });
+
+    if (String(maquina.controlador || "").toUpperCase() !== "IMPRESSORA_3D") {
+      return res.status(409).json({ mensagem: "Este equipamento não está configurado como Impressora 3D." });
+    }
+    if (maquina.modoSimulacao !== false) {
+      return res.status(409).json({ mensagem: "Os comandos da impressora exigem equipamento real conectado pelo SteelControl Edge." });
+    }
+
+    const comando = String(req.body?.comando || "").trim().toUpperCase();
+    if (!PRINTER3D_COMMANDS.has(comando)) {
+      return res.status(400).json({ mensagem: "Comando de impressora 3D não permitido." });
+    }
+
+    const cargo = String(req.auth?.cargo || "").toUpperCase();
+    if (!["ADMINISTRADOR", "SUPERVISOR", "TECNICO"].includes(cargo)) {
+      return res.status(403).json({ mensagem: "Seu cargo não possui permissão para controlar a impressora 3D." });
+    }
+
+    const estadoConexao = calcularEstadoConexao(maquina);
+    if (String(estadoConexao?.codigo || "").toUpperCase() !== "CONECTADA") {
+      return res.status(409).json({ mensagem: "Comando bloqueado: a impressora não possui conexão estável e recente." });
+    }
+
+    if (maquina?.integracaoMeta?.impressora3d?.remoteControlEnabled !== true) {
+      return res.status(409).json({ mensagem: "Controle remoto da impressora está desativado no cadastro. O monitoramento continua disponível." });
+    }
+
+    const payload = req.body?.payload && typeof req.body.payload === "object" && !Array.isArray(req.body.payload)
+      ? JSON.parse(JSON.stringify(req.body.payload))
+      : {};
+    const criado = await prisma.comandoMaquina.create({ data: { maquinaId: id, comando, payload } });
+    await prisma.log.create({ data: { maquinaId: id, mensagem: `Impressora 3D: ${comando} solicitado por ${req.auth.nome || req.auth.email}.` } });
+    await registrarAuditoria({ req, acao: "COMANDO_IMPRESSORA_3D", entidade: "MAQUINA", entidadeId: id, detalhes: { comando } });
+    publicarEventoMaquina(id, "comando", { id: criado.id, comando, status: criado.status });
+
+    return res.status(202).json({
+      mensagem: "Comando enviado para a fila segura da impressora.",
+      comando: { id: criado.id, comando: criado.comando, status: criado.status, criadoEm: criado.criadoEm }
+    });
+  } catch (erro) {
+    next(erro);
+  }
+}
+
+export async function statusComandoDobot(req, res, next) {
+  try {
+    const maquinaId = Number(req.params.id);
+    const comandoId = Number(req.params.comandoId);
+    if (!Number.isInteger(maquinaId) || !Number.isInteger(comandoId)) {
+      return res.status(400).json({ mensagem: "Identificador de comando inválido." });
+    }
+
+    const maquina = await prisma.maquina.findFirst({ where: whereEmpresa(req, maquinaId) });
+    if (!maquina) return res.status(404).json({ mensagem: "Máquina não encontrada." });
+
+    const comando = await prisma.comandoMaquina.findFirst({
+      where: { id: comandoId, maquinaId },
+      select: { id: true, comando: true, status: true, criadoEm: true, entregueEm: true, concluidoEm: true }
+    });
+    if (!comando) return res.status(404).json({ mensagem: "Comando não encontrado." });
+
+    return res.json(comando);
   } catch (erro) {
     next(erro);
   }

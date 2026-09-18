@@ -127,3 +127,111 @@ html[data-theme="escuro"] .motion-lock.unlocked {
 html[data-theme="escuro"] .device-key-modal p {
   color: #cbd5e1;
 }
+
+
+/* SteelControl Dobot — Manual + Ciclo Automatico Industrial 2026-09-14 */
+.dobot-operation-switch{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) auto;gap:10px;align-items:stretch;margin-bottom:16px;padding:10px;border:1px solid #dce4ef;border-radius:15px;background:rgba(148,163,184,.055)}
+.dobot-operation-switch>button{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;min-height:58px;border:1px solid #d7dee7;border-radius:12px;padding:9px 12px;background:var(--card-bg,#fff);color:inherit;cursor:pointer;transition:.18s ease}
+.dobot-operation-switch>button i{grid-row:1/3;font-size:19px;color:#c47b12}.dobot-operation-switch>button span{font-size:12px;font-weight:900;letter-spacing:.5px}.dobot-operation-switch>button small{font-size:10px;color:#64748b}.dobot-operation-switch>button.active{border-color:#c47b12;background:rgba(196,123,18,.09);box-shadow:inset 0 0 0 1px rgba(196,123,18,.14)}.dobot-operation-switch>button:disabled{opacity:.52;cursor:not-allowed}
+.dobot-cycle-interlock{display:flex;align-items:center;justify-content:center;gap:7px;min-width:150px;padding:0 13px;border-radius:12px;background:#ecfdf5;color:#166534;font-size:11px;font-weight:900}.dobot-cycle-interlock.running{background:#fff7ed;color:#9a3412}.dobot-cycle-interlock.paused{background:#fef9c3;color:#854d0e}
+.dobot-operation-pane[hidden]{display:none!important}.dobot-auto-header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin:3px 0 14px}.dobot-auto-header span{font-size:10px;font-weight:900;letter-spacing:1px;color:#c47b12}.dobot-auto-header h4{font-size:17px;margin:3px 0}.dobot-auto-header p{font-size:12px;color:#64748b;margin:0}.dobot-auto-status{min-width:170px;padding:10px 12px;border-radius:11px;background:rgba(196,123,18,.08);text-align:right}.dobot-auto-status small{display:block;font-size:9px;color:#64748b}.dobot-auto-status strong{font-size:12px;color:#9e600a}
+.dobot-teach-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.dobot-teach-grid article{display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid #dce4ef;border-radius:13px;background:rgba(148,163,184,.045)}.dobot-teach-grid article>div{display:flex;align-items:baseline;gap:7px}.dobot-teach-grid article strong{font-size:14px;color:#c47b12}.dobot-teach-grid article span{font-size:10px;font-weight:800;color:#475569}.dobot-teach-grid code{min-height:38px;display:flex;align-items:center;font-size:9px;line-height:1.35;color:#64748b;white-space:normal}.dobot-teach-grid button{min-height:34px;border:1px solid #e8c890;border-radius:9px;background:#fff7ed;color:#9e600a;font-size:10px;font-weight:900;cursor:pointer}.dobot-teach-grid article.taught{border-color:#86efac;background:rgba(34,197,94,.045)}.dobot-teach-grid article.taught code{color:#166534}.dobot-teach-grid button:disabled{opacity:.5;cursor:not-allowed}
+.dobot-auto-config{display:grid;grid-template-columns:150px 210px 1fr;gap:11px;align-items:end;margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0}.dobot-auto-config label{font-size:10px;font-weight:900;color:#64748b}.dobot-auto-config input{width:100%;height:40px;margin-top:5px;border:1px solid #cbd5e1;border-radius:9px;padding:0 10px;background:var(--card-bg,#fff);color:inherit}.dobot-auto-progress-wrap>div:first-child{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:11px}.dobot-auto-progress-wrap span{color:#64748b}.dobot-auto-progress{height:8px;border-radius:999px;background:#e2e8f0;overflow:hidden}.dobot-auto-progress>span{display:block;height:100%;background:#c47b12;transition:width .2s ease}.dobot-auto-actions{display:flex;gap:9px;margin-top:14px}.dobot-auto-actions button{min-height:44px;border:0;border-radius:10px;padding:0 16px;font-weight:900;cursor:pointer;background:#f7efe1;color:#9e600a}.dobot-auto-actions .start{background:#c47b12;color:#fff}.dobot-auto-actions .danger{background:#dc2626;color:#fff}.dobot-auto-actions button:disabled{opacity:.45;cursor:not-allowed}
+html[data-theme="escuro"] .dobot-operation-switch{border-color:#41494f;background:#1c2226}html[data-theme="escuro"] .dobot-operation-switch>button{background:#24292d;border-color:#41494f}html[data-theme="escuro"] .dobot-operation-switch>button small,html[data-theme="escuro"] .dobot-auto-header p,html[data-theme="escuro"] .dobot-auto-status small,html[data-theme="escuro"] .dobot-teach-grid code,html[data-theme="escuro"] .dobot-auto-config label{color:#cbd5e1}html[data-theme="escuro"] .dobot-teach-grid article{background:#24292d;border-color:#41494f}html[data-theme="escuro"] .dobot-teach-grid article span{color:#cbd5e1}html[data-theme="escuro"] .dobot-teach-grid button{background:#2c2923;border-color:#69430f;color:#e8c890}html[data-theme="escuro"] .dobot-auto-status{background:#2c2923}html[data-theme="escuro"] .dobot-auto-status strong{color:#e8c890}html[data-theme="escuro"] .dobot-auto-config{border-top-color:#41494f}html[data-theme="escuro"] .dobot-auto-config input{background:#2b3135;border-color:#475569;color:#f8fafc}html[data-theme="escuro"] .dobot-auto-progress{background:#41494f}
+@media(max-width:1050px){.dobot-teach-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dobot-teach-grid article:last-child{grid-column:1/-1}.dobot-auto-config{grid-template-columns:1fr 1fr}.dobot-auto-progress-wrap{grid-column:1/-1}.dobot-operation-switch{grid-template-columns:1fr 1fr}.dobot-cycle-interlock{grid-column:1/-1;min-height:38px}}
+@media(max-width:620px){.dobot-operation-switch,.dobot-auto-config,.dobot-teach-grid{grid-template-columns:1fr}.dobot-teach-grid article:last-child{grid-column:auto}.dobot-auto-header{flex-direction:column}.dobot-auto-status{width:100%;text-align:left}.dobot-auto-actions{flex-direction:column}.dobot-auto-actions button{width:100%}}
+
+/* SteelControl Dobot — refinamento visual do modo automático 2026-09-14 */
+.dobot-operation-switch,
+.dobot-operation-switch button,
+.dobot-auto-header,
+.dobot-teach-grid,
+.dobot-auto-config,
+.dobot-auto-actions {
+  font-family:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
+  font-synthesis:none;
+}
+.dobot-operation-switch>button span{font-size:12.5px!important;font-weight:700!important;letter-spacing:0!important}
+.dobot-operation-switch>button small{font-size:10.5px!important;font-weight:400!important;letter-spacing:0!important}
+.dobot-auto-header span{font-size:9.5px!important;font-weight:700!important;letter-spacing:.11em!important}
+.dobot-auto-header h4{font-size:18px!important;font-weight:700!important;letter-spacing:-.02em!important}
+.dobot-auto-header p{font-size:12px!important;font-weight:400!important;line-height:1.45!important}
+.dobot-teach-grid article strong{font-size:14px!important;font-weight:700!important}
+.dobot-teach-grid article span{font-size:10px!important;font-weight:600!important}
+.dobot-teach-grid code{font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif!important;font-size:9.5px!important;font-weight:400!important;letter-spacing:0!important}
+.dobot-teach-grid button,.dobot-auto-actions button{font-family:inherit!important;font-weight:650!important;letter-spacing:0!important}
+.dobot-auto-config label{font-size:10.5px!important;font-weight:600!important;letter-spacing:0!important}
+.dobot-auto-progress-wrap>div:first-child{font-size:11px!important;font-weight:400!important}
+
+/* Seleção segue o mesmo padrão discreto do menu lateral: grafite + filete laranja. */
+.dobot-operation-switch>button.active{
+  position:relative;
+  border-color:#cfd7de!important;
+  background:#f4f5f5!important;
+  box-shadow:inset 3px 0 0 #c78322!important;
+}
+html[data-theme="escuro"] .dobot-operation-switch>button.active,
+html[data-theme="dark"] .dobot-operation-switch>button.active{
+  background:#242d31!important;
+  border-color:#334046!important;
+  box-shadow:inset 2px 0 0 #d39332!important;
+}
+html[data-theme="escuro"] .dobot-operation-switch>button.active span,
+html[data-theme="dark"] .dobot-operation-switch>button.active span{color:#fff!important}
+html[data-theme="escuro"] .dobot-operation-switch>button.active small,
+html[data-theme="dark"] .dobot-operation-switch>button.active small{color:#aeb9bf!important}
+html[data-theme="escuro"] .dobot-operation-switch>button.active i,
+html[data-theme="dark"] .dobot-operation-switch>button.active i{color:#dda24a!important}
+
+/* ========================================================================
+   SteelControl — refinamento visual final do modo Automático do Dobot.
+   SOMENTE VISUAL: mantém integralmente a lógica de captura/ciclo/comandos.
+   ======================================================================== */
+.dobot-operation-switch,
+.dobot-operation-switch button,
+.dobot-cycle-interlock,
+.dobot-auto-header,
+.dobot-auto-status,
+.dobot-teach-grid,
+.dobot-auto-config,
+.dobot-auto-progress-wrap,
+.dobot-auto-actions,
+.dobot-auto-actions button {
+  font-family: var(--sc-font, "Segoe UI", Arial, Helvetica, sans-serif) !important;
+  font-synthesis: none !important;
+}
+.dobot-operation-switch>button span { font-size: 13px !important; font-weight: 600 !important; line-height:1.2 !important; letter-spacing:0 !important; }
+.dobot-operation-switch>button small { font-size: 11px !important; font-weight: 400 !important; line-height:1.35 !important; letter-spacing:0 !important; }
+.dobot-cycle-interlock { font-size: 11.5px !important; font-weight: 600 !important; }
+.dobot-auto-header span { font-size: 9px !important; font-weight: 700 !important; letter-spacing:.10em !important; }
+.dobot-auto-header h4 { font-size: 18px !important; font-weight: 700 !important; line-height:1.2 !important; letter-spacing:-.01em !important; }
+.dobot-auto-header p { font-size: 12px !important; font-weight: 400 !important; line-height:1.45 !important; }
+.dobot-auto-status small { font-size: 9.5px !important; font-weight: 400 !important; }
+.dobot-auto-status strong { font-size: 12px !important; font-weight: 600 !important; }
+.dobot-teach-grid article strong { font-size: 14px !important; font-weight: 700 !important; }
+.dobot-teach-grid article span { font-size: 11px !important; font-weight: 500 !important; }
+.dobot-teach-grid code { font-family: var(--sc-font, "Segoe UI", Arial, sans-serif) !important; font-size: 10px !important; font-weight: 400 !important; line-height:1.4 !important; letter-spacing:0 !important; }
+.dobot-teach-grid button { font-size: 11px !important; font-weight: 600 !important; letter-spacing:0 !important; }
+.dobot-auto-config label { font-size: 11px !important; font-weight: 600 !important; letter-spacing:0 !important; }
+.dobot-auto-config input { font-size: 13px !important; }
+.dobot-auto-progress-wrap>div:first-child { font-size: 11px !important; font-weight: 400 !important; }
+.dobot-auto-actions button { font-size: 12px !important; font-weight: 700 !important; letter-spacing:0 !important; }
+
+/* Seleção discreta igual ao menu lateral, em claro e escuro. */
+.dobot-operation-switch>button.active {
+  border-color:#d0d8df !important;
+  background:#f3f5f6 !important;
+  box-shadow:inset 2px 0 0 #c78322 !important;
+}
+.dobot-operation-switch>button.active span { color:#202529 !important; }
+.dobot-operation-switch>button.active small { color:#64748b !important; }
+html[data-theme="escuro"] .dobot-operation-switch>button.active,
+html[data-theme="dark"] .dobot-operation-switch>button.active {
+  background:#242d31 !important;
+  border-color:#334046 !important;
+  box-shadow:inset 2px 0 0 #d39332 !important;
+}
+html[data-theme="escuro"] .dobot-operation-switch>button.active span,
+html[data-theme="dark"] .dobot-operation-switch>button.active span { color:#f8fafc !important; }
+html[data-theme="escuro"] .dobot-operation-switch>button.active small,
+html[data-theme="dark"] .dobot-operation-switch>button.active small { color:#aeb9bf !important; }

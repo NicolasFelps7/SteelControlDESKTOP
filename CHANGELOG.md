@@ -1,5 +1,11 @@
 # 2026-09-09 — Organização final de arquivos
 
+## 2026-09-14 — IHM dedicada para impressora 3D
+- Impressoras 3D agora usam uma IHM exclusiva em vez dos cartões industriais genéricos.
+- Painel adaptativo para FDM/FFF, SLA/MSLA/DLP, SLS e controladores proprietários.
+- Trabalho, temperaturas, processo, material, eixos, conexão, segurança e tendência térmica local.
+- Edge normaliza sinais adicionais no contrato `steelcontrol-printer3d-hmi-v2`.
+
 - Removido o workflow legado `.github/workflows/flutter-quality.yml`; o repositório Desktop não executa mais CI de Flutter/Mobile.
 - Removidos resíduos Flutter/Mobile que estavam por engano no projeto Desktop.
 - Removidas notas antigas de patches e assets sem referência.

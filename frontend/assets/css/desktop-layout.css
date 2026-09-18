@@ -170,3 +170,50 @@ html[data-theme="escuro"] .home-page .header-actions .steel-language-switcher se
     font-size: 11px !important;
   }
 }
+
+/* ========================================================================
+   STEELCONTROL — AÇÕES LARANJA NA TELA DE EQUIPAMENTOS
+   Mantém o Desktop alinhado ao Mobile sem alterar cores semânticas de status.
+   ======================================================================== */
+.page-machines .toggle-form-btn,
+.page-machines .discovery-scan-btn,
+.page-machines .discovery-ip-btn,
+.page-machines .discovery-approve-btn:not(:disabled) {
+  background: #c47b12 !important;
+  border-color: #c47b12 !important;
+  color: #fff !important;
+  box-shadow: 0 6px 16px rgba(196, 123, 18, .16) !important;
+}
+
+.page-machines .toggle-form-btn:hover,
+.page-machines .discovery-scan-btn:not(:disabled):hover,
+.page-machines .discovery-ip-btn:not(:disabled):hover,
+.page-machines .discovery-approve-btn:not(:disabled):hover {
+  background: #9e600a !important;
+  border-color: #9e600a !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+}
+
+.page-machines .toggle-form-btn i,
+.page-machines .discovery-scan-btn i,
+.page-machines .discovery-ip-btn i,
+.page-machines .discovery-approve-btn:not(:disabled) i {
+  color: #fff !important;
+}
+
+/* Checks e setas visuais seguem o mesmo laranja usado no Mobile. */
+.page-machines .hero-features .fa-check,
+.page-machines .machine-card-btn .fa-arrow-right,
+.page-machines .discovery-diagnostics > summary i,
+.page-machines .discovered-device-icon {
+  color: #c47b12 !important;
+}
+
+/* Estados desabilitados continuam neutros para não parecerem clicáveis. */
+.page-machines .discovery-approve-btn:disabled {
+  background: #94a3b8 !important;
+  border-color: #94a3b8 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}

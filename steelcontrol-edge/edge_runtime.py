@@ -4,6 +4,7 @@ from typing import Callable
 from adapters import create_adapter,infer_driver,AdapterError
 from edge_client import SteelControlClient
 from edge_profiles import MachineProfile
+from printer3d_normalizer import normalize_printer3d_telemetry
 
 class MachineRuntime:
     def __init__(self, profile:MachineProfile, log:Callable[[str,str],None], status:Callable[[str,str,dict],None]):
@@ -47,6 +48,8 @@ class MachineRuntime:
                         c.heartbeat(); last_hb=cycle
                     data=self.adapter.read_telemetry() or {}
                     if data:
+                        if str(cfg.get('controlador') or '').upper() == 'IMPRESSORA_3D':
+                            data = normalize_printer3d_telemetry(data, protocol=cfg.get('protocolo') or driver)
                         data.setdefault('origem',driver); c.telemetry(data)
                     cmd=c.next_command()
                     if cmd:

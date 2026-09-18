@@ -102,8 +102,21 @@ class MagicianSerialDriver(DobotDriver):
 
     def clear_alarms(self): self._exchange(21,1,False)
     def stop(self): self._exchange(242,1,False)
-    def home(self): self._exchange(31,1,True,struct.pack('<I',0)); self.cycles += 1
-    def ptp(self,x,y,z,r): self._exchange(84,1,True,bytes([1])+struct.pack('<4f',x,y,z,r)); self.cycles += 1; self.production += 1
+    def home(self):
+        # Execução imediata: não dependemos da fila interna do Dobot.
+        self._exchange(31,1,False,struct.pack('<I',0)); self.cycles += 1
+    def ptp(self,x,y,z,r):
+        before=self.get_pose()
+        self._exchange(84,1,False,bytes([1])+struct.pack('<4f',x,y,z,r))
+        deadline=time.monotonic()+12.0; moved=False; last=before
+        while time.monotonic()<deadline:
+            time.sleep(.15); last=self.get_pose()
+            moved=moved or any(abs(last[k]-before[k])>0.3 for k in ('x','y','z','r'))
+            if abs(last['x']-x)<=1.5 and abs(last['y']-y)<=1.5 and abs(last['z']-z)<=1.5 and abs(last['r']-r)<=2.0:
+                self.cycles += 1; self.production += 1; return
+        if not moved:
+            raise DobotProtocolError('Dobot aceitou o PTP, mas não iniciou movimento. Verifique alarmes/intertravamentos e a faixa do alvo.')
+        raise DobotProtocolError(f"Dobot não atingiu o alvo PTP. Atual: X={last['x']:.2f} Y={last['y']:.2f} Z={last['z']:.2f} R={last['r']:.2f}")
     def suction_set(self,on): self._exchange(62,1,False,bytes([1,1 if on else 0])); self.suction=on
     def gripper_set(self,on): self._exchange(63,1,False,bytes([1,1 if on else 0])); self.gripper=on
 

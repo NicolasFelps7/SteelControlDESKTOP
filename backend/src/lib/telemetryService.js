@@ -24,6 +24,8 @@ export function normalizarOrigem(valor) {
     "CONTROLADOR_ROBOTICO",
     "CNC",
     "GATEWAY_INDUSTRIAL",
+    "IMPRESSORA_3D",
+    "PRINTER_3D",
     "EQUIPAMENTO",
     "MQTT",
     "MODBUS",

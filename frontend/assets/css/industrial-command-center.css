@@ -1366,3 +1366,54 @@ html[data-theme="escuro"] .dashboard-shell th {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* ========================================================================
+   V5 — STATUS REAL DA MÁQUINA / CONTRASTE
+   O cabeçalho industrial é escuro nos dois temas. O badge de conexão também
+   precisa permanecer escuro para não deixar texto claro sobre fundo branco.
+   ======================================================================== */
+.dashboard-shell .industrial-live {
+  background: #20272b !important;
+  border: 1px solid #3a4449 !important;
+  border-left: 3px solid #68757c !important;
+  border-radius: 6px !important;
+  padding: 8px 11px !important;
+  min-width: 160px;
+}
+
+.dashboard-shell .industrial-live strong {
+  color: #f4f7f8 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.dashboard-shell .industrial-live small {
+  color: #aeb8bd !important;
+  font-size: 9px !important;
+}
+
+.dashboard-shell .industrial-live.is-online { border-left-color: #4aa36c !important; }
+.dashboard-shell .industrial-live.is-online .live-dot {
+  background: #4fc17a !important;
+  box-shadow: 0 0 0 3px rgba(79,193,122,.12) !important;
+}
+
+.dashboard-shell .industrial-live.is-unstable { border-left-color: #d59a35 !important; }
+.dashboard-shell .industrial-live.is-unstable .live-dot {
+  background: #dca443 !important;
+  box-shadow: 0 0 0 3px rgba(220,164,67,.12) !important;
+}
+
+.dashboard-shell .industrial-live.is-offline { border-left-color: #b85b5b !important; }
+.dashboard-shell .industrial-live.is-offline .live-dot {
+  background: #d66b6b !important;
+  box-shadow: 0 0 0 3px rgba(214,107,107,.12) !important;
+  animation: none !important;
+}
+
+.dashboard-shell .industrial-live.is-simulation { border-left-color: #c47b12 !important; }
+.dashboard-shell .industrial-live.is-simulation .live-dot {
+  background: #d58a1b !important;
+  box-shadow: 0 0 0 3px rgba(213,138,27,.12) !important;
+}

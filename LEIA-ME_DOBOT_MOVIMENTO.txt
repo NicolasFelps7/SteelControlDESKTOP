@@ -1,0 +1,13 @@
+SteelControl - correção Dobot movimento real
+
+Correção:
+- PTP e HOME agora são enviados para execução imediata no Dobot.
+- Antes, o comando era enviado como queued=True, porém a fila interna não era iniciada.
+- Por isso o Edge registrava "Comando concluído: DOBOT_PTP" sem o braço se mover.
+- PTP agora verifica se a pose realmente mudou e se o alvo foi atingido antes de confirmar conclusão.
+
+Instalação:
+1. Feche o SteelControl Edge.
+2. Extraia este ZIP dentro da raiz do SteelControlDESKTOP, substituindo os arquivos.
+3. Abra o SteelControl Edge novamente.
+4. Deixe a área do braço livre e teste primeiro um deslocamento pequeno (ex.: +10 mm em Z).

@@ -70,8 +70,26 @@ class DobotMagicianAdapter(BaseAdapter):
         if command in {"DOBOT_STOP","PARAR_SEGURANCA"}:self._exchange(242,1,False);return
         if command=="LIBERAR_OPERACAO":return
         if command=="DOBOT_CLEAR_ALARMS":self._exchange(21,1,False);return
-        if command=="DOBOT_HOME":self._exchange(31,1,True,struct.pack('<I',0));self.cycles+=1;return
-        if command=="DOBOT_PTP":self._exchange(84,1,True,bytes([1])+struct.pack('<4f',float(payload['x']),float(payload['y']),float(payload['z']),float(payload['r'])));self.cycles+=1;self.production+=1;return
+        if command=="DOBOT_HOME":
+            # Execução imediata: o Edge não usa a fila interna do Dobot.
+            # Com queued=True o comando era apenas enfileirado e o runtime
+            # marcava como concluído sem iniciar a fila.
+            self._exchange(31,1,False,struct.pack('<I',0));self.cycles+=1;return
+        if command=="DOBOT_PTP":
+            x=float(payload['x']);y=float(payload['y']);z=float(payload['z']);r=float(payload['r'])
+            before=self._get_pose()
+            # MOVJ_XYZ (modo 1), execução imediata.
+            self._exchange(84,1,False,bytes([1])+struct.pack('<4f',x,y,z,r))
+            deadline=time.monotonic()+12.0; moved=False; last=before
+            while time.monotonic()<deadline:
+                time.sleep(.15)
+                last=self._get_pose()
+                moved=moved or any(abs(last[k]-before[k])>0.3 for k in ('x','y','z','r'))
+                if abs(last['x']-x)<=1.5 and abs(last['y']-y)<=1.5 and abs(last['z']-z)<=1.5 and abs(last['r']-r)<=2.0:
+                    self.cycles+=1;self.production+=1;return
+            if not moved:
+                raise AdapterError('Dobot aceitou o PTP, mas não iniciou movimento. Verifique alarmes/intertravamentos e a faixa do alvo.')
+            raise AdapterError(f"Dobot não atingiu o alvo PTP. Atual: X={last['x']:.2f} Y={last['y']:.2f} Z={last['z']:.2f} R={last['r']:.2f}")
         if command=="DOBOT_SUCTION_ON":self._exchange(62,1,False,bytes([1,1]));self.suction=True;return
         if command=="DOBOT_SUCTION_OFF":self._exchange(62,1,False,bytes([1,0]));self.suction=False;return
         if command=="DOBOT_GRIPPER_OPEN":self._exchange(63,1,False,bytes([1,0]));self.gripper=False;return

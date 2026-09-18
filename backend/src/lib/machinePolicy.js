@@ -72,6 +72,22 @@ export function calcularEstadoConexao(
   const heartbeat =
     timestampSeguro(maquina?.ultimoHeartbeatEm);
 
+  // O heartbeat é emitido apenas depois que o Edge/controlador conseguiu abrir
+  // o driver da máquina. Portanto ele representa "equipamento pronto/online",
+  // mesmo quando naquele ciclo não existe um novo pacote de telemetria.
+  const idadeHeartbeatMs =
+    heartbeat
+      ? Math.max(0, agora - heartbeat)
+      : null;
+
+  // O Edge envia heartbeat a cada ~10 s. A janela estável precisa ser maior que
+  // esse período para o badge não oscilar entre ONLINE/INSTÁVEL a cada ciclo.
+  const limiteHeartbeatEstavelMs =
+    Math.max(15_000, intervalo * 8);
+
+  const limiteHeartbeatOfflineMs =
+    Math.max(35_000, intervalo * 18);
+
   const ultimoSinal =
     Math.max(
       ultimaTelemetria || 0,
@@ -99,6 +115,49 @@ export function calcularEstadoConexao(
   const idadeSinalMs =
     Math.max(0, agora - ultimoSinal);
 
+  // Heartbeat recente = driver conectado e equipamento disponível no Edge.
+  // Não exigimos uma mudança de sensor para chamar a máquina de online.
+  if (
+    idadeHeartbeatMs !== null &&
+    idadeHeartbeatMs <= limiteHeartbeatEstavelMs
+  ) {
+    return {
+      codigo: "CONECTADA",
+      conectado: true,
+      texto: "Máquina online",
+      detalhe:
+        ultimaTelemetria && agora - ultimaTelemetria <= limiteOfflineMs
+          ? "Equipamento conectado • telemetria ativa"
+          : "Equipamento conectado ao SteelControl Edge",
+      ultimaLeituraEm:
+        ultimaTelemetria
+          ? new Date(ultimaTelemetria).toISOString()
+          : null,
+      ultimoSinalEm: new Date(heartbeat).toISOString(),
+      idadeSinalMs: idadeHeartbeatMs
+    };
+  }
+
+  // Um heartbeat que acabou de atrasar ainda é distinguido de um equipamento
+  // realmente offline, dando margem para pequenas pausas de USB/rede.
+  if (
+    idadeHeartbeatMs !== null &&
+    idadeHeartbeatMs <= limiteHeartbeatOfflineMs
+  ) {
+    return {
+      codigo: "INSTAVEL",
+      conectado: true,
+      texto: "Conexão instável",
+      detalhe: "Heartbeat do equipamento atrasado",
+      ultimaLeituraEm:
+        ultimaTelemetria
+          ? new Date(ultimaTelemetria).toISOString()
+          : null,
+      ultimoSinalEm: new Date(heartbeat).toISOString(),
+      idadeSinalMs: idadeHeartbeatMs
+    };
+  }
+
   const ultimaQualidade =
     leituras
       .slice()
@@ -117,7 +176,7 @@ export function calcularEstadoConexao(
     return {
       codigo: "CONECTADA",
       conectado: true,
-      texto: "Máquina conectada",
+      texto: "Máquina online",
       detalhe: "Dados em tempo real",
       ultimaLeituraEm:
         ultimaTelemetria

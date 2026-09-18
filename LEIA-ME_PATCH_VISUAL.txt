@@ -1,0 +1,13 @@
+SteelControl — Patch visual 2026-09-14
+
+Alterações SOMENTE VISUAIS:
+- IHM exclusiva da Impressora 3D compatível com tema claro e escuro.
+- Escala tipográfica alinhada aos outros dashboards SteelControl.
+- Tipografia do modo Automático do Dobot normalizada.
+- Seleção Manual/Automático no mesmo padrão discreto da sidebar.
+- Linha sob a marca da sidebar mais sutil.
+
+NÃO foram alterados JavaScript, backend, banco, Edge, rotas, telemetria ou lógica de comandos/ciclo.
+
+Extraia na raiz do SteelControlDESKTOP e aceite substituir os arquivos.
+Depois reinicie o SteelControl e use Ctrl+F5 no navegador.

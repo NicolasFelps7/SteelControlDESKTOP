@@ -23,7 +23,7 @@
 
   const controladorLabel = valor => ({
     ESP32: "ESP32", DOBOT_MAGICIAN: "Dobot Magician", CLP_PLC: "CLP / PLC", CONTROLADOR_ROBOTICO: "Controlador robótico",
-    CNC: "CNC", GATEWAY_INDUSTRIAL: "Gateway industrial", OUTRO: "Outro"
+    CNC: "CNC", IMPRESSORA_3D: "Impressora 3D", GATEWAY_INDUSTRIAL: "Gateway industrial", OUTRO: "Outro"
   })[valor] || valor || "Não definido";
 
   const protocoloLabel = valor => ({
@@ -61,16 +61,32 @@
   function estadoLocal(diag) {
     const base = diag?.estadoConexao || {};
     if (diag?.modoSimulacao) return { ...base, codigo: "SIMULACAO", texto: "Modo simulação" };
-    const ultimo = base.ultimoSinalEm || diag?.ultimoHeartbeatEm || diag?.ultimaTelemetriaEm;
+
+    const intervalo = Math.max(500, Number(diag?.intervaloLeitura) || 2000);
+    const heartbeat = diag?.ultimoHeartbeatEm;
+    const telemetria = diag?.ultimaTelemetriaEm;
+    const ultimo = base.ultimoSinalEm || heartbeat || telemetria;
     if (!ultimo) return { ...base, codigo: "OFFLINE", texto: "Máquina offline" };
 
-    const idade = Math.max(0, Date.now() - new Date(ultimo).getTime());
-    const intervalo = Math.max(500, Number(diag?.intervaloLeitura) || 2000);
+    const agora = Date.now();
+    const heartbeatTs = heartbeat ? new Date(heartbeat).getTime() : NaN;
+    const idadeHeartbeat = Number.isFinite(heartbeatTs) ? Math.max(0, agora - heartbeatTs) : null;
+    const heartbeatEstavel = Math.max(15000, intervalo * 8);
+    const heartbeatOffline = Math.max(35000, intervalo * 18);
+
+    if (idadeHeartbeat !== null && idadeHeartbeat <= heartbeatEstavel) {
+      return { ...base, codigo: "CONECTADA", texto: "Máquina online", ultimoSinalEm: heartbeat };
+    }
+    if (idadeHeartbeat !== null && idadeHeartbeat <= heartbeatOffline) {
+      return { ...base, codigo: "INSTAVEL", texto: "Conexão instável", ultimoSinalEm: heartbeat };
+    }
+
+    const idade = Math.max(0, agora - new Date(ultimo).getTime());
     const estavel = Math.max(3000, intervalo * 2);
     const offline = Math.max(10000, Math.min(180000, intervalo * 5));
     const qualidadeRuim = Number.isFinite(Number(diag?.qualidadeSinal)) && Number(diag.qualidadeSinal) < 35;
 
-    if (idade <= estavel && !qualidadeRuim) return { ...base, codigo: "CONECTADA", texto: "Máquina conectada", ultimoSinalEm: ultimo };
+    if (idade <= estavel && !qualidadeRuim) return { ...base, codigo: "CONECTADA", texto: "Máquina online", ultimoSinalEm: ultimo };
     if (idade <= offline) return { ...base, codigo: "INSTAVEL", texto: "Conexão instável", ultimoSinalEm: ultimo };
     return { ...base, codigo: "OFFLINE", texto: "Máquina offline", ultimoSinalEm: ultimo };
   }

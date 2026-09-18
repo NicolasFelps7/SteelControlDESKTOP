@@ -302,6 +302,7 @@ function formatarControlador(
     CONTROLADOR_ROBOTICO:
       "Controlador robótico",
     CNC: "CNC",
+    IMPRESSORA_3D: "Impressora 3D",
     GATEWAY_INDUSTRIAL:
       "Gateway industrial",
     OUTRO: "Equipamento"
@@ -322,6 +323,7 @@ function obterPerfilOperacional(maquina) {
     CLP_PLC: { nome: "CLP / PLC", titulo: "Produção controlada pelo PLC", descricao: "Produção, ciclos de processo e dados de automação da máquina selecionada.", primario: "Unidades produzidas:", ciclos: "Ciclos do processo:", metrica: "Tempo de scan", valor: m => m.dadosExtrasAtuais?.plc?.scanTimeMs, unidade: "ms", recursos: ["Processo", "I/O", "Registradores"], grafico: "Produção do PLC" },
     CONTROLADOR_ROBOTICO: { nome: "Controlador robótico", titulo: "Operação da célula robótica", descricao: "Produção e ciclos executados exclusivamente pela célula selecionada.", primario: "Operações concluídas:", ciclos: "Ciclos robóticos:", metrica: "Modo de operação", valor: m => m.dadosExtrasAtuais?.robot?.mode, unidade: "", recursos: ["Eixos", "Ferramenta", "Segurança"], grafico: "Ciclos robóticos" },
     CNC: { nome: "CNC / Usinagem", titulo: "Produção da máquina CNC", descricao: "Peças, ciclos e parâmetros de usinagem da máquina selecionada.", primario: "Peças produzidas:", ciclos: "Ciclos de usinagem:", metrica: "Rotação do spindle", valor: m => m.dadosExtrasAtuais?.cnc?.spindleRpm, unidade: "RPM", recursos: ["Spindle", "Avanço", "Programa"], grafico: "Peças usinadas" },
+    IMPRESSORA_3D: { nome: "Impressora 3D", titulo: "Produção aditiva em tempo real", descricao: "Temperaturas, progresso, camadas e estado da impressora 3D selecionada.", primario: "Impressões concluídas:", ciclos: "Trabalhos/ciclos:", metrica: "Progresso", valor: m => m.dadosExtrasAtuais?.impressora3d?.progress ?? m.dadosExtrasAtuais?.printer3d?.progress, unidade: "%", recursos: ["Temperaturas", "Progresso", "Camadas", "Material"], grafico: "Progresso da impressão" },
     GATEWAY_INDUSTRIAL: { nome: "Gateway industrial", titulo: "Operação do gateway industrial", descricao: "Fluxo de dados e atividade dos equipamentos integrados por este gateway.", primario: "Mensagens/processos:", ciclos: "Ciclos de comunicação:", metrica: "Dispositivos online", valor: m => m.dadosExtrasAtuais?.gateway?.devicesOnline, unidade: "disp.", recursos: ["Dispositivos", "Protocolos", "Tráfego"], grafico: "Atividade do gateway" },
     OUTRO: { nome: "Controlador genérico", titulo: "Produção da máquina", descricao: "Indicadores operacionais exclusivos do equipamento selecionado.", primario: "Total produzido:", ciclos: "Ciclos executados:", metrica: "Carga elétrica", valor: m => m.consumoEnergia, unidade: "%", recursos: ["Produção", "Telemetria", "Alertas"], grafico: "Produção da máquina" }
   };
@@ -624,6 +626,21 @@ const overviewMachineNameEl =
 const overviewMachineMetaEl =
   document.getElementById(
     "overviewMachineMeta"
+  );
+
+const overviewConnectionEl =
+  document.querySelector(
+    ".industrial-live"
+  );
+
+const overviewConnectionTitleEl =
+  document.getElementById(
+    "overviewConnectionTitle"
+  );
+
+const overviewConnectionDetailEl =
+  document.getElementById(
+    "overviewConnectionDetail"
   );
 
 const setorMaquinaEl =
@@ -1747,16 +1764,52 @@ function atualizarTela(
   }
 
 
+  const estadoOperacao =
+    obterEstadoOperacao(
+      maquina
+    );
+
   if (overviewMachineMetaEl) {
-
-    const estadoOperacao =
-      obterEstadoOperacao(
-        maquina
-      );
-
     overviewMachineMetaEl.textContent =
       `${setorAtual} • ${estadoOperacao.titulo}`;
+  }
 
+  if (overviewConnectionEl) {
+    overviewConnectionEl.classList.remove(
+      "is-online",
+      "is-offline",
+      "is-unstable",
+      "is-simulation"
+    );
+
+    const classeConexao =
+      estadoOperacao.codigo === "CONECTADA"
+        ? "is-online"
+        : estadoOperacao.codigo === "INSTAVEL"
+          ? "is-unstable"
+          : estadoOperacao.codigo === "SIMULACAO"
+            ? "is-simulation"
+            : "is-offline";
+
+    overviewConnectionEl.classList.add(classeConexao);
+  }
+
+  if (overviewConnectionTitleEl) {
+    overviewConnectionTitleEl.textContent =
+      estadoOperacao.codigo === "CONECTADA"
+        ? "Máquina online"
+        : estadoOperacao.codigo === "INSTAVEL"
+          ? "Conexão instável"
+          : estadoOperacao.codigo === "SIMULACAO"
+            ? "Modo simulação"
+            : "Máquina offline";
+  }
+
+  if (overviewConnectionDetailEl) {
+    overviewConnectionDetailEl.textContent =
+      maquina?.estadoConexao?.detalhe ||
+      estadoOperacao.detalhe ||
+      "Atualização automática";
   }
 
 
@@ -1870,6 +1923,10 @@ function atualizarTela(
   atualizarAlertas(
     maquina.alertas || []
   );
+
+  if (window.SteelControlPrinter3D?.update) {
+    window.SteelControlPrinter3D.update(maquina);
+  }
 
 }
 

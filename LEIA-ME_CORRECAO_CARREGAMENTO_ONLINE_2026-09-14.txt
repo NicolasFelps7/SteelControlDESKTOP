@@ -1,0 +1,9 @@
+SteelControl Desktop — correção de carregamento e presença online
+
+- /maquinas não consulta mais histórico de telemetria para montar a lista.
+- Lista usa cache curto de sessão e atualização silenciosa para evitar spinner demorado.
+- Requisições concorrentes de lista são deduplicadas e possuem timeout de 8 s.
+- Descoberta automática inicia depois da primeira carga dos equipamentos.
+- Heartbeat recente do Edge representa equipamento pronto/ONLINE.
+- Badge “Sistema online” foi substituído pelo estado real da máquina.
+- Contraste do badge foi corrigido nos temas claro e escuro.

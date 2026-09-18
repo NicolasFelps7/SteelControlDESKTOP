@@ -1,0 +1,14 @@
+SteelControl — IHM Impressora 3D Exclusiva V3
+
+Correção principal:
+- Impressora 3D não abre mais a IHM industrial genérica "Processo da máquina".
+- Ao entrar por ?view=controller, IMPRESSORA_3D redireciona para /app/dashboard?view=printer3d.
+- Dashboard exclusivo mantém câmera, trabalho atual, progresso/camadas, térmica, material, eixos,
+  histórico, estado físico, segurança e comandos compatíveis.
+- Cache-bust atualizado para evitar navegador servindo CSS/JS antigo.
+
+Após extrair:
+1. Pare e reinicie o SteelControl.
+2. No navegador use Ctrl+F5 uma vez.
+3. Abra novamente a máquina cadastrada com controlador IMPRESSORA_3D.
+4. No topo da IHM deve aparecer o selo "IHM EXCLUSIVA 3D".

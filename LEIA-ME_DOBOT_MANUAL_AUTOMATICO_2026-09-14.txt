@@ -1,0 +1,16 @@
+STEELCONTROL - DOBOT MANUAL + AUTOMATICO
+
+1. Reinicie o SteelControl Edge depois de aplicar o patch.
+2. Abra o painel do Dobot.
+3. Em MANUAL, confirme que PTP e ventosa funcionam.
+4. Abra AUTOMATICO.
+5. Posicione o braço em cada ponto e toque/clique em "Capturar atual":
+   P0 Espera
+   P1 Acima da peca
+   P2 Coleta
+   P3 Acima do destino
+   P4 Entrega
+6. Comece com 1 repeticao e 10-15% de velocidade.
+7. Mantenha a area do robo livre e o botao PARAR acessivel.
+
+O automatico executa um pick-and-place usando a ventosa.
