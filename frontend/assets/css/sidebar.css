@@ -33,9 +33,9 @@
 
   .dashboard-shell .logo img,
   .dashboard-shell #empresaLogoSidebar {
-    width: 38px !important;
+    width: 42px !important;
     height: 42px !important;
-    flex: 0 0 38px !important;
+    flex: 0 0 42px !important;
     object-fit: contain !important;
     border-radius: 7px !important;
   }
@@ -121,6 +121,25 @@
   .dashboard-shell .menu-btn:last-child {
     margin-top: 2px !important;
   }
+}
+
+/* A logo institucional conserva suas cores sobre uma placa clara.
+   Evita que logos coloridas desapareçam no tema escuro. */
+html[data-theme="escuro"] .dashboard-shell .config-company-logo,
+html[data-theme="dark"] .dashboard-shell .config-company-logo {
+  background: #ffffff !important;
+  border-color: #68747b !important;
+}
+
+html[data-theme="escuro"] .dashboard-shell #configEmpresaLogo,
+html[data-theme="dark"] .dashboard-shell #configEmpresaLogo,
+html[data-theme="escuro"] .dashboard-shell .config-company-logo img,
+html[data-theme="dark"] .dashboard-shell .config-company-logo img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  filter: none !important;
+  object-fit: contain !important;
 }
 
 /* V6 — tipografia nativa, navegação limpa e proporções do dashboard. */
@@ -453,8 +472,10 @@ html[data-theme="dark"] {
   html[data-theme="escuro"] .dashboard-shell #empresaLogoSidebar,
   html[data-theme="dark"] .dashboard-shell #empresaLogoSidebar {
     padding: 7px !important;
-    background: #f7f8f8 !important;
-    border: 1px solid #d8dee2 !important;
+    background: #0f1418 !important;
+    border: 1px solid #303a40 !important;
+    filter: none !important;
+    opacity: 1 !important;
   }
 
   html[data-theme="escuro"] .dashboard-shell .sidebar-brand-copy strong,

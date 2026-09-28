@@ -297,7 +297,7 @@ const token =
   );
 
 
-if (!token) {
+if (localStorage.getItem("autenticado") !== "true") {
 
   window.location.href =
     "/app/login";
@@ -856,12 +856,6 @@ async function api(
 
 
   headers.set(
-    "Authorization",
-    `Bearer ${token}`
-  );
-
-
-  headers.set(
     "Cache-Control",
     "no-cache"
   );
@@ -1359,13 +1353,6 @@ document
 
               method: "POST",
 
-              headers: {
-
-                Authorization:
-                  `Bearer ${token}`
-
-              },
-
               body: form
 
             }
@@ -1509,10 +1496,7 @@ document
               method:
                 "DELETE",
 
-              headers: {
-                Authorization:
-                  `Bearer ${token}`
-              }
+              headers: {}
             }
           );
 
@@ -4696,11 +4680,6 @@ async function cadastrarEmbeddingFuncionario() {
           method:
             "POST",
 
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          },
-
           body:
             form
         }
@@ -5674,6 +5653,8 @@ async function sair(confirmar = true) {
   }
 
   pararCamera();
+
+  await window.encerrarSessaoServidor?.();
 
 
   localStorage.removeItem(

@@ -9,6 +9,8 @@ Gateway Python que conecta o **Dobot Magician** ao protocolo de dispositivos do 
 ## Segurança
 Movimentos físicos começam bloqueados (`DOBOT_ALLOW_MOTION=false`). Leitura, heartbeat e diagnóstico funcionam normalmente. Só altere para `true` depois de testar o robô em área livre e confirmar HOME/limites físicos.
 
+O gateway consulta a fila de comandos a cada `DOBOT_COMMAND_POLL_MS` (100 ms por padrão) e envia telemetria separadamente conforme `DOBOT_INTERVAL_MS` (500 ms por padrão). Isso mantém os comandos responsivos sem sobrecarregar o backend.
+
 ## Primeiro teste sem braço
 1. No SteelControl cadastre máquina em **Equipamento real**, controlador **Dobot Magician**, protocolo **USB / Serial**.
 2. Copie a Device Key mostrada uma única vez.

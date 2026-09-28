@@ -51,6 +51,14 @@ function Protect-LocalText {
   [IO.File]::WriteAllBytes($Path,$Protected)
 }
 
+function Protect-LocalFile {
+  param([string]$Source,[string]$Destination)
+  Add-Type -AssemblyName System.Security
+  $Bytes = [IO.File]::ReadAllBytes($Source)
+  $Protected = [Security.Cryptography.ProtectedData]::Protect($Bytes,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
+  [IO.File]::WriteAllBytes($Destination,$Protected)
+}
+
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $EnvFile = Join-Path $Root 'backend\.env'
 $Db = Get-DatabaseConfig $EnvFile
@@ -77,6 +85,13 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "pg_dump falhou com codigo $LASTEXITCODE." }
 } finally { $env:PGPASSWORD = $OldPassword }
 if (-not (Test-Path $DumpPath) -or (Get-Item $DumpPath).Length -lt 1024) { throw "Dump do banco nao foi criado corretamente." }
+
+# O dump contém credenciais derivadas, biometria e dados operacionais. Ele
+# nunca permanece em texto puro no conjunto final do backup.
+$EncryptedDumpPath = Join-Path $BackupDir 'database.dump.dpapi'
+Protect-LocalFile -Source $DumpPath -Destination $EncryptedDumpPath
+Remove-Item $DumpPath -Force
+if (-not (Test-Path $EncryptedDumpPath)) { throw "Falha ao criptografar o dump do banco." }
 
 # Configuracao local e protegida por DPAPI do usuario Windows atual.
 $EncryptedEnv = Join-Path $ConfigDir 'backend.env.dpapi'
@@ -107,7 +122,7 @@ $Files = Get-ChildItem $BackupDir -File -Recurse | ForEach-Object {
 $Manifest = [ordered]@{
   schemaVersion=1; product='SteelControl'; appVersion=$Version; createdAt=(Get-Date).ToString('o'); tag=$SafeTag;
   database=[ordered]@{ host=$Db.Host; port=$Db.Port; name=$Db.Database; schema=$Db.Schema; user=$Db.User };
-  security=[ordered]@{ backendEnv='DPAPI CurrentUser'; edgeProfiles='Device Keys continuam protegidas por DPAPI' };
+  security=[ordered]@{ databaseDump='DPAPI CurrentUser'; backendEnv='DPAPI CurrentUser'; edgeProfiles='Device Keys continuam protegidas por DPAPI' };
   files=$Files
 }
 $Manifest | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $BackupDir 'manifest.json') -Encoding UTF8

@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 import { env } from "./config/env.js";
 import { prisma } from "./lib/prisma.js";
-import { securityHeaders, criarRateLimit } from "./middlewares/security.js";
+import { securityHeaders, criarRateLimit, enforceHttps } from "./middlewares/security.js";
+import { requestMonitoring, prometheusMetrics } from "./lib/monitoring.js";
+import { redisHealth } from "./lib/redisStore.js";
 
 import { authRoutes } from "./modules/auth/auth.routes.js";
 import { machineRoutes } from "./modules/machines/machine.routes.js";
@@ -51,13 +53,22 @@ if (
   );
 }
 
+app.locals.enforceHttps = env.enforceHttps;
+app.locals.corsOrigins = env.corsOrigins;
+
 // =========================================================
 // SEGURANÇA / LIMITES
 // =========================================================
 
 app.use(
+  enforceHttps
+);
+
+app.use(
   securityHeaders
 );
+
+app.use(requestMonitoring);
 
 app.use(
   criarRateLimit({
@@ -130,8 +141,10 @@ app.use(
         allowedHeaders: [
           "Content-Type",
           "Authorization",
+          "X-SteelControl-Client",
           "X-Device-Key"
         ],
+        credentials: true,
         maxAge: 86400
       });
 
@@ -198,10 +211,20 @@ app.get(
     try {
       await prisma.$queryRaw`SELECT 1`;
 
+      const redis = await redisHealth();
+      if (env.level9 && !redis.connected) {
+        return res.status(503).json({
+          status: "degraded",
+          banco: "PostgreSQL",
+          bancoConectado: true,
+          redis: { configurado: redis.configured, conectado: false }
+        });
+      }
       return res.json({
         status: "ok",
         banco: "PostgreSQL",
-        bancoConectado: true
+        bancoConectado: true,
+        redis: { configurado: redis.configured, conectado: redis.connected }
       });
     } catch {
       return res
@@ -214,6 +237,17 @@ app.get(
     }
   }
 );
+
+app.get("/api/health/live", (req, res) => {
+  res.json({ status: "ok", uptimeSeconds: Math.floor(process.uptime()) });
+});
+
+app.get("/api/metrics", (req, res) => {
+  if (!env.monitoringToken) return res.status(404).end();
+  const provided = String(req.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (provided !== env.monitoringToken) return res.status(401).end();
+  return res.type("text/plain; version=0.0.4").send(prometheusMetrics());
+});
 
 // =========================================================
 // API

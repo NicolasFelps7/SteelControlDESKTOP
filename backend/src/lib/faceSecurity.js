@@ -1,3 +1,5 @@
+import { descriptografarJsonSensivel } from "./sensitiveData.js";
+
 export function normalizarEmbedding(embedding) {
   if (!Array.isArray(embedding) || embedding.length === 0) {
     return null;
@@ -63,6 +65,12 @@ export function validarMesmaPessoaLiveness({
 // =========================================================
 
 export function extrairTemplatesFaciais(valor) {
+  try {
+    valor = descriptografarJsonSensivel(valor);
+  } catch {
+    // Falha fechada: biometria corrompida ou com chave incorreta nunca é usada.
+    return [];
+  }
   // Legado: embedding: [512 numeros]
   if (Array.isArray(valor)) {
     return normalizarEmbedding(valor)

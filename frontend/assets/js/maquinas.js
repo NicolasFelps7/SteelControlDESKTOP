@@ -105,8 +105,7 @@ function usuarioEhAdministrador() {
 
 
 if (
-  autenticado !== "true" ||
-  !TOKEN_API
+  autenticado !== "true"
 ) {
 
   window.location.href =
@@ -2176,7 +2175,7 @@ function editarMaquina(
   if (dobotMode) dobotMode.value = String(dobot.mode || "MOCK").toUpperCase();
   if (dobotPort) dobotPort.value = dobot.port || "AUTO";
   if (dobotBaud) dobotBaud.value = Number(dobot.baudRate || 115200);
-  if (dobotMotion) dobotMotion.checked = Boolean(dobot.allowMotion);
+  if (dobotMotion) dobotMotion.checked = Boolean(dobot.remoteControlEnabled);
 
   const hmiRemote = document.getElementById("hmiRemoteEnabledInput");
   if (hmiRemote) hmiRemote.checked = Boolean(maquina.integracaoMeta?.hmi?.remoteControlEnabled);
@@ -2667,7 +2666,7 @@ formMaquina
             mode: String(document.getElementById("dobotModeInput")?.value || "MOCK").toUpperCase(),
             port: String(document.getElementById("dobotPortInput")?.value || "AUTO").trim().toUpperCase(),
             baudRate: Number(document.getElementById("dobotBaudInput")?.value || 115200),
-            allowMotion: Boolean(document.getElementById("dobotAllowMotionInput")?.checked),
+            remoteControlEnabled: Boolean(document.getElementById("dobotAllowMotionInput")?.checked),
             externalSensors: { temperature: false, vibration: false, current: false }
           }}
         : controlador === "IMPRESSORA_3D"
@@ -3019,6 +3018,8 @@ async function sair(confirmar = true) {
     if (!confirmado) return;
 
   }
+
+  await window.encerrarSessaoServidor?.();
 
   localStorage.removeItem(
     "autenticado"

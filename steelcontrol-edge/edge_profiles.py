@@ -42,7 +42,7 @@ class MachineProfile:
 @dataclass
 class EdgeStore:
     profiles:list[MachineProfile]=field(default_factory=list)
-    schema:int=2
+    schema:int=3
 
 
 def save_store(store:EdgeStore)->Path:
@@ -50,7 +50,7 @@ def save_store(store:EdgeStore)->Path:
     items=[]
     for p in store.profiles:
         p.validate(); raw=asdict(p); raw.pop('device_key',None); raw['device_key_protected']=protect_text(p.device_key); items.append(raw)
-    payload={'schema':2,'profiles':items}; target.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8'); return target
+    payload={'schema':3,'profiles':items}; target.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8'); return target
 
 def load_store()->EdgeStore:
     target=profiles_path()
@@ -60,14 +60,17 @@ def load_store()->EdgeStore:
         if legacy.exists():
             try:
                 d=json.loads(legacy.read_text(encoding='utf-8')); key=unprotect_text(str(d.get('device_key_protected') or ''))
-                p=MachineProfile(label=f"Máquina {d.get('machine_id') or ''}",server_url=str(d.get('server_url') or 'http://127.0.0.1:3000'),machine_id=int(d.get('machine_id') or 0),device_key=key,driver='DOBOT_MAGICIAN',interval_ms=int(d.get('interval_ms') or 1000),params={'serialPort':d.get('port') or 'AUTO','baud':int(d.get('baud') or 115200)},allow_commands=bool(d.get('allow_motion',False)))
+                # Perfis antigos nunca herdam permissão de movimento. O operador
+                # precisa autorizar novamente no Edge depois da migração segura.
+                p=MachineProfile(label=f"Máquina {d.get('machine_id') or ''}",server_url=str(d.get('server_url') or 'http://127.0.0.1:3000'),machine_id=int(d.get('machine_id') or 0),device_key=key,driver='DOBOT_MAGICIAN',interval_ms=int(d.get('interval_ms') or 1000),params={'serialPort':d.get('port') or 'AUTO','baud':int(d.get('baud') or 115200)},allow_commands=False)
                 if p.machine_id and p.device_key:return EdgeStore([p])
             except Exception:pass
         return EdgeStore()
     try:
         d=json.loads(target.read_text(encoding='utf-8')); out=[]
+        schema=int(d.get('schema') or 1)
         for raw in d.get('profiles') or []:
             key=unprotect_text(str(raw.get('device_key_protected') or ''))
-            out.append(MachineProfile(id=str(raw.get('id') or uuid.uuid4()),label=str(raw.get('label') or 'Máquina'),server_url=str(raw.get('server_url') or 'http://127.0.0.1:3000'),machine_id=int(raw.get('machine_id') or 0),device_key=key,driver=str(raw.get('driver') or 'AUTO'),enabled=bool(raw.get('enabled',True)),allow_commands=bool(raw.get('allow_commands',False)),interval_ms=int(raw.get('interval_ms') or 2000),params=dict(raw.get('params') or {})).normalized())
-        return EdgeStore(out)
+            out.append(MachineProfile(id=str(raw.get('id') or uuid.uuid4()),label=str(raw.get('label') or 'Máquina'),server_url=str(raw.get('server_url') or 'http://127.0.0.1:3000'),machine_id=int(raw.get('machine_id') or 0),device_key=key,driver=str(raw.get('driver') or 'AUTO'),enabled=bool(raw.get('enabled',True)),allow_commands=bool(raw.get('allow_commands',False)) if schema>=3 else False,interval_ms=int(raw.get('interval_ms') or 2000),params=dict(raw.get('params') or {})).normalized())
+        return EdgeStore(out,schema=3)
     except Exception:return EdgeStore()

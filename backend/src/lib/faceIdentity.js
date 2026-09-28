@@ -2,6 +2,7 @@ import {
   encontrarCorrespondenciaFacial,
   criarPacoteTemplatesFaciais
 } from "./faceSecurity.js";
+import { criptografarJsonSensivel } from "./sensitiveData.js";
 
 // Mantém a mesma referência de identidade usada no login facial.
 // Se uma nova amostra reconheceria uma pessoa já existente, ela não pode
@@ -165,7 +166,7 @@ export async function criarAmostraFacialExclusiva({
           data: {
             usuarioId,
             nome: nomeFinal,
-            embedding: pacoteTemplates,
+            embedding: criptografarJsonSensivel(pacoteTemplates),
             modelo
           }
         });

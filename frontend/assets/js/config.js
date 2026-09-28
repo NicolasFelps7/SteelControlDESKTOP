@@ -1,5 +1,16 @@
 const STEELCONTROL_BUILD = "20260902_SINGLE_ORIGIN_APP_ROUTES";
 console.info("[SteelControl] build", STEELCONTROL_BUILD);
+
+// A sessão web vive em cookie HttpOnly. `credentials: include` também mantém
+// o ambiente de desenvolvimento (frontend e API em portas diferentes)
+// compatível, sem expor o JWT ao JavaScript.
+(() => {
+  if (window.__steelFetchWithCredentials) return;
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = (input, init = {}) =>
+    nativeFetch(input, { credentials: "include", ...init });
+  window.__steelFetchWithCredentials = true;
+})();
 // =========================================================
 // ENDPOINTS — LOCAL + PRODUÇÃO
 // =========================================================
@@ -28,7 +39,7 @@ console.info("[SteelControl] build", STEELCONTROL_BUILD);
 
   window.STEELCONTROL_API_URL =
     frontendSeparado
-      ? "http://localhost:3000"
+      ? `http://${host || "localhost"}:3000`
       : window.location.origin;
 })();
 
@@ -8256,16 +8267,20 @@ function abrirIdiomas() {
 
 function aplicarContrasteLogoEmpresa() {
   const escuro =
-    document.documentElement.getAttribute("data-theme") === "escuro";
+    ["escuro", "dark"].includes(
+      document.documentElement.getAttribute("data-theme")
+    );
 
-  // A marca do sidebar usa uma placa clara própria nos dois temas.
-  // Nunca inverter essa imagem: logos pretas/industriais ficavam brancas
-  // sobre a própria placa clara e aparentavam desaparecer no tema escuro.
+  // No tema escuro, a marca branca usa uma placa preta. No tema claro,
+  // preserva o ícone original sobre uma placa clara.
   const logoSidebar =
     document.getElementById("empresaLogoSidebar");
 
   if (logoSidebar) {
     logoSidebar.classList.remove("logo-monocromatica-escura");
+    logoSidebar.src = escuro
+      ? "assets/img/steel-icon-white.svg?v=20260921"
+      : "assets/img/steel-icon.svg?v=20260921";
     logoSidebar.style.setProperty(
       "filter",
       "none",
@@ -8276,25 +8291,29 @@ function aplicarContrasteLogoEmpresa() {
       "1",
       "important"
     );
+    logoSidebar.style.setProperty(
+      "background-color",
+      escuro ? "#0f1418" : "#f7f8f8",
+      "important"
+    );
+    logoSidebar.style.setProperty(
+      "border-color",
+      escuro ? "#303a40" : "#d8dee2",
+      "important"
+    );
   }
 
-  // Logos exibidas dentro do conteúdo continuam recebendo contraste
-  // automático no tema escuro.
+  // A logo institucional fica sobre uma placa clara no conteúdo.
+  // Preservar a imagem original evita apagar cores de marcas como SENAI.
   [
     document.getElementById("configEmpresaLogo"),
     document.getElementById("empresaLogo")
   ]
     .filter(Boolean)
     .forEach(img => {
-      if (escuro) {
-        img.style.setProperty(
-          "filter",
-          "grayscale(1) brightness(0) invert(1)",
-          "important"
-        );
-      } else {
-        img.style.removeProperty("filter");
-      }
+      img.classList.remove("logo-monocromatica-escura");
+      img.style.setProperty("filter", "none", "important");
+      img.style.setProperty("opacity", "1", "important");
     });
 }
 
@@ -8740,6 +8759,17 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
   });
 };
 
+window.encerrarSessaoServidor = async function encerrarSessaoServidor() {
+  try {
+    await fetch(`${window.STEELCONTROL_API_URL}/auth/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (_) {
+    // A limpeza local continua mesmo se o servidor estiver indisponível.
+  }
+};
+
 // =========================================================
 // REALTIME DA EMPRESA — DESKTOP / MULTI-DISPOSITIVO
 // =========================================================
@@ -8750,10 +8780,10 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
 (() => {
   if (window.__steelCompanyRealtimeStarted) return;
 
-  const tokenRealtime = localStorage.getItem("token");
+  const autenticadoRealtime = localStorage.getItem("autenticado") === "true";
   const apiRealtime = String(window.STEELCONTROL_API_URL || "").replace(/\/$/, "");
 
-  if (!tokenRealtime || !apiRealtime) return;
+  if (!autenticadoRealtime || !apiRealtime) return;
 
   window.__steelCompanyRealtimeStarted = true;
 
@@ -8788,7 +8818,6 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
           method: "GET",
           headers: {
             Accept: "text/event-stream",
-            Authorization: `Bearer ${tokenRealtime}`,
             "Cache-Control": "no-cache"
           },
           cache: "no-store",
@@ -8859,9 +8888,9 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
 (() => {
   if (window.__steelSessionRealtimeStarted) return;
 
-  const token = localStorage.getItem("token");
+  const autenticado = localStorage.getItem("autenticado") === "true";
   const api = String(window.STEELCONTROL_API_URL || "").replace(/\/$/, "");
-  if (!token || !api) return;
+  if (!autenticado || !api) return;
 
   window.__steelSessionRealtimeStarted = true;
   let encerrando = false;
@@ -8902,7 +8931,6 @@ window.confirmarSaidaDaConta = async function confirmarSaidaDaConta() {
           method: "GET",
           headers: {
             Accept: "text/event-stream",
-            Authorization: `Bearer ${token}`,
             "Cache-Control": "no-cache"
           },
           cache: "no-store",

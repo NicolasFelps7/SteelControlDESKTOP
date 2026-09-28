@@ -2,7 +2,7 @@
   const API = window.STEELCONTROL_API_URL;
   const token = localStorage.getItem("token");
   const maquinaId = localStorage.getItem("maquinaId");
-  if (!token || !maquinaId) return;
+  if (localStorage.getItem("autenticado") !== "true" || !maquinaId) return;
 
   const dom = {
     vibracao: document.getElementById("vibracao"),
@@ -40,7 +40,7 @@
 
   async function fetchAuth(url, options = {}) {
     const headers = new Headers(options.headers || {});
-    headers.set("Authorization", `Bearer ${token}`);
+    if (token) headers.set("Authorization", `Bearer ${token}`);
     if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
     headers.set("Cache-Control", "no-cache");
     return fetch(url, { ...options, headers, cache: "no-store" });

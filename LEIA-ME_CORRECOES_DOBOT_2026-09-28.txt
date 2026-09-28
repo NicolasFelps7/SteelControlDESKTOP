@@ -1,0 +1,35 @@
+STEELCONTROL DESKTOP + EDGE 2.1.7
+
+CORRECOES
+- Controle manual/JOG envia o movimento pelo protocolo serial imediato e confirma a pose real.
+- HOME, ventosa e garra não ficam presos na fila interna do firmware Magician/Lite.
+- A fila segura, permissões, limites, auditoria, alarmes e STOP do SteelControl foram preservados.
+- Pontos automáticos antigos duplicados são removidos e podem ser redefinidos pela interface.
+- Polling da interface foi reduzido para evitar espera e excesso de requisições.
+- Inicializador tolera bloqueio temporario do marcador da Face API no Windows.
+
+ATUALIZACAO
+1. Feche o Desktop, backend e SteelControl Edge.
+2. Extraia este pacote sobre C:\Users\48856683873\SteelControlDESKTOP.
+3. Confirme a substituicao dos arquivos.
+4. Inicie o SteelControl normalmente.
+5. Abra o Edge e confirme a etiqueta EDGE 2.1.7.
+6. Inicie a maquina e teste nesta ordem: Limpar alarmes, HOME, JOG de 1 mm.
+
+AUTOMATICO
+- Clique em REDEFINIR PONTOS.
+- Posicione o braco e capture P0, P1, P2, P3 e P4 em posicoes diferentes.
+- Comece com velocidade de 10% e uma repeticao.
+- Mantenha a area livre e o STOP fisico acessivel.
+CORREÇÃO DE RECUPERAÇÃO DO ALARME 18
+====================================
+
+- O Edge agora executa PARAR FILA -> ESVAZIAR FILA -> LIMPAR ALARMES.
+- A fila só é reiniciada depois que o Dobot confirma a limpeza.
+- Um PTP inválido não pode mais reaparecer durante a recuperação.
+- O diagnóstico informa X, Y, Z e R do último alvo rejeitado.
+- Ao detectar um alarme durante o PTP, o movimento falha imediatamente em vez
+  de permanecer carregando até o timeout.
+
+Depois de atualizar, feche o Edge antigo e abra novamente
+INICIAR_STEELCONTROL_EDGE.bat. Pressione PARAR e depois Limpar alarmes uma vez.

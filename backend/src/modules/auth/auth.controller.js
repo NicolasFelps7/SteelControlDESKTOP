@@ -10,10 +10,19 @@ import {
   env
 } from "../../config/env.js";
 
+import {
+  clearSessionCookie,
+  clientWantsBearer,
+  setSessionCookie
+} from "../../lib/sessionCookie.js";
+import { criptografarJsonSensivel } from "../../lib/sensitiveData.js";
+import { deleteShared, getSharedJson, setSharedJson } from "../../lib/redisStore.js";
+
 
 import {
   enviarCodigoCadastroEmpresa,
-  enviarCodigoSegundoFatorFacial
+  enviarCodigoSegundoFatorFacial,
+  enviarCodigoMfaAdministrador
 } from "../../lib/mailer.js";
 
 import {
@@ -52,6 +61,37 @@ const FACE_2FA_TTL_MS = 5 * 60 * 1000;
 const FACE_2FA_MAX_ATTEMPTS = 5;
 const FACE_2FA_MAX_SENDS = 3;
 const FACE_2FA_CHALLENGES = new Map();
+const ADMIN_MFA_TTL_MS = 5 * 60 * 1000;
+const ADMIN_MFA_MAX_ATTEMPTS = 5;
+const ADMIN_MFA_CHALLENGES = new Map();
+
+async function salvarAdminMfa(id, desafio) {
+  ADMIN_MFA_CHALLENGES.set(id, desafio);
+  const salvo = await setSharedJson(`admin-mfa:${id}`, desafio, Math.max(1000, desafio.expiraEm - Date.now()));
+  if (env.level9 && !salvo) {
+    ADMIN_MFA_CHALLENGES.delete(id);
+    const erro = new Error("MFA indisponível porque o armazenamento seguro não respondeu.");
+    erro.statusCode = 503;
+    throw erro;
+  }
+}
+
+async function obterAdminMfa(id) {
+  const compartilhado = await getSharedJson(`admin-mfa:${id}`);
+  return env.level9 ? compartilhado : compartilhado || ADMIN_MFA_CHALLENGES.get(id) || null;
+}
+
+async function removerAdminMfa(id) {
+  ADMIN_MFA_CHALLENGES.delete(id);
+  await deleteShared(`admin-mfa:${id}`);
+}
+
+function limparAdminMfaExpirados() {
+  const agora = Date.now();
+  for (const [id, desafio] of ADMIN_MFA_CHALLENGES.entries()) {
+    if (!desafio || desafio.expiraEm <= agora) ADMIN_MFA_CHALLENGES.delete(id);
+  }
+}
 
 function limparFace2FAExpirados() {
   const agora = Date.now();
@@ -60,6 +100,27 @@ function limparFace2FAExpirados() {
       FACE_2FA_CHALLENGES.delete(id);
     }
   }
+}
+
+async function salvarFace2FA(id, desafio) {
+  FACE_2FA_CHALLENGES.set(id, desafio);
+  const salvo = await setSharedJson(`face-2fa:${id}`, desafio, Math.max(1000, desafio.expiraEm - Date.now()));
+  if (env.level9 && !salvo) {
+    FACE_2FA_CHALLENGES.delete(id);
+    const erro = new Error("Segundo fator facial indisponível porque o armazenamento seguro não respondeu.");
+    erro.statusCode = 503;
+    throw erro;
+  }
+}
+
+async function obterFace2FA(id) {
+  const compartilhado = await getSharedJson(`face-2fa:${id}`);
+  return env.level9 ? compartilhado : compartilhado || FACE_2FA_CHALLENGES.get(id) || null;
+}
+
+async function removerFace2FA(id) {
+  FACE_2FA_CHALLENGES.delete(id);
+  await deleteShared(`face-2fa:${id}`);
 }
 
 function mascararEmailFace2FA(email) {
@@ -108,6 +169,27 @@ function criarToken(usuario) {
       expiresIn: env.jwtExpiresIn
     }
   );
+}
+
+function criarSessao(req, res, usuario) {
+  const token = criarToken(usuario);
+  setSessionCookie(res, token);
+
+  return clientWantsBearer(req)
+    ? { token, authMode: "bearer" }
+    : { authMode: "secure-cookie" };
+}
+
+export function logout(req, res) {
+  clearSessionCookie(res);
+  return res.json({ mensagem: "Sessão encerrada com segurança." });
+}
+
+export function sessionStatus(req, res) {
+  return res.json({
+    autenticado: true,
+    usuario: req.auth
+  });
 }
 
 
@@ -1458,11 +1540,11 @@ export async function completeCompanyRegistrationWithFace(
                 nome:
                   "Facial principal",
                 embedding:
-                  criarPacoteTemplatesFaciais({
+                  criptografarJsonSensivel(criarPacoteTemplatesFaciais({
                     inicial: facialInicial?.embedding,
                     movimento: facialMovimento.embedding,
                     final: facialFinal.embedding
-                  }),
+                  })),
                 modelo:
                   "insightface-buffalo_l"
               }
@@ -1490,10 +1572,7 @@ export async function completeCompanyRegistrationWithFace(
       .json({
         mensagem:
           "Cadastro concluído com sucesso. E-mail e biometria facial confirmados.",
-        token:
-          criarToken(
-            resultado.usuario
-          ),
+        ...criarSessao(req, res, resultado.usuario),
         usuario: {
           id:
             resultado.usuario.id,
@@ -1592,12 +1671,46 @@ export async function login(
         });
     }
 
+    if (env.adminMfaRequired && usuario.cargo === "ADMINISTRADOR") {
+      limparAdminMfaExpirados();
+      const challengeId = randomUUID();
+      const codigo = String(randomInt(100000, 1000000));
+      const codigoHash = await bcrypt.hash(codigo, 10);
+
+      const desafioMfa = {
+        usuarioId: usuario.id,
+        codigoHash,
+        expiraEm: Date.now() + ADMIN_MFA_TTL_MS,
+        tentativas: 0
+      };
+      await salvarAdminMfa(challengeId, desafioMfa);
+
+      try {
+        await enviarCodigoMfaAdministrador({
+          destino: usuario.email,
+          codigo,
+          nome: usuario.nome
+        });
+      } catch (erro) {
+        await removerAdminMfa(challengeId);
+        throw erro;
+      }
+
+      return res.status(202).json({
+        codigo: "ADMIN_MFA_REQUIRED",
+        mensagem: "Digite o código enviado ao e-mail do administrador.",
+        mfaRequired: true,
+        challengeId,
+        email: mascararEmailFace2FA(usuario.email),
+        expiraEmSegundos: Math.floor(ADMIN_MFA_TTL_MS / 1000)
+      });
+    }
+
     return res.json({
       mensagem:
         "Login realizado com sucesso.",
 
-      token:
-        criarToken(usuario),
+      ...criarSessao(req, res, usuario),
 
       usuario: {
         id:
@@ -1623,6 +1736,66 @@ export async function login(
 
   } catch (erro) {
 
+    next(erro);
+  }
+}
+
+export async function verifyAdminMfa(req, res, next) {
+  try {
+    limparAdminMfaExpirados();
+    const challengeId = String(req.body?.challengeId || "").trim();
+    const codigo = String(req.body?.codigo || "").replace(/\D/g, "").slice(0, 6);
+    const desafio = await obterAdminMfa(challengeId);
+
+    if (!desafio || codigo.length !== 6) {
+      return res.status(401).json({
+        codigo: "ADMIN_MFA_INVALID",
+        mensagem: "Código administrativo inválido ou expirado."
+      });
+    }
+
+    desafio.tentativas += 1;
+    if (desafio.tentativas > ADMIN_MFA_MAX_ATTEMPTS) {
+      await removerAdminMfa(challengeId);
+      return res.status(429).json({
+        codigo: "ADMIN_MFA_ATTEMPTS_EXCEEDED",
+        mensagem: "Limite de tentativas excedido. Faça login novamente."
+      });
+    }
+
+    const valido = await bcrypt.compare(codigo, desafio.codigoHash);
+    if (!valido) {
+      await salvarAdminMfa(challengeId, desafio);
+      return res.status(401).json({
+        codigo: "ADMIN_MFA_INVALID",
+        mensagem: "Código administrativo incorreto.",
+        tentativasRestantes: Math.max(0, ADMIN_MFA_MAX_ATTEMPTS - desafio.tentativas)
+      });
+    }
+
+    const usuario = await prisma.usuario.findFirst({
+      where: { id: desafio.usuarioId, ativo: true, cargo: "ADMINISTRADOR" },
+      include: { empresa: true }
+    });
+    await removerAdminMfa(challengeId);
+
+    if (!usuario) {
+      return res.status(401).json({ mensagem: "Conta administrativa indisponível." });
+    }
+
+    return res.json({
+      mensagem: "Autenticação multifator concluída.",
+      ...criarSessao(req, res, usuario),
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        cargo: cargoParaTela(usuario.cargo)
+      },
+      empresa: empresaParaResposta(usuario.empresa),
+      mfa: { verificado: true, metodo: "email_codigo" }
+    });
+  } catch (erro) {
     next(erro);
   }
 }
@@ -2397,7 +2570,7 @@ export async function loginFace(
 
       const challengeId = randomUUID();
 
-      FACE_2FA_CHALLENGES.set(challengeId, {
+      await salvarFace2FA(challengeId, {
         candidatos: [...new Set(candidatos)],
         criadoEm: Date.now(),
         expiraEm: Date.now() + FACE_2FA_TTL_MS,
@@ -2437,10 +2610,7 @@ export async function loginFace(
       mensagem:
         `Rosto reconhecido. Bem-vindo, ${usuario.nome}!`,
 
-      token:
-        criarToken(
-          usuario
-        ),
+      ...criarSessao(req, res, usuario),
 
       usuario: {
         id:
@@ -2500,10 +2670,10 @@ export async function requestFaceAmbiguousCode(req, res, next) {
 
     const challengeId = String(req.body?.challengeId || "").trim();
     const email = String(req.body?.email || "").trim().toLowerCase();
-    const desafio = FACE_2FA_CHALLENGES.get(challengeId);
+    const desafio = await obterFace2FA(challengeId);
 
     if (!challengeId || !email || !desafio || desafio.expiraEm <= Date.now()) {
-      FACE_2FA_CHALLENGES.delete(challengeId);
+      await removerFace2FA(challengeId);
       return res.status(400).json({
         codigo: "FACE_2FA_EXPIRED",
         mensagem: "A confirmação adicional expirou. Refaça o reconhecimento facial."
@@ -2534,7 +2704,9 @@ export async function requestFaceAmbiguousCode(req, res, next) {
     if (!usuario) {
       desafio.tentativas += 1;
       if (desafio.tentativas >= FACE_2FA_MAX_ATTEMPTS) {
-        FACE_2FA_CHALLENGES.delete(challengeId);
+        await removerFace2FA(challengeId);
+      } else {
+        await salvarFace2FA(challengeId, desafio);
       }
       return res.status(400).json({
         codigo: "FACE_2FA_EMAIL_MISMATCH",
@@ -2557,6 +2729,7 @@ export async function requestFaceAmbiguousCode(req, res, next) {
     desafio.codigoExpiraEm = Date.now() + FACE_2FA_TTL_MS;
     desafio.envios += 1;
     desafio.tentativas = 0;
+    await salvarFace2FA(challengeId, desafio);
 
     return res.json({
       codigo: "FACE_2FA_CODE_SENT",
@@ -2576,7 +2749,7 @@ export async function verifyFaceAmbiguousCode(req, res, next) {
     const challengeId = String(req.body?.challengeId || "").trim();
     const email = String(req.body?.email || "").trim().toLowerCase();
     const codigo = String(req.body?.codigo || "").replace(/\D/g, "").slice(0, 6);
-    const desafio = FACE_2FA_CHALLENGES.get(challengeId);
+    const desafio = await obterFace2FA(challengeId);
 
     if (
       !desafio ||
@@ -2585,7 +2758,7 @@ export async function verifyFaceAmbiguousCode(req, res, next) {
       !desafio.codigoExpiraEm ||
       desafio.codigoExpiraEm <= Date.now()
     ) {
-      FACE_2FA_CHALLENGES.delete(challengeId);
+      await removerFace2FA(challengeId);
       return res.status(400).json({
         codigo: "FACE_2FA_EXPIRED",
         mensagem: "O código expirou. Refaça o reconhecimento facial."
@@ -2605,7 +2778,7 @@ export async function verifyFaceAmbiguousCode(req, res, next) {
     desafio.tentativas += 1;
 
     if (desafio.tentativas > FACE_2FA_MAX_ATTEMPTS) {
-      FACE_2FA_CHALLENGES.delete(challengeId);
+      await removerFace2FA(challengeId);
       return res.status(429).json({
         codigo: "FACE_2FA_ATTEMPTS_EXCEEDED",
         mensagem: "Muitas tentativas incorretas. Refaça o reconhecimento facial."
@@ -2615,6 +2788,7 @@ export async function verifyFaceAmbiguousCode(req, res, next) {
     const valido = await bcrypt.compare(codigo, desafio.codigoHash);
 
     if (!valido) {
+      await salvarFace2FA(challengeId, desafio);
       return res.status(401).json({
         codigo: "FACE_2FA_INVALID",
         mensagem: "Código de confirmação incorreto.",
@@ -2635,18 +2809,18 @@ export async function verifyFaceAmbiguousCode(req, res, next) {
     });
 
     if (!usuario || !desafio.candidatos.includes(usuario.id)) {
-      FACE_2FA_CHALLENGES.delete(challengeId);
+      await removerFace2FA(challengeId);
       return res.status(401).json({
         codigo: "FACE_2FA_IDENTITY_INVALID",
         mensagem: "Não foi possível confirmar a identidade."
       });
     }
 
-    FACE_2FA_CHALLENGES.delete(challengeId);
+    await removerFace2FA(challengeId);
 
     return res.json({
       mensagem: `Identidade confirmada. Bem-vindo, ${usuario.nome}!`,
-      token: criarToken(usuario),
+      ...criarSessao(req, res, usuario),
       usuario: {
         id: usuario.id,
         nome: usuario.nome,

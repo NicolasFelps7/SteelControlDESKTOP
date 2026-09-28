@@ -54,6 +54,11 @@ test(
       "DENY"
     );
 
+    assert.match(
+      res.headers["Content-Security-Policy"],
+      /frame-src https:\/\/www\.google\.com https:\/\/maps\.google\.com/
+    );
+
     assert.equal(
       nextChamado,
       true

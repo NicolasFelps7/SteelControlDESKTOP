@@ -19,6 +19,9 @@ import {
   removeFace,
   listFaceSamples,
   removeFaceSample
+  ,logout
+  ,sessionStatus
+  ,verifyAdminMfa
 } from "./auth.controller.js";
 
 import {
@@ -115,6 +118,24 @@ authRoutes.post(
   "/login",
   limiteLogin,
   login
+);
+
+authRoutes.post(
+  "/admin-mfa/verify",
+  limiteLogin,
+  verifyAdminMfa
+);
+
+authRoutes.get(
+  "/session",
+  authRequired,
+  sessionStatus
+);
+
+authRoutes.post(
+  "/logout",
+  authRequired,
+  logout
 );
 
 authRoutes.post(

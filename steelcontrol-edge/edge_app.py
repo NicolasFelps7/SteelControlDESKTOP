@@ -1,6 +1,6 @@
 from __future__ import annotations
-import json, queue, threading, time, tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+import json, queue, socket, threading, time, tkinter as tk
+from tkinter import ttk, messagebox
 import requests
 try:
     from serial.tools import list_ports
@@ -12,7 +12,7 @@ from edge_runtime import EdgeRuntimeManager
 from adapters import infer_driver
 from edge_discovery import EdgeDiscoveryService
 
-APP_TITLE='SteelControl Edge'; APP_VERSION='2.1.2'
+APP_TITLE='SteelControl Edge'; APP_VERSION='2.1.7'; INSTANCE_PORT=4212
 BG='#0d1318'; PANEL='#151d24'; PANEL2='#1b252e'; INPUT='#0f171d'; TEXT='#edf3f7'; MUTED='#93a4b3'; ACCENT='#32c36c'; WARN='#e4ab42'; DANGER='#e35d63'; BORDER='#2a3944'; BLUE='#4aa3ff'
 
 class App(tk.Tk):
@@ -29,7 +29,7 @@ class App(tk.Tk):
             known={(p.machine_id,p.server_url) for p in self.store.profiles}
             incoming={(p.machine_id,p.server_url) for p in fresh.profiles}
             if incoming != known:
-                self.store=fresh; self._refresh_list()
+                self.store=fresh; self.manager.reconcile(self.store.profiles); self._refresh_list()
                 if self.store.profiles and not self.selected_id:self._select(self.store.profiles[0].id)
         except Exception:pass
         self.after(2500,self._reload_external_profiles)
@@ -44,7 +44,7 @@ class App(tk.Tk):
         self.label=tk.StringVar(); self.server=tk.StringVar(value='http://127.0.0.1:3000'); self.mid=tk.StringVar(); self.key=tk.StringVar(); self.driver=tk.StringVar(value='AUTO'); self.enabled=tk.BooleanVar(value=True); self.allow=tk.BooleanVar(value=False); self.interval=tk.StringVar(value='2000'); self.show_key=tk.BooleanVar(value=False)
         self.host=tk.StringVar(); self.port=tk.StringVar(); self.unit=tk.StringVar(value='1'); self.serial=tk.StringVar(value='AUTO'); self.baud=tk.StringVar(value='115200'); self.endpoint=tk.StringVar(); self.topic=tk.StringVar(); self.command_endpoint=tk.StringVar()
     def _ui(self):
-        h=ttk.Frame(self); h.pack(fill='x',padx=24,pady=(20,12)); left=ttk.Frame(h); left.pack(side='left',fill='x',expand=True); ttk.Label(left,text='SteelControl Edge',style='Header.TLabel').pack(anchor='w'); ttk.Label(left,text='Gateway multi-máquina • drivers industriais • provisionamento sem código',foreground=MUTED,background=BG).pack(anchor='w',pady=(2,0)); tk.Label(h,text='EDGE 2.1.2',bg='#163622',fg='#6be99b',font=('Segoe UI Semibold',9),padx=12,pady=6).pack(side='right')
+        h=ttk.Frame(self); h.pack(fill='x',padx=24,pady=(20,12)); left=ttk.Frame(h); left.pack(side='left',fill='x',expand=True); ttk.Label(left,text='SteelControl Edge',style='Header.TLabel').pack(anchor='w'); ttk.Label(left,text='Gateway multi-máquina • drivers industriais • provisionamento sem código',foreground=MUTED,background=BG).pack(anchor='w',pady=(2,0)); tk.Label(h,text=f'EDGE {APP_VERSION}',bg='#163622',fg='#6be99b',font=('Segoe UI Semibold',9),padx=12,pady=6).pack(side='right')
         body=ttk.Frame(self); body.pack(fill='both',expand=True,padx=24,pady=(0,20)); body.columnconfigure(0,weight=0); body.columnconfigure(1,weight=1); body.rowconfigure(0,weight=1)
         nav=ttk.Frame(body,style='Panel.TFrame',padding=14,width=315); nav.grid(row=0,column=0,sticky='nsw',padx=(0,10)); nav.grid_propagate(False); nav.columnconfigure(0,weight=1); nav.rowconfigure(3,weight=1)
         ttk.Label(nav,text='Máquinas configuradas',style='Section.TLabel').grid(row=0,column=0,sticky='w'); ttk.Label(nav,text='Um Edge pode operar várias máquinas.',style='Muted.TLabel').grid(row=1,column=0,sticky='w',pady=(2,10))
@@ -82,7 +82,7 @@ class App(tk.Tk):
         self.driver_hint=ttk.Label(p,text='',style='Muted.TLabel'); self.driver_hint.grid(row=8,column=0,columnspan=2,sticky='w',pady=(4,6))
         comm=ttk.LabelFrame(p,text=' Comunicação com a máquina ',padding=12); comm.grid(row=9,column=0,columnspan=2,sticky='ew',pady=(4,8)); comm.columnconfigure(0,weight=1); comm.columnconfigure(1,weight=1); self._entry(comm,'Host / IP / broker',self.host,0); self._entry(comm,'Porta TCP',self.port,0,1); self._entry(comm,'Unit ID (Modbus)',self.unit,2); self._entry(comm,'Porta serial',self.serial,2,1); self._entry(comm,'Baud rate',self.baud,4); self._entry(comm,'Endpoint / caminho',self.endpoint,4,1); self._entry(comm,'Tópico MQTT',self.topic,6); self._entry(comm,'Endpoint/tópico de comando',self.command_endpoint,6,1)
         self.port_combo=ttk.Combobox(comm,textvariable=self.serial,values=['AUTO']); self.port_combo.grid(row=5,column=1,sticky='ew'); ttk.Button(comm,text='Detectar COM',command=self._refresh_ports).grid(row=8,column=1,sticky='e',pady=(7,0))
-        safety=ttk.Frame(p,style='Panel2.TFrame',padding=11); safety.grid(row=10,column=0,columnspan=2,sticky='ew',pady=(5,8)); safety.columnconfigure(0,weight=1); tk.Label(safety,text='SEGURANÇA DE COMANDOS',bg=PANEL2,fg=WARN,font=('Segoe UI Semibold',9)).grid(row=0,column=0,sticky='w'); ttk.Checkbutton(safety,text='Permitir comandos físicos desta máquina',variable=self.allow,command=self._allow_changed).grid(row=1,column=0,sticky='w',pady=(5,0)); ttk.Label(safety,text='Desativado por padrão. Telemetria continua funcionando. STOP de segurança é tratado separadamente.',background=PANEL2,foreground=MUTED).grid(row=2,column=0,sticky='w',pady=(3,0))
+        safety=ttk.Frame(p,style='Panel2.TFrame',padding=11); safety.grid(row=10,column=0,columnspan=2,sticky='ew',pady=(5,8)); safety.columnconfigure(0,weight=1); tk.Label(safety,text='SEGURANÇA DE COMANDOS',bg=PANEL2,fg=WARN,font=('Segoe UI Semibold',9)).grid(row=0,column=0,sticky='w'); ttk.Checkbutton(safety,text='Permitir comandos físicos desta máquina',variable=self.allow,command=self._allow_changed).grid(row=1,column=0,sticky='w',pady=(5,0)); ttk.Label(safety,text='Exige liberação explícita no cadastro e neste Edge. Limites PTP e STOP continuam ativos.',background=PANEL2,foreground=MUTED).grid(row=2,column=0,sticky='w',pady=(3,0))
 
     def _actions_ui(self,parent):
         # Rodapé fixo: nunca some quando a configuração é maior que a janela.
@@ -189,9 +189,9 @@ class App(tk.Tk):
     def _driver_hint(self):
         d=self.driver.get(); self.driver_hint.configure(text=DRIVER_NAMES.get(d,d)+(' — usa automaticamente controlador/protocolo cadastrados no SteelControl.' if d=='AUTO' else ''))
     def _allow_changed(self):
-        if not self.allow.get():return
-        ans=simpledialog.askstring('Liberação de comandos','Comandos físicos podem movimentar máquinas. Valide E-stop, intertravamentos, limites e área segura.\n\nDigite LIBERAR para confirmar:',parent=self)
-        if ans!='LIBERAR':self.allow.set(False);messagebox.showinfo(APP_TITLE,'Comandos físicos permaneceram bloqueados.')
+        # A caixa agora é imediata. O backend continua aplicando autenticação,
+        # allowlist, faixas PTP e STOP de segurança.
+        return
     def _start_selected(self):
         p=self._profile()
         if not p:return
@@ -236,5 +236,15 @@ class App(tk.Tk):
         except Exception:pass
         self.destroy()
 
-def main():App().mainloop()
+def main():
+    # O servidor local mantém a porta reservada durante toda a execução. Uma
+    # segunda janela do Edge não pode abrir os mesmos dispositivos seriais.
+    guard=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    try:
+        guard.bind(('127.0.0.1',INSTANCE_PORT));guard.listen(1)
+    except OSError:
+        guard.close()
+        root=tk.Tk();root.withdraw();messagebox.showerror(APP_TITLE,'O SteelControl Edge já está aberto neste computador.\n\nUse a janela que já está em execução para evitar disputa da porta COM.');root.destroy();return
+    try:App().mainloop()
+    finally:guard.close()
 if __name__=='__main__':main()

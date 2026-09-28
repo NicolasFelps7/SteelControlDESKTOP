@@ -3,7 +3,9 @@
 ## Modelo de ameaça resumido
 
 ### Autenticação
-- Tokens JWT são assinados com segredo obrigatório.
+- Tokens JWT são assinados com segredo obrigatório e expiração curta.
+- No desktop, a sessão usa cookie `HttpOnly`, `Secure` e `SameSite=Strict`; o JWT não é persistido no `localStorage`.
+- Administradores autenticados por senha passam por MFA de código único quando `ADMIN_MFA_REQUIRED=true` (padrão de produção).
 - O backend consulta o usuário atual no banco em toda rota protegida.
 - Usuários desativados perdem acesso mesmo que ainda possuam token não expirado.
 - Cargo e `empresaId` vêm do banco, não são confiados ao conteúdo antigo do token.
@@ -35,6 +37,8 @@ No login:
 6. o backend gera o embedding final;
 7. a comparação acontece no Node.
 
+Os templates são armazenados em envelope AES-256-GCM. Produção exige uma `SENSITIVE_DATA_KEY` independente; registros legados podem ser migrados com `npm run face:encrypt`.
+
 ### Limitações
 A prova de vida por movimento é uma proteção de demonstração e não equivale a detecção anti-spoofing certificada.
 
@@ -59,6 +63,9 @@ A release possui controles adicionais fora da lógica da aplicação:
 - CI com `permissions: contents: read`;
 - E2E com PostgreSQL efêmero em ambiente isolado;
 - Dependabot para npm, pip e GitHub Actions.
+- varredura semanal de dependências e execução manual autorizada do OWASP ZAP;
+- Redis para rate limit distribuído quando `REDIS_URL` está configurada;
+- endpoint Prometheus protegido por `MONITORING_TOKEN`.
 
 ## Containers
 
@@ -102,4 +109,19 @@ Antes de publicar uma versão:
 - Identidades com margem insuficiente não são escolhidas automaticamente: o backend retorna um challenge opaco de segundo fator.
 - O segundo fator por e-mail usa código de 6 dígitos, hash bcrypt, TTL de 5 minutos e limites de tentativas/envios.
 - O challenge não expõe ao cliente os candidatos biométricos detectados.
-- Em implantação multi-instância, o armazenamento temporário dos challenges deve ser migrado do Map em memória para Redis/armazenamento compartilhado com TTL.
+- No perfil `level9`, rate limits, MFA administrativo e challenges faciais usam Redis e falham de forma segura quando o armazenamento compartilhado está indisponível.
+
+## Perfil de produção nível 9
+
+- `SECURITY_PROFILE=level9` exige produção, HTTPS, MFA administrativo, Redis, sessão de até 30 minutos, token de monitoramento e CORS somente HTTPS.
+- O backend não inicia se PostgreSQL ou Redis não responderem.
+- O rate limit não regride para memória local quando Redis falha.
+- Use `CONFIGURAR_PRODUCAO_NIVEL9.ps1` para gerar arquivos locais e `VALIDAR_NIVEL9.ps1` para o aceite técnico.
+
+## Controle físico do Dobot
+
+- Movimentos exigem `remoteControlEnabled=true` no cadastro e liberação local no Edge.
+- O Edge nunca habilita movimento automaticamente durante o provisionamento.
+- O backend e o Edge validam o mesmo envelope PTP e velocidade máxima de 60%.
+- Comandos possuem TTL; PTP novo cancela PTP pendente e STOP cancela comandos operacionais na fila.
+- STOP permanece disponível como comando de segurança mesmo com controle remoto desabilitado.

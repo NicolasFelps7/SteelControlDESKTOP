@@ -233,11 +233,13 @@
   }
 
   async function sendPrinterCommand(command) {
-    if (!activeMachineId || !token) return;
+    if (!activeMachineId || localStorage.getItem("autenticado") !== "true") return;
     const dangerous = command === "PRINTER3D_CANCEL" || command === "PRINTER3D_HOME";
     const confirmed = await (window.SteelUI?.confirm?.({ titulo: "Comando da impressora 3D", mensagem: `Enviar ${command}?`, confirmar: "Enviar", perigoso: dangerous }) ?? Promise.resolve(window.confirm(`Enviar ${command}?`)));
     if (!confirmed) return;
-    const response = await fetch(`${API}/maquinas/${activeMachineId}/impressora3d/comandos`, { method:"POST", headers:{ Authorization:`Bearer ${token}`, "Content-Type":"application/json" }, body:JSON.stringify({ comando:command, payload:{} }) });
+    const headers = { "Content-Type":"application/json" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const response = await fetch(`${API}/maquinas/${activeMachineId}/impressora3d/comandos`, { method:"POST", headers, body:JSON.stringify({ comando:command, payload:{} }) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.mensagem || "Comando não aceito.");
     window.SteelUI?.toast?.({ tipo:"success", titulo:"Impressora 3D", mensagem:data.mensagem || "Comando enviado." });

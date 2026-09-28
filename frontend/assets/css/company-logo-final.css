@@ -1,0 +1,73 @@
+/* Logo institucional: preserva as cores reais também no tema escuro. */
+.page-company .company-logo-wrapper {
+  width: 154px !important;
+  min-width: 154px !important;
+  max-width: 154px !important;
+  align-items: stretch !important;
+}
+
+.page-company .company-logo-box {
+  width: 154px !important;
+  min-width: 154px !important;
+  height: 90px !important;
+  padding: 10px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  border: 1px solid #cfd6dc !important;
+  border-radius: 10px !important;
+}
+
+.page-company .change-logo-btn,
+.page-company .remove-logo-btn {
+  width: 154px !important;
+  min-width: 154px !important;
+}
+
+.page-company .company-logo-box #empresaLogo {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background: #ffffff !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="escuro"] .page-company .company-logo-box,
+html[data-theme="dark"] .page-company .company-logo-box {
+  background: #ffffff !important;
+  border-color: #505b63 !important;
+}
+
+html[data-theme="escuro"] .page-company #empresaLogo,
+html[data-theme="dark"] .page-company #empresaLogo,
+html[data-theme="escuro"] .page-company #empresaLogo.logo-monocromatica-escura,
+html[data-theme="dark"] .page-company #empresaLogo.logo-monocromatica-escura {
+  background: #ffffff !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 720px) {
+  .page-company .company-logo-wrapper {
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+  }
+
+  .page-company .company-logo-box {
+    width: 124px !important;
+    min-width: 124px !important;
+    height: 76px !important;
+  }
+
+
+  .page-company .change-logo-btn,
+  .page-company .remove-logo-btn {
+    width: 124px !important;
+    min-width: 124px !important;
+  }
+}

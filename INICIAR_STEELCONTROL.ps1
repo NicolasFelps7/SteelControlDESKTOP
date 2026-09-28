@@ -143,7 +143,27 @@ Ele e obrigatorio porque o InsightFace 0.7.3 e distribuido como codigo-fonte e p
   try {
     Invoke-Native $VenvPython -m pip install --upgrade pip setuptools wheel
     Invoke-Native $VenvPython -m pip install --prefer-binary -r $Requirements
-    Set-Content -Path $InstallMarker -Value $RequirementsHash -Encoding ASCII
+    # Windows Defender, o indexador ou uma segunda inicializacao podem manter
+    # o marcador aberto por alguns milissegundos. Ele serve apenas para evitar
+    # reinstalar dependencias; uma trava temporaria nao deve impedir o sistema
+    # inteiro de iniciar.
+    $MarkerWritten = $false
+    for ($Attempt = 1; $Attempt -le 12; $Attempt++) {
+      try {
+        [System.IO.File]::WriteAllText(
+          $InstallMarker,
+          $RequirementsHash,
+          [System.Text.Encoding]::ASCII
+        )
+        $MarkerWritten = $true
+        break
+      } catch [System.IO.IOException] {
+        Start-Sleep -Milliseconds 250
+      }
+    }
+    if (-not $MarkerWritten) {
+      Write-Warning "Dependencias instaladas, mas o marcador da Face API continua em uso. O SteelControl seguira normalmente."
+    }
   } catch {
     Remove-Item $InstallMarker -Force -ErrorAction SilentlyContinue
     throw

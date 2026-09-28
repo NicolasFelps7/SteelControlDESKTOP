@@ -200,6 +200,39 @@ html[data-theme="dark"] {
   font-weight: 600 !important;
 }
 
+/* Tema claro: os painéis dedicados seguem a mesma linguagem branca do app. */
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-hero,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .dobot-hero {
+  color: #202529 !important;
+  background: #ffffff !important;
+  border: 1px solid #d7dee3 !important;
+  border-left: 4px solid var(--sc-v3-accent) !important;
+  box-shadow: 0 8px 24px rgba(24, 32, 38, .06) !important;
+}
+
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-hero::after,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .dobot-hero::after {
+  background: linear-gradient(125deg, transparent 20%, rgba(199, 131, 34, .045)) !important;
+}
+
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-hero h2,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .dobot-hero h2 {
+  color: #202529 !important;
+}
+
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-hero p,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .dobot-hero p {
+  color: #68757e !important;
+}
+
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-hero-icon,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .controller-state,
+html:not([data-theme="escuro"]):not([data-theme="dark"]) .dashboard-shell .dobot-state {
+  color: #202529 !important;
+  background: #f7f9fa !important;
+  border-color: #d7dee3 !important;
+}
+
 /* ========================================================================
    3. DIAGNÓSTICOS / KPIs — sem cards bege/laranja
    ======================================================================== */

@@ -2,6 +2,7 @@ import { app } from "./app.js";
 import { prisma } from "./lib/prisma.js";
 import { env } from "./config/env.js";
 import { startDeviceDiscovery, stopDeviceDiscovery } from "./lib/deviceDiscovery.js";
+import { requireRedis } from "./lib/redisStore.js";
 
 let server;
 let encerrando = false;
@@ -47,6 +48,9 @@ async function encerrar(
 async function iniciar() {
   try {
     await prisma.$connect();
+    if (env.level9) {
+      await requireRedis();
+    }
 
     server =
       app.listen(

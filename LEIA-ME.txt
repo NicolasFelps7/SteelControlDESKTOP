@@ -1,0 +1,25 @@
+STEELCONTROL EDGE 2.1.6 - RECUPERACAO DO ALARME 0
+
+APLICACAO
+1. Feche completamente o SteelControl Edge.
+2. Extraia o conteudo deste ZIP diretamente em:
+   C:\Users\48856683873\SteelControlDESKTOP
+3. Confirme a substituicao dos arquivos.
+4. Execute .\INICIAR_STEELCONTROL_EDGE.bat
+5. Confirme no canto superior que aparece EDGE 2.1.6.
+
+TESTE
+1. Selecione Dobot Magician Lite no Edge.
+2. Confirme comandos LIBERADOS.
+3. Clique uma vez em Limpar alarmes no SteelControl.
+4. Aguarde o resultado.
+5. Clique em HOME com a area do robo livre.
+6. Somente depois teste um PTP curto e seguro.
+
+CORRECAO
+- Usa a ordem ClearAllAlarmsState, StopExec, ClearQueue e StartExec.
+- Nao usa ForceStop para limpar alarmes.
+- Se o firmware mantiver somente o bit 0 depois de confirmar a limpeza, HOME
+  pode recuperar a referencia do robo.
+- O bit bruto permanece registrado em rawAlarms para diagnostico.
+- Qualquer outro alarme continua bloqueando os movimentos.

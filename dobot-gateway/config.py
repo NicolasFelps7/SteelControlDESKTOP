@@ -15,7 +15,8 @@ class Config:
     mode: str = os.getenv("DOBOT_MODE", "mock").strip().lower()
     port: str = os.getenv("DOBOT_PORT", "AUTO").strip()
     baud: int = int(os.getenv("DOBOT_BAUD", "115200"))
-    interval_ms: int = max(500, int(os.getenv("DOBOT_INTERVAL_MS", "1000")))
+    interval_ms: int = max(250, int(os.getenv("DOBOT_INTERVAL_MS", "500")))
+    command_poll_ms: int = max(50, int(os.getenv("DOBOT_COMMAND_POLL_MS", "100")))
     allow_motion: bool = _bool("DOBOT_ALLOW_MOTION", False)
 
     def validate(self):

@@ -38,10 +38,17 @@ function Unprotect-LocalText {
   $Bytes=[Security.Cryptography.ProtectedData]::Unprotect($Protected,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
   return [Text.Encoding]::UTF8.GetString($Bytes)
 }
+function Unprotect-LocalFile {
+  param([string]$Source,[string]$Destination)
+  Add-Type -AssemblyName System.Security
+  $Protected=[IO.File]::ReadAllBytes($Source)
+  $Bytes=[Security.Cryptography.ProtectedData]::Unprotect($Protected,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)
+  [IO.File]::WriteAllBytes($Destination,$Bytes)
+}
 function Get-BackupInfo {
   param([string]$Path)
   $ManifestPath = Join-Path $Path 'manifest.json'
-  $DumpPath = Join-Path $Path 'database.dump'
+  $DumpPath = Join-Path $Path 'database.dump.dpapi'
   if (-not (Test-Path $ManifestPath) -or -not (Test-Path $DumpPath)) { return $null }
   try {
     $Manifest = Get-Content $ManifestPath -Raw | ConvertFrom-Json
@@ -105,7 +112,7 @@ if ($Latest) {
 
 $Backup=$SelectedInfo.Path
 $Manifest=$SelectedInfo.Manifest
-$ManifestPath=Join-Path $Backup 'manifest.json'; $DumpPath=Join-Path $Backup 'database.dump'
+$ManifestPath=Join-Path $Backup 'manifest.json'; $ProtectedDumpPath=Join-Path $Backup 'database.dump.dpapi'
 
 Write-Host ''
 Write-Host 'STEELCONTROL - RESTAURACAO' -ForegroundColor Cyan
@@ -144,12 +151,18 @@ $Confirm=Read-Host 'Digite RESTAURAR para continuar'
 if($Confirm -ne 'RESTAURAR'){Write-Host 'Operacao cancelada. Nenhum dado foi restaurado.' -ForegroundColor Yellow; exit 0}
 
 $PgRestore=Find-PgTool 'pg_restore'; $OldPassword=$env:PGPASSWORD; $env:PGPASSWORD=$Db.Password
+$TempDump=Join-Path ([IO.Path]::GetTempPath()) ("steelcontrol_restore_" + [guid]::NewGuid().ToString('N') + '.dump')
 try {
   Write-Host ''
+  Write-Host 'Descriptografando dump protegido para arquivo temporario...' -ForegroundColor Yellow
+  Unprotect-LocalFile -Source $ProtectedDumpPath -Destination $TempDump
   Write-Host 'Restaurando PostgreSQL...' -ForegroundColor Yellow
-  & $PgRestore --clean --if-exists --no-owner --no-privileges --exit-on-error --host=$($Db.Host) --port=$($Db.Port) --username=$($Db.User) --dbname=$($Db.Database) $DumpPath
+  & $PgRestore --clean --if-exists --no-owner --no-privileges --exit-on-error --host=$($Db.Host) --port=$($Db.Port) --username=$($Db.User) --dbname=$($Db.Database) $TempDump
   if($LASTEXITCODE -ne 0){throw "pg_restore falhou com codigo $LASTEXITCODE."}
-} finally {$env:PGPASSWORD=$OldPassword}
+} finally {
+  $env:PGPASSWORD=$OldPassword
+  if(Test-Path $TempDump){Remove-Item $TempDump -Force}
+}
 
 if($RestaurarConfiguracaoLocal){
   $ProtectedEnv=Join-Path $Backup 'config\backend.env.dpapi'

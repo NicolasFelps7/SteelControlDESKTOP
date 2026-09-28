@@ -136,7 +136,8 @@ class EdgeDiscoveryService:
         dobot = _is_dobot(port)
         store = load_store()
         profile = next((x for x in store.profiles if x.machine_id == machine_id and x.server_url.rstrip("/") == server), None)
-        if not profile:
+        is_new = profile is None
+        if is_new:
             profile = MachineProfile()
             store.profiles.append(profile)
         profile.label = f"{'Dobot' if dobot else (_safe(getattr(port, 'description', None)) or 'Máquina')} • {serial_port}"
@@ -145,7 +146,9 @@ class EdgeDiscoveryService:
         profile.device_key = key
         profile.driver = "DOBOT_MAGICIAN" if dobot else "SERIAL_JSON"
         profile.enabled = True
-        profile.allow_commands = False
+        # Provisionamento nunca libera movimento físico implicitamente.
+        if is_new:
+            profile.allow_commands = False
         profile.interval_ms = max(500, int(payload.get("telemetryIntervalMs") or 2000))
         profile.params = {"serialPort": serial_port, "baud": 115200}
         save_store(store)

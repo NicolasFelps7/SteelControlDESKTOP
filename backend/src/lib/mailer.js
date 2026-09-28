@@ -65,15 +65,30 @@ function criarTransporter() {
     throw erro;
   }
 
+  const auth = {
+    user: env.emailUser,
+    pass: env.emailAppPassword
+  };
+
+  const transporte = env.smtpHost
+    ? {
+        host: env.smtpHost,
+        port: env.smtpPort,
+        secure: env.smtpSecure,
+        requireTLS: !env.smtpSecure,
+        auth
+      }
+    : {
+        service: "gmail",
+        auth
+      };
+
   return nodemailer.createTransport({
-    service: "gmail",
-
-    auth: {
-      user:
-        env.emailUser,
-
-      pass:
-        env.emailAppPassword
+    ...transporte,
+    disableFileAccess: true,
+    disableUrlAccess: true,
+    tls: {
+      minVersion: "TLSv1.2"
     }
   });
 }
@@ -734,6 +749,25 @@ export async function enviarCodigoSegundoFatorFacial({
     destino,
     subject:
       "SteelControl — confirmação de identidade facial",
+    html
+  });
+}
+
+export async function enviarCodigoMfaAdministrador({ destino, codigo, nome }) {
+  const html = criarTemplateEmail({
+    titulo: "Confirme o acesso administrativo",
+    subtitulo: "Autenticação multifator SteelControl",
+    nome,
+    codigo,
+    mensagemPrincipal:
+      "Uma autenticação com senha tentou acessar uma conta administradora. Digite este código para concluir o login.",
+    mensagemSecundaria:
+      "O código é de uso único. Se a tentativa não foi sua, altere a senha e revise a auditoria da empresa."
+  });
+
+  return enviarEmail({
+    destino,
+    subject: "SteelControl — código de acesso administrativo",
     html
   });
 }

@@ -5,6 +5,7 @@ import { gerarDeviceKey, hashDeviceKey, deviceKeyHint } from "../../lib/deviceSe
 import { processarTelemetria, validarLimitesMaquina } from "../../lib/telemetryService.js";
 import { publicarEventoMaquina, assinarEventosMaquina, publicarEventoEmpresa } from "../../lib/realtime.js";
 import { normalizarComandoIhm, politicaComandoIhm, cargoPodeComandoIhm, expiraEmComandoIhm, avaliarPermissaoStartIhm, controleRemotoIhmHabilitado } from "../../lib/hmiPolicy.js";
+import { controleRemotoDobotHabilitado, expiraEmComandoDobot, validarPayloadDobot } from "../../lib/dobotPolicy.js";
 
 function ehAdministrador(req) {
   return req.auth?.cargo === "ADMINISTRADOR";
@@ -89,28 +90,6 @@ const PRINTER3D_COMMANDS = new Set([
   "PRINTER3D_LIGHT_ON",
   "PRINTER3D_LIGHT_OFF"
 ]);
-
-function validarPayloadDobot(comando, payload = {}) {
-  if (comando !== "DOBOT_PTP") return {};
-  const resultado = {};
-  for (const campo of ["x", "y", "z", "r"]) {
-    const valor = Number(payload?.[campo]);
-    if (!Number.isFinite(valor)) {
-      const erro = new Error(`Informe ${campo.toUpperCase()} para o movimento PTP.`);
-      erro.statusCode = 400;
-      throw erro;
-    }
-    resultado[campo] = valor;
-  }
-  if (resultado.x < -500 || resultado.x > 500 || resultado.y < -500 || resultado.y > 500 || resultado.z < -50 || resultado.z > 500 || resultado.r < -360 || resultado.r > 360) {
-    const erro = new Error("Coordenadas PTP fora da faixa de segurança aceita pelo SteelControl.");
-    erro.statusCode = 400;
-    throw erro;
-  }
-  const velocidade = Number(payload?.velocidade ?? 40);
-  resultado.velocidade = Math.max(1, Math.min(100, Number.isFinite(velocidade) ? velocidade : 40));
-  return resultado;
-}
 
 function metaIhmComPatch(maquina, patch = {}) {
   const metaAtual = maquina?.integracaoMeta && typeof maquina.integracaoMeta === "object" && !Array.isArray(maquina.integracaoMeta)
@@ -1158,23 +1137,63 @@ export async function criarComandoDobot(req, res, next) {
       return res.status(403).json({ mensagem: "Seu cargo não possui permissão para este comando do robô." });
     }
 
-    const payload = validarPayloadDobot(comando, req.body?.payload || {});
-    const criado = await prisma.comandoMaquina.create({
+    if (!somenteStop && !controleRemotoDobotHabilitado(maquina)) {
+      return res.status(409).json({
+        codigo: "DOBOT_REMOTE_CONTROL_DISABLED",
+        mensagem: "Controle físico do Dobot desativado. Habilite remoteControlEnabled explicitamente no cadastro da máquina."
+      });
+    }
+
+    const estadoConexao = calcularEstadoConexao(maquina);
+    if (String(estadoConexao?.codigo || "").toUpperCase() !== "CONECTADA") {
+      return res.status(409).json({
+        mensagem: "Comando bloqueado: o Dobot não possui conexão real estável e telemetria recente."
+      });
+    }
+
+    const payload = {
+      ...validarPayloadDobot(comando, req.body?.payload || {}),
+      origem: "STEELCONTROL_DOBOT",
+      solicitadoPor: req.auth.nome || req.auth.email,
+      usuarioId: req.auth.usuarioId,
+      expiresAt: expiraEmComandoDobot(comando)
+    };
+
+    const cancelaveis = comando === "DOBOT_STOP"
+      ? [...DOBOT_COMMANDS].filter(item => item !== "DOBOT_STOP")
+      : comando === "DOBOT_PTP"
+        ? ["DOBOT_PTP"]
+        : [];
+
+    const operacoes = [];
+    if (cancelaveis.length) {
+      operacoes.push(prisma.comandoMaquina.updateMany({
+        where: {
+          maquinaId: id,
+          comando: { in: cancelaveis },
+          status: { in: ["PENDENTE", "ENTREGUE"] }
+        },
+        data: { status: "CANCELADO", concluidoEm: new Date() }
+      }));
+    }
+    operacoes.push(prisma.comandoMaquina.create({
       data: { maquinaId: id, comando, payload }
-    });
+    }));
+    const resultados = await prisma.$transaction(operacoes);
+    const criado = resultados.at(-1);
 
     await prisma.log.create({
       data: { maquinaId: id, mensagem: `Comando ${comando} solicitado por ${req.auth.nome || req.auth.email}.` }
     });
     await registrarAuditoria({
       req, acao: "COMANDO_DOBOT", entidade: "MAQUINA", entidadeId: id,
-      detalhes: { comando, payload }
+      detalhes: { comando, payload, comandosAnterioresCancelados: cancelaveis }
     });
     publicarEventoMaquina(id, "comando", { id: criado.id, comando, status: criado.status });
 
     return res.status(202).json({
       mensagem: "Comando enviado para a fila segura do equipamento.",
-      comando: { id: criado.id, comando: criado.comando, status: criado.status, criadoEm: criado.criadoEm }
+      comando: { id: criado.id, comando: criado.comando, status: criado.status, criadoEm: criado.criadoEm, expiraEm: payload.expiresAt }
     });
   } catch (erro) {
     next(erro);

@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 
 import { env } from "../config/env.js";
 import { prisma } from "../lib/prisma.js";
+import { sessionTokenFromCookie } from "../lib/sessionCookie.js";
+import { csrfCookieGuard } from "./security.js";
 
 export async function authRequired(
   req,
@@ -11,8 +13,18 @@ export async function authRequired(
   const auth =
     req.headers.authorization;
 
+  const bearerToken =
+    auth?.startsWith("Bearer ")
+      ? auth.substring(7)
+      : "";
+
+  const cookieToken =
+    bearerToken ? "" : sessionTokenFromCookie(req);
+
+  const token = bearerToken || cookieToken;
+
   if (
-    !auth?.startsWith("Bearer ")
+    !token
   ) {
     return res
       .status(401)
@@ -25,7 +37,7 @@ export async function authRequired(
   try {
     const payload =
       jwt.verify(
-        auth.substring(7),
+        token,
         env.jwtSecret
       );
 
@@ -97,7 +109,9 @@ export async function authRequired(
         usuario.nome
     };
 
-    return next();
+    req.authTransport = bearerToken ? "bearer" : "cookie";
+
+    return csrfCookieGuard(req, res, next);
 
   } catch (erro) {
     return res

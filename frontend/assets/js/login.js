@@ -383,10 +383,9 @@ function salvarSessao(
     "true"
   );
 
-  localStorage.setItem(
-    "token",
-    dados.token
-  );
+  // O JWT do desktop permanece somente no cookie HttpOnly do backend.
+  // Remove tokens gravados por versões anteriores.
+  localStorage.removeItem("token");
 
   if (dados.usuario?.id) {
     localStorage.setItem(
@@ -551,7 +550,8 @@ loginForm.addEventListener(
               JSON.stringify({
 
                 email,
-                senha
+                senha,
+                clientType: "desktop"
 
               })
 
@@ -561,6 +561,12 @@ loginForm.addEventListener(
 
       const dados =
         await resposta.json();
+
+
+      if (resposta.status === 202 && dados.mfaRequired === true) {
+        await abrirMfaAdministrador(dados);
+        return;
+      }
 
 
       if (!resposta.ok) {
@@ -1431,6 +1437,8 @@ async function analisarFrame() {
     const form =
       new FormData();
 
+    form.append("clientType", "desktop");
+
 
     form.append(
       "imagem",
@@ -1733,6 +1741,9 @@ async function executarReconhecimento() {
       new FormData();
 
 
+    form.append("clientType", "desktop");
+
+
     form.append(
       "imagem",
       blob,
@@ -1848,6 +1859,8 @@ async function cadastrarFace(
     verificacaoId
   );
 
+  form.append("clientType", "desktop");
+
   const resposta =
     await fetch(
       `${API_URL}/auth/register-company/complete-face`,
@@ -1922,6 +1935,78 @@ function fecharSegundoFatorFacial() {
   document
     .querySelector(".face-2fa-overlay")
     ?.remove();
+}
+
+async function abrirMfaAdministrador(dados) {
+  fecharSegundoFatorFacial();
+  const overlay = document.createElement("div");
+  overlay.className = "face-2fa-overlay";
+  overlay.innerHTML = `
+    <section class="face-2fa-card" role="dialog" aria-modal="true" aria-labelledby="adminMfaTitle">
+      <button type="button" class="face-2fa-close" aria-label="Fechar">×</button>
+      <div class="face-2fa-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="face-2fa-kicker">STEELCONTROL • MFA ADMINISTRATIVO</span>
+      <h2 id="adminMfaTitle">Confirme o acesso</h2>
+      <p class="face-2fa-description">Enviamos um código de uso único para ${dados.email || "o e-mail protegido"}.</p>
+      <div class="face-2fa-step">
+        <label for="adminMfaCode">Código de 6 dígitos</label>
+        <input id="adminMfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+        <button type="button" class="face-2fa-primary face-2fa-verify">Confirmar acesso</button>
+      </div>
+      <div class="face-2fa-message" aria-live="polite"></div>
+      <small class="face-2fa-security">A sessão só será criada depois da confirmação.</small>
+    </section>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("is-visible"));
+
+  const input = overlay.querySelector("#adminMfaCode");
+  const button = overlay.querySelector(".face-2fa-verify");
+  const message = overlay.querySelector(".face-2fa-message");
+  overlay.querySelector(".face-2fa-close")?.addEventListener("click", fecharSegundoFatorFacial);
+
+  button?.addEventListener("click", async () => {
+    const codigo = String(input.value || "").replace(/\D/g, "").slice(0, 6);
+    if (codigo.length !== 6) {
+      message.textContent = "Informe os 6 dígitos do código.";
+      message.classList.add("is-error");
+      return;
+    }
+
+    button.disabled = true;
+    message.classList.remove("is-error");
+    message.textContent = "Confirmando acesso seguro...";
+    try {
+      const resposta = await fetch(`${API_URL}/auth/admin-mfa/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          challengeId: dados.challengeId,
+          codigo,
+          clientType: "desktop"
+        })
+      });
+      const sessao = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(sessao.mensagem || "Código inválido.");
+
+      salvarSessao(sessao);
+      fecharSegundoFatorFacial();
+      mostrarBoasVindas({
+        titulo: textoAcesso("loginWelcomeTitle", { nome: sessao.usuario?.nome || "" }),
+        texto: textoAcesso("loginWelcomeText")
+      });
+      setTimeout(() => { window.location.href = "/app/maquinas"; }, 700);
+    } catch (erro) {
+      message.textContent = erro.message || "Não foi possível confirmar o código.";
+      message.classList.add("is-error");
+      button.disabled = false;
+      input.focus();
+    }
+  });
+
+  input?.addEventListener("keydown", event => {
+    if (event.key === "Enter") button?.click();
+  });
+  input?.focus();
 }
 
 async function abrirSegundoFatorFacial(challengeId) {
@@ -2040,7 +2125,7 @@ async function abrirSegundoFatorFacial(challengeId) {
       const resposta = await fetch(`${API_URL}/auth/face/ambiguous/verify-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ challengeId, email, codigo })
+        body: JSON.stringify({ challengeId, email, codigo, clientType: "desktop" })
       });
       const dados = await resposta.json().catch(() => ({}));
       if (!resposta.ok) throw new Error(dados.mensagem || "Código inválido.");

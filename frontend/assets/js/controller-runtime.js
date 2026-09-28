@@ -3,7 +3,7 @@
   const token = localStorage.getItem("token");
   const machineId = localStorage.getItem("maquinaId");
   const requestedView = new URLSearchParams(window.location.search).get("view");
-  if (!token || !machineId || requestedView !== "controller") return;
+  if (localStorage.getItem("autenticado") !== "true" || !machineId || requestedView !== "controller") return;
 
   const BRAND_ACCENT = "#c47b12";
   const BRAND_DARK = "#1e2225";
@@ -132,7 +132,7 @@
 
   async function fetchAuth(url, options = {}) {
     const headers = new Headers(options.headers || {});
-    headers.set("Authorization", `Bearer ${token}`);
+    if (token) headers.set("Authorization", `Bearer ${token}`);
     if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
     return fetch(url, { cache: "no-store", ...options, headers });
   }

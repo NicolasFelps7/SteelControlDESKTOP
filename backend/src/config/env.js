@@ -23,6 +23,12 @@ const nodeEnv =
   texto("NODE_ENV") ||
   "development";
 
+const securityProfile =
+  texto("SECURITY_PROFILE").toLowerCase() ||
+  (nodeEnv === "production" ? "standard" : "development");
+
+const level9 = securityProfile === "level9";
+
 const jwtSecret =
   obrigatoria(
     "JWT_SECRET"
@@ -33,6 +39,12 @@ if (
 ) {
   throw new Error(
     "JWT_SECRET deve possuir pelo menos 32 caracteres. Use uma chave longa e aleatória."
+  );
+}
+
+if (level9 && jwtSecret.length < 64) {
+  throw new Error(
+    "SECURITY_PROFILE=level9 exige JWT_SECRET com pelo menos 64 caracteres."
   );
 }
 
@@ -61,6 +73,10 @@ const emailUser =
   texto("EMAIL_USER") ||
   texto("GMAIL_USER") ||
   texto("MAIL_USER");
+
+const smtpHost = texto("SMTP_HOST");
+const smtpPort = Math.max(1, Math.min(65535, Number(process.env.SMTP_PORT || 587) || 587));
+const smtpSecure = ["1", "true", "on", "yes", "sim"].includes(texto("SMTP_SECURE").toLowerCase());
 
 // O Google exibe a senha de app normalmente em grupos separados por
 // espaços. Nodemailer deve receber apenas os 16 caracteres. Também
@@ -102,6 +118,31 @@ if (
 const faceApiKey =
   texto("FACE_API_KEY");
 
+const sensitiveDataKey =
+  texto("SENSITIVE_DATA_KEY");
+
+const sensitiveDataKeyValida = (() => {
+  if (!sensitiveDataKey) return false;
+  if (/^[a-f0-9]{64}$/i.test(sensitiveDataKey)) return true;
+  try {
+    return Buffer.from(sensitiveDataKey, "base64").length === 32;
+  } catch {
+    return false;
+  }
+})();
+
+if (sensitiveDataKey && !sensitiveDataKeyValida) {
+  throw new Error(
+    "SENSITIVE_DATA_KEY deve conter 32 bytes em Base64 ou 64 caracteres hexadecimais."
+  );
+}
+
+if (nodeEnv === "production" && !sensitiveDataKeyValida) {
+  throw new Error(
+    "SENSITIVE_DATA_KEY é obrigatória em produção para criptografar biometria e dados sensíveis."
+  );
+}
+
 if (
   nodeEnv === "production" &&
   faceApiKey.length < 32
@@ -118,6 +159,21 @@ if (
   throw new Error(
     "O cadastro por código exige EMAIL_USER e EMAIL_APP_PASSWORD em produção."
   );
+}
+
+const redisUrl = texto("REDIS_URL");
+const monitoringToken = texto("MONITORING_TOKEN");
+
+if (level9) {
+  if (nodeEnv !== "production") {
+    throw new Error("SECURITY_PROFILE=level9 só pode ser usado com NODE_ENV=production.");
+  }
+  if (!redisUrl) {
+    throw new Error("SECURITY_PROFILE=level9 exige REDIS_URL para proteção distribuída.");
+  }
+  if (monitoringToken.length < 32) {
+    throw new Error("SECURITY_PROFILE=level9 exige MONITORING_TOKEN com pelo menos 32 caracteres.");
+  }
 }
 
 
@@ -138,23 +194,66 @@ const discoveryEnabled =
 const discoveryAdvertiseUrl =
   texto("DISCOVERY_ADVERTISE_URL");
 
+const booleano = (nome, padrao = false) => {
+  const valor = texto(nome).toLowerCase();
+  if (!valor) return padrao;
+  return ["1", "true", "on", "yes", "sim"].includes(valor);
+};
+
+const enforceHttps = booleano("ENFORCE_HTTPS", nodeEnv === "production");
+const adminMfaRequired = booleano("ADMIN_MFA_REQUIRED", nodeEnv === "production");
+const sessionCookieMaxAgeMs = Math.max(
+  5 * 60 * 1000,
+  Number(process.env.SESSION_COOKIE_MAX_AGE_MS || 30 * 60 * 1000) ||
+    30 * 60 * 1000
+);
+
 const corsPadrao =
   nodeEnv === "production"
     ? ""
     : "http://127.0.0.1:5500,http://localhost:5500";
 
+const corsOrigins = String(process.env.CORS_ORIGINS ?? corsPadrao)
+  .split(",")
+  .map(item => item.trim())
+  .filter(Boolean);
+
+if (level9) {
+  if (!enforceHttps) {
+    throw new Error("SECURITY_PROFILE=level9 exige ENFORCE_HTTPS=true.");
+  }
+  if (!adminMfaRequired) {
+    throw new Error("SECURITY_PROFILE=level9 exige ADMIN_MFA_REQUIRED=true.");
+  }
+  if (sessionCookieMaxAgeMs > 30 * 60 * 1000) {
+    throw new Error("SECURITY_PROFILE=level9 limita a sessão desktop a 30 minutos.");
+  }
+  if (corsOrigins.some(origem => !origem.startsWith("https://"))) {
+    throw new Error("SECURITY_PROFILE=level9 aceita apenas origens CORS HTTPS.");
+  }
+}
+
 export const env = {
   port,
   nodeEnv,
+  securityProfile,
+  level9,
   databaseUrl,
   jwtSecret,
 
   jwtExpiresIn:
     texto("JWT_EXPIRES_IN") ||
-    "8h",
+    "30m",
+
+  sessionCookieMaxAgeMs,
+
+  enforceHttps,
 
   emailUser,
   emailAppPassword,
+  smtpHost,
+  smtpPort,
+  smtpSecure,
 
   emailFrom:
     texto("EMAIL_FROM") ||
@@ -171,6 +270,7 @@ export const env = {
     ),
 
   faceApiKey,
+  sensitiveDataKey,
 
   faceApiTimeoutMs:
     Math.max(
@@ -181,17 +281,7 @@ export const env = {
       ) || 60000
     ),
 
-  corsOrigins:
-    String(
-      process.env.CORS_ORIGINS ??
-      corsPadrao
-    )
-      .split(",")
-      .map(
-        item =>
-          item.trim()
-      )
-      .filter(Boolean),
+  corsOrigins,
 
   discoveryPort,
   discoveryEnabled,
@@ -204,5 +294,11 @@ export const env = {
         process.env.DEVICE_COMMAND_LEASE_MS ||
         15000
       ) || 15000
-    )
+    ),
+
+  redisUrl,
+
+  monitoringToken,
+
+  adminMfaRequired
 };

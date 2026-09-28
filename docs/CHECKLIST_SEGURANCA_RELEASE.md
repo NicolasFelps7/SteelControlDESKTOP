@@ -17,10 +17,14 @@
 
 ## JWT / e-mail / Face API
 
-- [ ] `JWT_SECRET` possui valor longo e aleatório.
+- [ ] `SECURITY_PROFILE=level9` e `npm run check:security9` está verde.
+- [ ] `JWT_SECRET` possui 64+ caracteres aleatórios.
+- [ ] `SENSITIVE_DATA_KEY`, `MONITORING_TOKEN` e `FACE_API_KEY` são diferentes.
 - [ ] Senha de app do Gmail está somente no secret manager do provedor.
 - [ ] `FACE_API_KEY` possui 32+ caracteres.
-- [ ] URLs de produção não apontam para localhost.
+- [ ] A Face API usa HTTPS ou loopback local; nenhuma API pública usa HTTP.
+- [ ] MFA de administrador foi recebido e validado.
+- [ ] Redis está saudável e o backend recusa iniciar sem ele.
 
 ## Containers
 
@@ -43,3 +47,5 @@
 - [ ] GitHub Actions verde.
 - [ ] E2E verde.
 - [ ] Commit/tag final registrado.
+- [ ] `VALIDAR_NIVEL9.ps1` finalizou em verde.
+- [ ] Pentest autorizado não possui achados críticos ou altos pendentes.

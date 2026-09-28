@@ -1,10 +1,28 @@
 from __future__ import annotations
 import struct, time
+
+DOBOT_LIMITS={"x":(-320.0,320.0),"y":(-320.0,320.0),"z":(-20.0,250.0),"r":(-180.0,180.0),"velocidade":(1.0,60.0)}
+
+def validate_ptp(payload):
+    values={}
+    for key in ("x","y","z","r"):
+        try:value=float(payload[key])
+        except (KeyError,TypeError,ValueError):raise RuntimeError(f"Coordenada {key.upper()} inválida.")
+        low,high=DOBOT_LIMITS[key]
+        if value<low or value>high:raise RuntimeError(f"{key.upper()} fora do envelope seguro ({low:g} a {high:g}).")
+        values[key]=value
+    speed=float(payload.get("velocidade",30));low,high=DOBOT_LIMITS["velocidade"]
+    if speed<low or speed>high:raise RuntimeError(f"Velocidade fora do limite seguro ({low:g}% a {high:g}%).")
+    values["velocidade"]=speed;return values
 import serial
 from serial.tools import list_ports
 from .base import DobotDriver
 
 HEADER = b"\xAA\xAA"
+ALARM_DESCRIPTIONS = {
+    0: "reinicialização pendente",
+    18: "alvo fora do alcance ou dos limites das juntas",
+}
 
 class DobotProtocolError(RuntimeError): pass
 
@@ -24,7 +42,7 @@ class MagicianSerialDriver(DobotDriver):
     """
     def __init__(self, port="AUTO", baud=115200):
         self.port_spec = port; self.baud = baud; self.ser = None; self.port = None
-        self.suction = False; self.gripper = False; self.cycles = 0; self.production = 0
+        self.suction = False; self.gripper = False; self.cycles = 0; self.production = 0; self.queue_stopped = False; self.startup_reset_acknowledged = False
 
     @staticmethod
     def ports():
@@ -45,6 +63,11 @@ class MagicianSerialDriver(DobotDriver):
                 self.ser=ser; self.port=port
                 # Só aceitamos a porta se o Dobot responder a GetPose.
                 self.get_pose()
+                alarms=self.get_alarms()
+                if alarms:
+                    try:self._recover_alarms()
+                    except DobotProtocolError:pass
+                else:self._initialize_controller()
                 return
             except Exception as exc:
                 errors.append(f"{port}: {exc}")
@@ -83,6 +106,84 @@ class MagicianSerialDriver(DobotDriver):
         self.ser.reset_input_buffer(); self.ser.write(packet(command_id,rw,queued,params)); self.ser.flush()
         return self._read_frame(command_id)
 
+    @staticmethod
+    def _queue_index(response):
+        params=response[2:]
+        if len(params)>=8:return struct.unpack('<Q',params[:8])[0]
+        return struct.unpack('<I',params[:4])[0] if len(params)>=4 else None
+
+    def _current_queue_index(self):
+        return self._queue_index(self._exchange(246,0,False))
+
+    def _wait_queue_index(self,index,timeout=5.0):
+        if index is None:return
+        deadline=time.monotonic()+timeout
+        while time.monotonic()<deadline:
+            current=self._current_queue_index()
+            if current is not None and current>=index:return
+            alarms=self._blocking_alarms()
+            if alarms:raise DobotProtocolError(f"Dobot bloqueou a fila por alarme(s): {self._describe_alarms(alarms)}.")
+            time.sleep(.05)
+        raise DobotProtocolError(f"Dobot recebeu o comando #{index}, mas a fila não o executou.")
+
+    def _initialize_controller(self):
+        self._exchange(240,1,False);self._exchange(245,1,False)
+        self._exchange(80,1,True,struct.pack('<8f',*[200.0]*8))
+        self._exchange(81,1,True,struct.pack('<4f',200.0,200.0,200.0,200.0))
+        self._exchange(82,1,True,struct.pack('<2f',10.0,200.0))
+        response=self._exchange(83,1,True,struct.pack('<2f',40.0,40.0))
+        self._exchange(240,1,False);self._wait_queue_index(self._queue_index(response),3.0);self.queue_stopped=False
+
+    def _queue_and_start(self, command_id, params=b""):
+        if self.queue_stopped:self._exchange(245,1,False)
+        self._exchange(240,1,False)
+        response = self._exchange(command_id, 1, True, params)
+        self._exchange(240, 1, False)
+        self.queue_stopped=False
+        return response
+
+    def _set_speed(self,value):
+        speed=max(1.0,min(100.0,float(value or 40.0)))
+        self._exchange(83,1,False,struct.pack('<2f',speed,speed))
+
+    def _ensure_motion_ready(self):
+        alarms=self._blocking_alarms()
+        if alarms:raise DobotProtocolError(f"Dobot possui alarme(s) ativo(s): {self._describe_alarms(alarms)}.")
+
+    def _blocking_alarms(self,alarms=None):
+        alarms=self.get_alarms() if alarms is None else list(alarms)
+        if self.startup_reset_acknowledged:
+            return [code for code in alarms if code!=0]
+        return alarms
+
+    @staticmethod
+    def _describe_alarms(alarms):
+        return ", ".join(f"{code} ({ALARM_DESCRIPTIONS.get(code,'consulte o manual Dobot')})" for code in alarms)
+
+    def _recover_alarms(self):
+        self.startup_reset_acknowledged=False
+        alarms=self.get_alarms()
+        for _ in range(5):
+            self._exchange(21,1,False)
+            time.sleep(.20)
+            self._exchange(241,1,False)
+            self._exchange(245,1,False)
+            self._exchange(240,1,False)
+            self.queue_stopped=False
+            time.sleep(.10)
+            alarms=self.get_alarms()
+            if not alarms:
+                self._initialize_controller();return
+            if alarms==[0]:
+                self.startup_reset_acknowledged=True
+                self._initialize_controller();return
+        raise DobotProtocolError(f"Alarmes continuam ativos: {self._describe_alarms(alarms)}. Reposicione o braço com segurança e desligue/ligue a alimentação.")
+
+    def _verify_effector(self,cid,enabled,on):
+        state=self._exchange(cid,0,False)[2:]
+        if len(state)>=2 and (bool(state[0])!=bool(enabled) or bool(state[1])!=bool(on)):
+            raise DobotProtocolError('O Dobot processou a fila, mas o efetuador não confirmou o estado solicitado.')
+
     def get_pose(self):
         payload=self._exchange(10,0,False)
         params=payload[2:]
@@ -100,12 +201,13 @@ class MagicianSerialDriver(DobotDriver):
                 if value & (1<<bit): active.append(byte_index*8+bit)
         return active
 
-    def clear_alarms(self): self._exchange(21,1,False)
-    def stop(self): self._exchange(242,1,False)
+    def clear_alarms(self):
+        self._recover_alarms()
+    def stop(self): self._exchange(242,1,False);self.queue_stopped=True;self.startup_reset_acknowledged=False
     def home(self):
-        # Execução imediata: não dependemos da fila interna do Dobot.
-        self._exchange(31,1,False,struct.pack('<I',0)); self.cycles += 1
-    def ptp(self,x,y,z,r):
+        self._ensure_motion_ready();self._exchange(30,1,False,struct.pack('<4f',200.0,0.0,0.0,0.0));self._exchange(31,1,False,struct.pack('<I',0)); self.cycles += 1
+    def ptp(self,x,y,z,r,speed=40):
+        self._ensure_motion_ready();self._set_speed(speed)
         before=self.get_pose()
         self._exchange(84,1,False,bytes([1])+struct.pack('<4f',x,y,z,r))
         deadline=time.monotonic()+12.0; moved=False; last=before
@@ -117,11 +219,13 @@ class MagicianSerialDriver(DobotDriver):
         if not moved:
             raise DobotProtocolError('Dobot aceitou o PTP, mas não iniciou movimento. Verifique alarmes/intertravamentos e a faixa do alvo.')
         raise DobotProtocolError(f"Dobot não atingiu o alvo PTP. Atual: X={last['x']:.2f} Y={last['y']:.2f} Z={last['z']:.2f} R={last['r']:.2f}")
-    def suction_set(self,on): self._exchange(62,1,False,bytes([1,1 if on else 0])); self.suction=on
-    def gripper_set(self,on): self._exchange(63,1,False,bytes([1,1 if on else 0])); self.gripper=on
+    def suction_set(self,on):
+        enabled=bool(on);self._exchange(62,1,False,bytes([1,1]) if on else bytes([0,0]));self._verify_effector(62,enabled,bool(on));self.suction=on
+    def gripper_set(self,on):
+        self._exchange(63,1,False,bytes([1,1 if on else 0]));self._verify_effector(63,True,bool(on));self.gripper=on
 
     def snapshot(self):
-        pose=self.get_pose(); alarms=self.get_alarms()
+        pose=self.get_pose(); raw_alarms=self.get_alarms(); alarms=self._blocking_alarms(raw_alarms)
         return {
             "producao": self.production, "ciclos": self.cycles, "qualidadeSinal": 100, "latenciaMs": 5,
             "origem": "DOBOT_REAL",
@@ -129,7 +233,7 @@ class MagicianSerialDriver(DobotDriver):
                 "mode":"REAL","connected":True,"port":self.port,"baudRate":self.baud,
                 "pose":{k:round(pose[k],4) for k in ["x","y","z","r"]},
                 "joints":{"j1":round(pose["j1"],4),"j2":round(pose["j2"],4),"j3":round(pose["j3"],4),"j4":round(pose["j4"],4)},
-                "alarms":alarms,"queue":"READY",
+                "alarms":alarms,"rawAlarms":raw_alarms,"startupResetAcknowledged":self.startup_reset_acknowledged,"queue":"READY",
                 "endEffector":{"suction":self.suction,"gripper":self.gripper},
                 "sensors":{"temperature":"NOT_INSTALLED","vibration":"NOT_INSTALLED","current":"NOT_INSTALLED"}
             }}
@@ -143,7 +247,8 @@ class MagicianSerialDriver(DobotDriver):
         if command in motion and not allow_motion:
             raise RuntimeError("Comando físico bloqueado. Defina DOBOT_ALLOW_MOTION=true somente após validar leitura e área segura.")
         if command=="DOBOT_HOME": self.home(); return
-        if command=="DOBOT_PTP": self.ptp(float(payload["x"]),float(payload["y"]),float(payload["z"]),float(payload["r"])); return
+        if command=="DOBOT_PTP":
+            target=validate_ptp(payload);self.ptp(target["x"],target["y"],target["z"],target["r"],target["velocidade"]);return
         if command=="DOBOT_SUCTION_ON": self.suction_set(True); return
         if command=="DOBOT_SUCTION_OFF": self.suction_set(False); return
         if command=="DOBOT_GRIPPER_OPEN": self.gripper_set(False); return

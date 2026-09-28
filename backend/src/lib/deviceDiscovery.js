@@ -188,7 +188,14 @@ function broadcastFor(address, netmask) {
 
 function privateInterfaces() {
   const result = [];
-  const interfaces = os.networkInterfaces();
+  let interfaces = {};
+  try {
+    interfaces = os.networkInterfaces();
+  } catch (_) {
+    // Ambientes restritos (containers/CI) podem negar uv_interface_addresses.
+    // O diagnóstico continua disponível sem inventar uma interface de rede.
+    return result;
+  }
 
   for (const [name, entries] of Object.entries(interfaces)) {
     for (const entry of entries || []) {

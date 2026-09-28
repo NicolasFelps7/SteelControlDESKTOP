@@ -4129,6 +4129,8 @@ async function sairSistema() {
 
   if (!confirmado) return;
 
+  await window.encerrarSessaoServidor?.();
+
   limparSessao();
 
 
@@ -4393,9 +4395,31 @@ document.addEventListener(
       document.getElementById("empresaLogoSidebar");
 
     if (logoSidebar) {
+      const temaEscuro =
+        ["escuro", "dark"].includes(
+          document.documentElement.getAttribute("data-theme")
+        );
+
       logoSidebar.classList.remove("logo-monocromatica-escura");
-      logoSidebar.style.setProperty("filter", "none", "important");
+      logoSidebar.src = temaEscuro
+        ? "assets/img/steel-icon-white.svg?v=20260921"
+        : "assets/img/steel-icon.svg?v=20260921";
+      logoSidebar.style.setProperty(
+        "filter",
+        "none",
+        "important"
+      );
       logoSidebar.style.setProperty("opacity", "1", "important");
+      logoSidebar.style.setProperty(
+        "background-color",
+        temaEscuro ? "#0f1418" : "#f7f8f8",
+        "important"
+      );
+      logoSidebar.style.setProperty(
+        "border-color",
+        temaEscuro ? "#303a40" : "#d8dee2",
+        "important"
+      );
     }
 
     const logoConteudo =

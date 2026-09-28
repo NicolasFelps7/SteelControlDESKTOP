@@ -22,6 +22,15 @@ if (-not (Test-Path (Join-Path $Backend '.env'))) { throw 'backend/.env nao enco
 $facePy = Join-Path $FaceApi 'venv\Scripts\python.exe'
 if (-not (Test-Path $facePy)) { throw 'Face API nao instalada. Execute INSTALAR_STEELCONTROL.bat primeiro.' }
 
+Push-Location $Root
+try {
+  Invoke-Native node tools/check-security-level9.mjs
+} finally { Pop-Location }
+
+if (-not (Test-Port 6379)) {
+  throw 'Redis nao esta ativo na porta local 6379. Inicie deploy/redis.compose.yml antes da producao.'
+}
+
 $pg = Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^postgresql' } | Sort-Object Name -Descending | Select-Object -First 1
 if ($pg -and $pg.Status -ne 'Running') {
   try { Start-Service $pg.Name; $pg.WaitForStatus('Running',[TimeSpan]::FromSeconds(30)) } catch { Write-Host 'Nao foi possivel iniciar PostgreSQL automaticamente.' -ForegroundColor Yellow }
@@ -43,7 +52,7 @@ if (Test-Port 3000) {
 if (Test-Port 8000) {
   Write-Host 'Face API ja esta ativa na porta 8000.' -ForegroundColor Yellow
 } else {
-  $face = Start-Process -FilePath $facePy -ArgumentList @('-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000') -WorkingDirectory $FaceApi -PassThru -WindowStyle Minimized
+  $face = Start-Process -FilePath $facePy -ArgumentList @('-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000','--env-file','.env') -WorkingDirectory $FaceApi -PassThru -WindowStyle Minimized
   $state.facePid = $face.Id
   Write-Host "Face API iniciada (PID $($face.Id))." -ForegroundColor Green
 }
@@ -61,4 +70,10 @@ if (-not $apiOk) { throw 'Backend nao respondeu na porta 3000.' }
 if (-not $faceOk) { throw 'Face API nao respondeu na porta 8000.' }
 
 Write-Host 'SteelControl ONLINE.' -ForegroundColor Green
-Start-Process 'http://localhost:3000/app/login'
+$caddy = Join-Path $Root 'deploy\Caddyfile'
+if (Test-Path $caddy) {
+  $dominio = (Get-Content $caddy | Where-Object { $_.Trim() -and -not $_.Trim().StartsWith('#') } | Select-Object -First 1).Trim().TrimEnd('{').Trim()
+  if ($dominio) { Start-Process "https://$dominio/app/login" }
+} else {
+  Write-Host 'Caddyfile ausente: acesse somente por um proxy HTTPS autorizado.' -ForegroundColor Yellow
+}

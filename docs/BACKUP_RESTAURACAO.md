@@ -16,7 +16,7 @@ O script:
 
 - lê a conexão PostgreSQL de `backend/.env`;
 - localiza `pg_dump`;
-- cria `database.dump` em formato custom do PostgreSQL;
+- cria temporariamente o dump custom do PostgreSQL e salva somente `database.dump.dpapi`, criptografado para o usuário Windows atual;
 - salva cópias das configurações não secretas;
 - protege `backend/.env` com Windows DPAPI (CurrentUser);
 - inclui `edge-profiles.json` quando existir (as Device Keys continuam protegidas por DPAPI);
